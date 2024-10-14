@@ -213,17 +213,19 @@
     <!-- JavaScript to fetch and display the data -->
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js (needed for date parsing) -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+    <!-- Include Chart.js Date Adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1"></script>
     <!-- Include the Financial Chart plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
 
     <script>
+        // Access the financial chart components from the global scope
+        const { CandlestickController, CandlestickElement, OhlcController, OhlcElement } = window['chartjs-chart-financial'];
+
         // Register the financial chart components
-        Chart.register(
-            Chart.controllers.financial,
-            Chart.controllers.candlestick,
-            Chart.elements.Candlestick,
-            Chart.scales.financialLinear
-        );
+        Chart.register(CandlestickController, CandlestickElement, OhlcController, OhlcElement);
 
         let liveChart; // Global chart variable for the live price chart
         let depthChart; // Global chart variable for the depth chart
@@ -461,6 +463,11 @@
                             scales: {
                                 x: {
                                     type: 'time',
+                                    adapters: {
+                                        date: {
+                                            locale: 'en-US',
+                                        }
+                                    },
                                     time: {
                                         tooltipFormat: 'MMM d, h:mm a',
                                     },
