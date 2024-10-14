@@ -49,14 +49,14 @@
             .logo {
                 width: 300px; /* Slightly larger logo on mobile */
                 position: relative;
-                top: 10px;
+                top: 0px; /* Move higher to the top */
                 left: 50%;
-                transform: translateX(-50%); /* Center the logo */
-                margin-top: 20px;
+                transform: translateX(-50%);
+                margin-top: 10px; /* Reduced margin to move content higher */
             }
 
             .container {
-                margin-top: 20px; /* Adjust the content margin on mobile */
+                margin-top: 40px; /* Bring content much higher on mobile */
             }
         }
 
@@ -114,7 +114,7 @@
         /* Mobile-specific styles */
         @media (max-width: 768px) {
             .container {
-                margin-top: 100px; /* Adjust content margin for mobile */
+                margin-top: 60px; /* Further reduce the content margin */
             }
 
             .data-section {
