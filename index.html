@@ -48,7 +48,7 @@
 
         /* Block height styling */
         .block-height {
-            font-size: 16px;
+            font-size: 24px;
             color: var(--accent-color);
             margin-bottom: 10px;
         }
@@ -81,7 +81,7 @@
                 width: 250px;
             }
             .block-height {
-                font-size: 14px;
+                font-size: 20px;
             }
         }
 
@@ -118,20 +118,12 @@
             margin-top: 10px;
         }
 
-        /* Time Interval Buttons */
-        .time-buttons button {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px;
-            margin: 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .time-buttons button:hover {
-            background-color: #ffb84d;
+        /* Headers for each section */
+        .section-header {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 10px;
         }
 
         /* Data display formatting */
@@ -148,11 +140,39 @@
             margin: 5px 0;
         }
 
+        /* Time Interval Buttons */
+        .time-buttons button {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .time-buttons button:hover {
+            background-color: #ffb84d;
+        }
+
         /* Chart container */
         .chart-container {
             width: 100%;
             max-width: 800px;
             margin: 20px auto;
+        }
+
+        /* Depth chart styling */
+        #depth-chart {
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        /* Live chart styling */
+        #live-chart {
+            height: 400px;
+            margin-top: 20px;
         }
 
         /* Mobile-specific styles using media queries */
@@ -170,6 +190,10 @@
 
             .data-value {
                 font-size: 28px;
+            }
+
+            .section-header {
+                font-size: 20px;
             }
 
             .small-text {
@@ -203,17 +227,22 @@
         <div class="data-section">
             <div class="section-header">Select Time Interval</div>
             <div class="time-buttons">
-                <button onclick="updateChart('1m')">Hourly</button>
-                <button onclick="updateChart('1h')">Hourly</button>
-                <button onclick="updateChart('1d')">Daily</button>
-                <button onclick="updateChart('1w')">Weekly</button>
-                <button onclick="updateChart('1M')">Monthly</button>
+                <button onclick="updateChart('1m')">1 Minute</button>
+                <button onclick="updateChart('5m')">5 Minutes</button>
+                <button onclick="updateChart('15m')">15 Minutes</button>
+                <button onclick="updateChart('1h')">1 Hour</button>
+                <button onclick="updateChart('1d')">1 Day</button>
             </div>
         </div>
 
         <!-- Live Bitcoin Price Chart -->
         <div class="chart-container">
             <canvas id="live-chart"></canvas>
+        </div>
+
+        <!-- Market Depth Chart -->
+        <div class="chart-container">
+            <canvas id="depth-chart"></canvas>
         </div>
 
         <!-- Exchange Prices Display -->
@@ -235,15 +264,14 @@
     </div>
 
     <!-- JavaScript to fetch and display the data -->
-    <!-- Load Compatible Chart.js Version and Financial Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
-    <!-- Load Date Adapter compatible with Chart.js 3.x -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0"></script>
+    <!-- Load Chart.js and Financial Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0/dist/chartjs-chart-financial.min.js"></script>
+    <!-- Load Date Adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
     <script>
-        // The financial plugin automatically registers the necessary controllers and elements
-        // No manual registration needed
+        // No manual registration needed; the plugin handles it
 
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
@@ -254,22 +282,6 @@
             } catch (error) {
                 console.error('Error fetching block height:', error);
                 document.getElementById('block-height').innerText = 'Error';
-            }
-        }
-
-        async function fetchFeeEstimates() {
-            console.log('Fetching fee estimates...');
-            try {
-                const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-                const data = await response.json();
-                document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
-                document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
-                document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
-            } catch (error) {
-                console.error('Error fetching fee estimates:', error);
-                document.getElementById('fast-fee').innerText = 'Error';
-                document.getElementById('medium-fee').innerText = 'Error';
-                document.getElementById('slow-fee').innerText = 'Error';
             }
         }
 
@@ -334,7 +346,114 @@
             }
         }
 
-        async function loadLiveChart(interval = '1m') {
+        async function fetchFeeEstimates() {
+            console.log('Fetching fee estimates...');
+            try {
+                const response = await fetch('https://mempool.space/api/v1/fees/recommended');
+                const data = await response.json();
+                document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
+                document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
+                document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
+            } catch (error) {
+                console.error('Error fetching fee estimates:', error);
+                document.getElementById('fast-fee').innerText = 'Error';
+                document.getElementById('medium-fee').innerText = 'Error';
+                document.getElementById('slow-fee').innerText = 'Error';
+            }
+        }
+
+        async function loadDepthChart() {
+            console.log('Loading depth chart...');
+            try {
+                const response = await fetch('https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=100');
+                const data = await response.json();
+
+                let bids = [];
+                let asks = [];
+                let totalBids = 0;
+                let totalAsks = 0;
+
+                data.bids.forEach(bid => {
+                    totalBids += parseFloat(bid[1]);
+                    bids.push({ x: parseFloat(bid[0]), y: totalBids });
+                });
+
+                data.asks.forEach(ask => {
+                    totalAsks += parseFloat(ask[1]);
+                    asks.push({ x: parseFloat(ask[0]), y: totalAsks });
+                });
+
+                const ctx = document.getElementById('depth-chart').getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Bids',
+                                data: bids.sort((a, b) => a.x - b.x),
+                                backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                                borderColor: 'rgba(0, 255, 0, 1)',
+                                fill: true,
+                                stepped: true,
+                            },
+                            {
+                                label: 'Asks',
+                                data: asks.sort((a, b) => a.x - b.x),
+                                backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                                borderColor: 'rgba(255, 0, 0, 1)',
+                                fill: true,
+                                stepped: true,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                title: {
+                                    display: true,
+                                    text: 'Price (USD)',
+                                    color: '#FFFFFF',
+                                },
+                                ticks: {
+                                    color: '#FFFFFF',
+                                },
+                                grid: {
+                                    color: '#444'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Cumulative Volume',
+                                    color: '#FFFFFF',
+                                },
+                                ticks: {
+                                    color: '#FFFFFF',
+                                },
+                                grid: {
+                                    color: '#444'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#FFFFFF',
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading depth chart:', error);
+                document.getElementById('depth-chart').innerText = 'Error loading depth chart.';
+            }
+        }
+
+        async function loadLiveChart(initialInterval = '1m') {
             console.log('Loading live price chart...');
 
             const ctx = document.getElementById('live-chart').getContext('2d');
@@ -361,7 +480,7 @@
                 }
             }
 
-            async function updateChart(interval = '1m') {
+            async function updateChart(interval = initialInterval) {
                 console.log(`Updating chart with interval: ${interval}`);
                 const chartData = await fetchHistoricalData(interval);
 
@@ -381,6 +500,7 @@
                             }]
                         },
                         options: {
+                            responsive: true,
                             scales: {
                                 x: {
                                     type: 'time',
@@ -418,17 +538,19 @@
                 }
             }
 
+            // Make updateChart globally accessible
             window.updateChart = updateChart;
 
             // Initial chart load
-            updateChart(interval);
+            updateChart(initialInterval);
         }
 
         // Fetch all data when the page loads
         window.onload = function() {
             fetchBlockHeight();
-            fetchFeeEstimates();
             fetchExchangePrices();
+            fetchFeeEstimates();
+            loadDepthChart();
             loadLiveChart();
         };
     </script>
