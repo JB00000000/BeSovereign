@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeSovereign</title>
 
-   <!-- Favicon for browser tab, using the SVG file -->
+    <!-- Favicon for browser tab, using the SVG file -->
     <link rel="icon" href="Favicon.svg" type="image/svg+xml"> <!-- Ensure "Favicon.svg" is in your repo -->
 
     <!-- Google Fonts -->
@@ -42,7 +42,7 @@
             background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            opacity: 0.15; /* Adjust transparency */
+            opacity: 0.15;
             z-index: -1; /* Push behind the content */
         }
 
@@ -127,6 +127,29 @@
             margin: 20px auto;
         }
 
+        /* Flexbox for Exchange Prices */
+        .exchange-prices-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .exchange-box {
+            flex: 1;
+            margin: 10px;
+            min-width: 250px;
+            background: var(--card-bg-color);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        /* Fee Estimates in a row */
+        .fee-estimates-row {
+            display: flex;
+            justify-content: space-around;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin-top: 5px;
@@ -147,6 +170,16 @@
             }
             .chart-container {
                 width: 100%;
+            }
+
+            /* Stack Exchange Boxes on mobile */
+            .exchange-prices-container {
+                flex-direction: column;
+            }
+
+            .exchange-box {
+                min-width: unset;
+                margin-bottom: 15px;
             }
         }
     </style>
@@ -202,18 +235,27 @@
             <!-- TradingView Widget END -->
         </div>
 
-        <!-- Exchange Prices Display -->
-        <div class="data-section">
-            <div class="section-header">Exchange Prices</div>
-            <div id="exchange-prices">Loading...</div>
+        <!-- Exchange Prices Display (3 Separate Boxes) -->
+        <div class="exchange-prices-container">
+            <div class="exchange-box" id="exchange-box-1">
+                Loading...
+            </div>
+            <div class="exchange-box" id="exchange-box-2">
+                Loading...
+            </div>
+            <div class="exchange-box" id="exchange-box-3">
+                Loading...
+            </div>
         </div>
 
-        <!-- Fee Estimates Display -->
+        <!-- Fee Estimates Display (Row Format) -->
         <div class="data-section">
             <div class="section-header">Fee Estimates</div>
-            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
-            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
-            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+            <div class="fee-estimates-row">
+                <div>Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
+                <div>Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
+                <div>Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+            </div>
         </div>
 
     </div>
@@ -230,25 +272,22 @@
                 { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
             ];
 
-            let exchangePricesHTML = '';
-            let totalPrice = 0;
-            let priceCount = 0;
+            let box1HTML = '', box2HTML = '', box3HTML = '';
+            let totalPrice = 0, priceCount = 0;
 
-            for (let exchange of exchanges) {
+            for (let i = 0; i < exchanges.length; i++) {
                 try {
-                    const response = await fetch(exchange.url);
+                    const response = await fetch(exchanges[i].url);
                     const data = await response.json();
                     let price = null;
 
-                    switch (exchange.name) {
+                    switch (exchanges[i].name) {
                         case 'Coinbase':
                             price = parseFloat(data.data.amount);
                             break;
                         case 'Kraken':
                             const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
-                            if (krakenPair) {
-                                price = parseFloat(krakenPair.c[0]);
-                            }
+                            if (krakenPair) price = parseFloat(krakenPair.c[0]);
                             break;
                         case 'Binance':
                             price = parseFloat(data.price);
@@ -265,19 +304,26 @@
                     }
 
                     if (price !== null && !isNaN(price)) {
-                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                        const exchangeHTML = `<div class="small-text">${exchanges[i].name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
                         totalPrice += price;
                         priceCount++;
-                    } else {
-                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`;
+
+                        if (i < 2) {
+                            box1HTML += exchangeHTML;
+                        } else if (i < 4) {
+                            box2HTML += exchangeHTML;
+                        } else {
+                            box3HTML += exchangeHTML;
+                        }
                     }
                 } catch (error) {
-                    console.error(`Error fetching price from ${exchange.name}:`, error);
-                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
+                    console.error(`Error fetching price from ${exchanges[i].name}:`, error);
                 }
             }
 
-            document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
+            document.getElementById('exchange-box-1').innerHTML = box1HTML || 'Error loading prices';
+            document.getElementById('exchange-box-2').innerHTML = box2HTML || 'Error loading prices';
+            document.getElementById('exchange-box-3').innerHTML = box3HTML || 'Error loading prices';
 
             if (priceCount > 0) {
                 const averagePrice = totalPrice / priceCount;
