@@ -21,7 +21,7 @@
             position: relative;
         }
 
-        /* Logo styling with new logo */
+        /* Logo styling */
         .logo {
             position: absolute;
             top: 20px;
@@ -29,18 +29,19 @@
             width: 250px; /* Adjust size as needed */
         }
 
-        /* Bitcoin price with dark mode styling */
-        .bitcoin-price {
-            font-size: 40px;
+        /* General styling for data sections */
+        .data-section {
+            font-size: 24px;
             font-weight: bold;
-            color: #FFA500; /* Orange to match Bitcoin colors */
+            color: #FFA500; /* Orange for Bitcoin */
             text-align: center;
-            background: #1e1e1e; /* Dark background for the price container */
+            background: #1e1e1e; /* Dark background for section */
             padding: 20px;
             border: 2px solid #FFA500; /* Border in orange */
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-            margin-top: 100px;
+            margin-top: 20px;
+            width: 80%; /* Make it more readable on mobile */
         }
 
         /* Debugging information hidden by default */
@@ -52,81 +53,119 @@
 
         /* Mobile-specific styles using media queries */
         @media (max-width: 768px) {
-            body {
-                justify-content: flex-start; /* Align content at the top on mobile */
-            }
-
             .logo {
                 width: 150px; /* Smaller logo on mobile */
                 top: 10px;
                 left: 10px;
             }
 
-            .bitcoin-price {
-                font-size: 28px; /* Smaller font size for price on mobile */
+            .data-section {
+                font-size: 20px; /* Slightly smaller font size for mobile */
                 padding: 15px;
-                margin-top: 150px; /* Ensure enough space between logo and price */
+                margin-top: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Updated logo reference -->
+    <!-- Logo in top-left -->
     <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
 
-    <!-- Bitcoin price centered with styling -->
-    <div class="bitcoin-price">
+    <!-- Bitcoin Price Display -->
+    <div class="data-section">
         Bitcoin Price (USD): <span id="btc-price">Loading...</span>
+    </div>
+
+    <!-- Mempool Summary Display -->
+    <div class="data-section">
+        Mempool Summary: <span id="mempool-summary">Loading...</span>
+    </div>
+
+    <!-- Fee Estimates Display -->
+    <div class="data-section">
+        Fee Estimates: 
+        <p>Fast: <span id="fast-fee">Loading...</span></p>
+        <p>Medium: <span id="medium-fee">Loading...</span></p>
+        <p>Slow: <span id="slow-fee">Loading...</span></p>
+    </div>
+
+    <!-- Block Information Display -->
+    <div class="data-section">
+        Block Height: <span id="block-height">Loading...</span><br>
+        Latest Block: <span id="block-info">Loading...</span>
     </div>
 
     <!-- Debugging Information -->
     <div class="debug-info" id="debug-info">
-        Debugging Information: <span id="debug-message">Waiting for price data...</span>
+        Debugging Information: <span id="debug-message">Waiting for data...</span>
     </div>
 
-    <!-- JavaScript to fetch live Bitcoin price -->
+    <!-- JavaScript to fetch and display the data -->
     <script>
         async function fetchBitcoinPrice() {
-            console.log('Starting to fetch Bitcoin price...');
-            document.getElementById('debug-message').innerText = 'Fetching Bitcoin price from API...';
+            console.log('Fetching Bitcoin price...');
             try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
                 const data = await response.json();
-                console.log('API response received:', data);
-                const price = data.bitcoin.usd;
-                console.log('Bitcoin price:', price);
-
-                // Ensure we update the price in the HTML
-                const priceElement = document.getElementById('btc-price');
-                if (priceElement) {
-                    priceElement.innerHTML = `$${price.toLocaleString()}`;
-                    document.getElementById('debug-message').innerText = 'Price successfully updated!';
-                } else {
-                    console.error('Could not find price element in the HTML!');
-                    document.getElementById('debug-message').innerText = 'Error: Could not find the price element in the HTML.';
-                }
+                document.getElementById('btc-price').innerText = `$${data.bitcoin.usd.toLocaleString()}`;
             } catch (error) {
-                const priceElement = document.getElementById('btc-price');
-                if (priceElement) {
-                    priceElement.innerHTML = 'Error fetching price';
-                }
-                console.error('Error fetching Bitcoin price:', error); 
-                document.getElementById('debug-message').innerText = `Error fetching price: ${error.message}`;
+                console.error('Error fetching Bitcoin price:', error);
+                document.getElementById('btc-price').innerText = 'Error';
             }
         }
 
-        // Fetch the price when the page loads
-        window.onload = fetchBitcoinPrice;
+        async function fetchMempoolSummary() {
+            console.log('Fetching Mempool summary...');
+            try {
+                const response = await fetch('https://mempool.space/api/mempool');
+                const data = await response.json();
+                document.getElementById('mempool-summary').innerText = `${data.count.toLocaleString()} transactions, ${Math.round(data.vsize / 1000000)} MB`;
+            } catch (error) {
+                console.error('Error fetching Mempool summary:', error);
+                document.getElementById('mempool-summary').innerText = 'Error';
+            }
+        }
 
+        async function fetchFeeEstimates() {
+            console.log('Fetching fee estimates...');
+            try {
+                const response = await fetch('https://mempool.space/api/v1/fees/recommended');
+                const data = await response.json();
+                document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
+                document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
+                document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
+            } catch (error) {
+                console.error('Error fetching fee estimates:', error);
+                document.getElementById('fast-fee').innerText = 'Error';
+                document.getElementById('medium-fee').innerText = 'Error';
+                document.getElementById('slow-fee').innerText = 'Error';
+            }
+        }
+
+        async function fetchBlockHeight() {
+            console.log('Fetching block height...');
+            try {
+                const heightResponse = await fetch('https://mempool.space/api/blocks/tip/height');
+                const blockResponse = await fetch('https://mempool.space/api/blocks/tip');
+                const height = await heightResponse.json();
+                const block = await blockResponse.json();
+                document.getElementById('block-height').innerText = height;
+                document.getElementById('block-info').innerText = `Block Hash: ${block[0].id}`;
+            } catch (error) {
+                console.error('Error fetching block height:', error);
+                document.getElementById('block-height').innerText = 'Error';
+                document.getElementById('block-info').innerText = 'Error';
+            }
+        }
+
+        // Fetch all data when the page loads
+        window.onload = function() {
+            fetchBitcoinPrice();
+            fetchMempoolSummary();
+            fetchFeeEstimates();
+            fetchBlockHeight();
+        };
     </script>
 
 </body>
