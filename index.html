@@ -39,7 +39,7 @@
             border: 2px solid #FFA500;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            margin-top: 100px; /* Increased margin to prevent overlap */
         }
 
         /* Debugging information hidden by default */
@@ -62,9 +62,9 @@
             }
 
             .bitcoin-price {
-                font-size: 30px; /* Smaller font size for price on mobile */
+                font-size: 28px; /* Slightly smaller font size for price on mobile */
                 padding: 15px;
-                margin-top: 80px; /* Ensure price is pushed down below the logo */
+                margin-top: 150px; /* Increased margin to avoid overlap with the logo */
             }
         }
     </style>
@@ -125,7 +125,6 @@
 
         // Fetch the price when the page loads
         window.onload = fetchBitcoinPrice;
-
     </script>
 
 </body>
