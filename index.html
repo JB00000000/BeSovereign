@@ -113,6 +113,11 @@
             }
         }
 
+        /* Adjust margins to move content up */
+        .data-section:first-child {
+            margin-top: 10px;
+        }
+
         /* Time Interval Buttons */
         .time-buttons button {
             background-color: var(--accent-color);
@@ -134,6 +139,13 @@
             font-size: 36px;
             font-weight: 400;
             color: var(--text-color);
+        }
+
+        /* Smaller text styling for detailed data */
+        .small-text {
+            font-size: 20px;
+            color: var(--text-color);
+            margin: 5px 0;
         }
 
         /* Chart container */
@@ -158,6 +170,10 @@
 
             .data-value {
                 font-size: 28px;
+            }
+
+            .small-text {
+                font-size: 18px;
             }
 
             .chart-container {
@@ -188,16 +204,24 @@
             <div class="section-header">Select Time Interval</div>
             <div class="time-buttons">
                 <button onclick="updateChart('1m')">Hourly</button>
+                <button onclick="updateChart('1h')">Hourly</button>
                 <button onclick="updateChart('1d')">Daily</button>
                 <button onclick="updateChart('1w')">Weekly</button>
                 <button onclick="updateChart('1M')">Monthly</button>
-                <button onclick="updateChart('1y')">Yearly</button>
             </div>
         </div>
 
         <!-- Live Bitcoin Price Chart -->
         <div class="chart-container">
             <canvas id="live-chart"></canvas>
+        </div>
+
+        <!-- Exchange Prices Display -->
+        <div class="data-section">
+            <div class="section-header">Exchange Prices</div>
+            <div id="exchange-prices">
+                Loading...
+            </div>
         </div>
 
         <!-- Fee Estimates Display -->
@@ -214,12 +238,12 @@
     <!-- Load Compatible Chart.js Version and Financial Plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
-    <!-- Load Date Adapter -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.9.1"></script>
+    <!-- Load Date Adapter compatible with Chart.js 3.x -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0"></script>
 
     <script>
-        const { CandlestickController, CandlestickElement, OhlcController, OhlcElement } = Chart;
-        Chart.register(CandlestickController, CandlestickElement, OhlcController, OhlcElement);
+        // The financial plugin automatically registers the necessary controllers and elements
+        // No manual registration needed
 
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
@@ -338,6 +362,7 @@
             }
 
             async function updateChart(interval = '1m') {
+                console.log(`Updating chart with interval: ${interval}`);
                 const chartData = await fetchHistoricalData(interval);
 
                 if (!chart) {
@@ -347,11 +372,12 @@
                             datasets: [{
                                 label: 'BTC/USD',
                                 data: chartData,
-                                color: {
+                                borderColor: {
                                     up: '#00ff00',
                                     down: '#ff0000',
                                     unchanged: '#999999'
-                                }
+                                },
+                                borderWidth: 1,
                             }]
                         },
                         options: {
@@ -395,7 +421,7 @@
             window.updateChart = updateChart;
 
             // Initial chart load
-            updateChart();
+            updateChart(interval);
         }
 
         // Fetch all data when the page loads
