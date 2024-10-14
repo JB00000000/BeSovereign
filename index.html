@@ -190,7 +190,8 @@
     <!-- Header with Block Height and Logo -->
     <div class="header">
         <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
-        <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
+        <!-- Update the src attribute to point to your actual logo file -->
+        <img src="your-logo-file.png" alt="BeSovereign Logo" class="logo">
     </div>
 
     <!-- Container for all content -->
@@ -238,6 +239,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
 
     <script>
+        // Register the financial chart types
+        Chart.register(Chart.Financial);
+
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
             try {
@@ -425,6 +429,11 @@
 
             let chart;
 
+            // Register the candlestick controller and element
+            const { CandlestickController, CandlestickElement } = Chart.controllers;
+            const { FinancialElement } = Chart.elements;
+            Chart.register(CandlestickController, CandlestickElement, FinancialElement);
+
             async function fetchHistoricalData() {
                 try {
                     // Fetch historical candlestick data from Binance
@@ -457,6 +466,7 @@
                             datasets: [{
                                 label: 'BTC/USD',
                                 data: chartData,
+                                borderColor: '#FF9900',
                                 color: {
                                     up: '#00ff00',
                                     down: '#ff0000',
