@@ -1,4 +1,4 @@
-i<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,19 +7,56 @@ i<!DOCTYPE html>
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
         }
         img {
             max-width: 100%;
             height: auto;
         }
+        .bitcoin-price {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-   <img src="BeSovereign.png" alt="BeSovereign Logo">
+
+    <!-- Bitcoin price added here -->
+    <div class="bitcoin-price">
+        Bitcoin Price (USD): <span id="btc-price">Loading...</span>
+    </div>
+
+    <!-- BeSovereign Logo -->
+    <img src="BeSovereign.png" alt="BeSovereign Logo">
+
+    <!-- JavaScript to fetch live Bitcoin price -->
+    <script>
+        async function fetchBitcoinPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                const data = await response.json();
+                const price = data.bitcoin.usd;
+                document.getElementById('btc-price').innerText = `$${price.toLocaleString()}`;
+            } catch (error) {
+                document.getElementById('btc-price').innerText = 'Error fetching price';
+                console.error('Error fetching Bitcoin price:', error);
+            }
+        }
+
+        // Fetch the price when the page loads
+        window.onload = fetchBitcoinPrice;
+
+        // Optionally, refresh the price every 60 seconds
+        setInterval(fetchBitcoinPrice, 60000);
+    </script>
+
 </body>
 </html>
