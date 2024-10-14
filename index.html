@@ -172,4 +172,132 @@
                     "toolbar_bg": "#f1f3f6",
                     "enable_publishing": false,
                     "hide_top_toolbar": true,
-       
+                    "hide_legend": true,
+                    "save_image": false,
+                    "container_id": "tradingview_btc_chart"
+                });
+                </script>
+            </div>
+            <!-- TradingView Widget END -->
+        </div>
+
+        <!-- Fee Estimates Display -->
+        <div class="data-section">
+            <div class="section-header">Fee Estimates</div>
+            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
+            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
+            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+        </div>
+
+        <!-- Block Information Display -->
+        <div class="data-section">
+            <div class="section-header">Block Height</div>
+            <div class="data-value" id="block-height">Loading...</div>
+        </div>
+
+        <!-- Exchange Prices Display -->
+        <div class="data-section">
+            <div class="section-header">Exchange Prices</div>
+            <div id="exchange-prices">Loading...</div>
+        </div>
+    </div>
+
+    <!-- JavaScript to fetch and display the data -->
+    <script>
+        async function fetchBitcoinPrice() {
+            console.log('Fetching Bitcoin price from Bitstamp...');
+            try {
+                const response = await fetch('https://www.bitstamp.net/api/v2/ticker/btcusd/');
+                const data = await response.json();
+                const price = parseFloat(data.last);
+                document.getElementById('btc-price').innerText = `$${price.toLocaleString()}`;
+            } catch (error) {
+                console.error('Error fetching Bitcoin price:', error);
+                document.getElementById('btc-price').innerText = 'Error';
+            }
+        }
+
+        async function fetchFeeEstimates() {
+            console.log('Fetching fee estimates...');
+            try {
+                const response = await fetch('https://mempool.space/api/v1/fees/recommended');
+                const data = await response.json();
+                document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
+                document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
+                document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
+            } catch (error) {
+                console.error('Error fetching fee estimates:', error);
+                document.getElementById('fast-fee').innerText = 'Error';
+                document.getElementById('medium-fee').innerText = 'Error';
+                document.getElementById('slow-fee').innerText = 'Error';
+            }
+        }
+
+        async function fetchBlockHeight() {
+            console.log('Fetching block height...');
+            try {
+                const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
+                const height = await response.text();
+                document.getElementById('block-height').innerText = height;
+            } catch (error) {
+                console.error('Error fetching block height:', error);
+                document.getElementById('block-height').innerText = 'Error';
+            }
+        }
+
+        async function fetchExchangePrices() {
+            console.log('Fetching prices from multiple exchanges...');
+            const exchanges = [
+                { name: 'Bitstamp', url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/' },
+                { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
+                { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
+                { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' }
+            ];
+
+            let exchangePricesHTML = '';
+
+            for (let exchange of exchanges) {
+                try {
+                    const response = await fetch(exchange.url);
+                    const data = await response.json();
+                    let price = 'N/A';
+
+                    switch (exchange.name) {
+                        case 'Bitstamp':
+                            price = parseFloat(data.last);
+                            break;
+                        case 'Coinbase':
+                            price = parseFloat(data.data.amount);
+                            break;
+                        case 'Kraken':
+                            const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
+                            if (krakenPair) {
+                                price = parseFloat(krakenPair.c[0]);
+                            }
+                            break;
+                        case 'Binance':
+                            price = parseFloat(data.price);
+                            break;
+                    }
+
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                } catch (error) {
+                    console.error(`Error fetching price from ${exchange.name}:`, error);
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
+                }
+            }
+
+            document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
+        }
+
+        // Fetch all data when the page loads
+        window.onload = function() {
+            fetchBitcoinPrice();
+            fetchFeeEstimates();
+            fetchBlockHeight();
+            fetchExchangePrices();
+        };
+    </script>
+
+</body>
+</html>
