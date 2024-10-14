@@ -39,18 +39,19 @@
             width: 300px;
             max-width: 90%;
             height: auto;
+            margin-bottom: 10px;
         }
 
         .block-height {
             font-size: 24px;
             color: var(--accent-color);
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* Moved data points up */
         }
 
         .current-time {
             font-size: 16px;
             color: #BBBBBB;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Moved data points up */
         }
 
         @media (min-width: 769px) {
@@ -60,7 +61,7 @@
             }
             .logo {
                 align-self: center;
-                margin-top: 10px;
+                margin-top: 5px; /* Moved logo slightly higher */
             }
         }
 
@@ -76,10 +77,10 @@
             color: var(--text-color);
             text-align: center;
             background: var(--card-bg-color);
-            padding: 20px;
+            padding: 15px; /* Reduced padding to move up */
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            margin: 15px auto;
+            margin: 10px auto; /* Moved data points up */
             width: 90%;
         }
 
@@ -111,22 +112,22 @@
         .chart-container {
             width: 100%;
             max-width: 1200px;
-            margin: 20px auto;
+            margin: 10px auto; /* Moved chart slightly higher */
         }
 
         #depth-chart {
             height: 400px;
-            margin-top: 20px;
+            margin-top: 15px; /* Reduced space at the top */
         }
 
         @media (max-width: 768px) {
             .container {
-                margin-top: 10px;
+                margin-top: 5px; /* Moved data points up */
             }
             .data-section {
                 font-size: 20px;
-                padding: 15px;
-                margin: 10px auto;
+                padding: 10px; /* Reduced padding */
+                margin: 8px auto;
             }
             .data-value {
                 font-size: 28px;
@@ -145,7 +146,7 @@
 </head>
 <body>
 
-    <!-- Header with Block Height, Date, Time and Logo -->
+    <!-- Header with Block Height, Date, Time, and Transparent Logo -->
     <div class="header">
         <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
         <div class="current-time" id="current-time">Loading...</div>
