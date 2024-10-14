@@ -59,12 +59,15 @@
                 // Ensure we update the price in the HTML
                 const priceElement = document.getElementById('btc-price');
                 if (priceElement) {
-                    priceElement.innerText = `$${price.toLocaleString()}`;
+                    priceElement.innerHTML = `$${price.toLocaleString()}`; // Fix to ensure price is displayed
                 } else {
                     console.error('Could not find price element in the HTML!');
                 }
             } catch (error) {
-                document.getElementById('btc-price').innerText = 'Error fetching price';
+                const priceElement = document.getElementById('btc-price');
+                if (priceElement) {
+                    priceElement.innerHTML = 'Error fetching price';
+                }
                 console.error('Error fetching Bitcoin price:', error); 
             }
         }
