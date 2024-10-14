@@ -1,78 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="10"> <!-- Auto-refreshes the page every 10 seconds -->
     <title>BeSovereign</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Using 'Open Sans' font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
+        /* CSS Variables for easy theme management */
+        :root {
+            --bg-color: #1A1A1A;
+            --text-color: #FFFFFF;
+            --accent-color: #FF9900;
+            --card-bg-color: #262626;
+        }
+
         /* Base styles */
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #121212; /* Dark background for dark mode */
-            color: #ddd; /* Softer grey text */
-            height: 100vh;
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
         }
 
-        /* Logo styling - keep it to the top-left */
+        /* Logo styling - top-left position */
         .logo {
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 200px; /* Adjust size if needed */
+            width: 250px; /* Increased size by 25% from 200px */
         }
 
         /* General styling for data sections */
         .data-section {
-            font-size: 24px; /* Increased font size */
-            color: #FFA500; /* Softer yellow-orange for readability */
+            font-size: 24px;
+            color: var(--text-color);
             text-align: center;
-            background: #1e1e1e; /* Dark background for section */
-            padding: 15px 25px; /* Adjust padding for cleaner layout */
-            border: 2px solid #FFA500; /* Border in orange */
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-            margin: 10px 0;
-            width: 80%; /* Make it more readable on mobile */
-            max-width: 600px; /* Limit the width for better desktop display */
+            background: var(--card-bg-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin: 15px 0;
+            width: 90%;
+            max-width: 500px;
         }
 
         /* Headers for each section */
         .section-header {
-            font-size: 22px;
-            font-weight: bold;
-            color: #FFA500;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent-color);
             margin-bottom: 10px;
         }
 
         /* Data display formatting */
         .data-value {
-            font-size: 32px; /* Larger font size for data */
-            font-weight: normal;
-            color: #ddd;
+            font-size: 36px;
+            font-weight: 400;
+            color: var(--text-color);
         }
 
         /* Smaller text styling for detailed data */
         .small-text {
-            font-size: 18px; /* Slightly larger font for sub-details */
-            color: #ccc; /* Softer grey */
+            font-size: 20px;
+            color: var(--text-color);
         }
 
         /* Mobile-specific styles using media queries */
         @media (max-width: 768px) {
             .data-section {
-                font-size: 22px; /* Adjust font size for mobile */
+                font-size: 22px;
                 padding: 15px;
             }
 
             .data-value {
-                font-size: 28px;
+                font-size: 32px;
+            }
+
+            .section-header {
+                font-size: 22px;
             }
         }
     </style>
@@ -86,12 +104,6 @@
     <div class="data-section">
         <div class="section-header">Bitcoin Price (USD)</div>
         <div class="data-value" id="btc-price">Loading...</div>
-    </div>
-
-    <!-- Mempool Summary Display -->
-    <div class="data-section">
-        <div class="section-header">Mempool Summary</div>
-        <div class="data-value" id="mempool-summary">Loading...</div>
     </div>
 
     <!-- Fee Estimates Display -->
@@ -119,18 +131,6 @@
             } catch (error) {
                 console.error('Error fetching Bitcoin price:', error);
                 document.getElementById('btc-price').innerText = 'Error';
-            }
-        }
-
-        async function fetchMempoolSummary() {
-            console.log('Fetching Mempool summary...');
-            try {
-                const response = await fetch('https://mempool.space/api/mempool');
-                const data = await response.json();
-                document.getElementById('mempool-summary').innerText = `${data.count.toLocaleString()} transactions, ${Math.round(data.vsize / 1000000)} MB`;
-            } catch (error) {
-                console.error('Error fetching Mempool summary:', error);
-                document.getElementById('mempool-summary').innerText = 'Error';
             }
         }
 
@@ -165,7 +165,6 @@
         // Fetch all data when the page loads
         window.onload = function() {
             fetchBitcoinPrice();
-            fetchMempoolSummary();
             fetchFeeEstimates();
             fetchBlockHeight();
         };
