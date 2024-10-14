@@ -15,23 +15,29 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
 
-        /* Logo styling to be smaller and in the top-left corner */
+        /* Logo styling to be larger and in the top-left corner */
         .logo {
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 150px;
+            width: 250px; /* Increased logo size */
         }
 
-        /* Bitcoin price centered */
+        /* Bitcoin price with artistic styling */
         .bitcoin-price {
-            font-size: 30px;
+            font-size: 40px; /* Larger font size */
             font-weight: bold;
-            color: #000;
+            color: #FFA500; /* Orange to match Bitcoin colors */
             text-align: center;
-            margin-bottom: 40px;
+            background: #fff; /* White background */
+            padding: 20px;
+            border: 2px solid #FFA500; /* Border in orange */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            margin-top: 20px;
         }
 
         /* Debugging information hidden by default */
@@ -47,7 +53,7 @@
     <!-- BeSovereign Logo in top-left -->
     <img src="BeSovereign.png" alt="BeSovereign Logo" class="logo">
 
-    <!-- Bitcoin price centered -->
+    <!-- Bitcoin price centered with styling -->
     <div class="bitcoin-price">
         Bitcoin Price (USD): <span id="btc-price">Loading...</span>
     </div>
