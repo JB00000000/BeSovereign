@@ -33,44 +33,28 @@
         /* Header styles */
         .header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             padding: 10px 20px;
-            position: relative;
         }
 
         .logo {
             width: 300px; /* Increased size */
             max-width: 90%;
             height: auto;
+            margin-bottom: 10px;
         }
 
         .block-height {
             font-size: 20px;
             color: var(--accent-color);
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            margin-top: 5px;
         }
 
-        /* Center logo on mobile */
+        /* Center logo and header */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: center;
-                padding: 10px 0;
-            }
-
             .logo {
                 width: 250px; /* Adjusted logo size on mobile */
-                margin: 10px 0;
-            }
-
-            .block-height {
-                position: static;
-                transform: none;
-                margin-top: 10px;
             }
         }
 
@@ -94,6 +78,11 @@
             margin: 15px auto;
             width: 90%;
             max-width: 500px;
+        }
+
+        /* Adjust margins to move content up */
+        .data-section:first-child {
+            margin-top: 10px;
         }
 
         /* Headers for each section */
@@ -258,7 +247,11 @@
                 const response = await fetch('https://www.bitstamp.net/api/v2/ticker/btcusd/');
                 const data = await response.json();
                 const price = parseFloat(data.last);
-                document.getElementById('btc-price').innerText = `$${price.toLocaleString()}`;
+                if (!isNaN(price)) {
+                    document.getElementById('btc-price').innerText = `$${price.toLocaleString()}`;
+                } else {
+                    throw new Error('Invalid price data');
+                }
             } catch (error) {
                 console.error('Error fetching Bitcoin price:', error);
                 document.getElementById('btc-price').innerText = 'Error';
@@ -381,7 +374,7 @@
                                     backgroundColor: 'rgba(0, 255, 0, 0.2)',
                                     borderColor: 'rgba(0, 255, 0, 1)',
                                     fill: true,
-                                    stepped: 'before',
+                                    stepped: true,
                                 },
                                 {
                                     label: 'Asks',
@@ -389,7 +382,7 @@
                                     backgroundColor: 'rgba(255, 0, 0, 0.2)',
                                     borderColor: 'rgba(255, 0, 0, 1)',
                                     fill: true,
-                                    stepped: 'after',
+                                    stepped: true,
                                 }
                             ]
                         },
