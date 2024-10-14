@@ -4,7 +4,6 @@
     <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="10"> <!-- Auto-refreshes the page every 10 seconds -->
     <title>BeSovereign</title>
 
     <!-- Google Fonts -->
@@ -35,12 +34,25 @@
             align-items: center;
         }
 
-        /* Logo styling - top-left position */
+        /* Container to center content vertically */
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        /* Logo styling */
         .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
             width: 250px; /* Increased size by 25% from 200px */
+            max-width: 90%; /* Ensure the logo doesn't exceed screen width */
+            height: auto;
+            margin-top: 20px;
+            align-self: flex-start; /* Align logo to the left */
+            margin-left: 20px;
         }
 
         /* General styling for data sections */
@@ -76,48 +88,62 @@
         .small-text {
             font-size: 20px;
             color: var(--text-color);
+            margin: 5px 0;
         }
 
         /* Mobile-specific styles using media queries */
         @media (max-width: 768px) {
+            .logo {
+                width: 180px; /* Reduce logo size on mobile */
+                margin-left: 10px;
+            }
+
             .data-section {
-                font-size: 22px;
+                font-size: 20px;
                 padding: 15px;
+                margin: 10px 0;
             }
 
             .data-value {
-                font-size: 32px;
+                font-size: 28px;
             }
 
             .section-header {
-                font-size: 22px;
+                font-size: 20px;
+            }
+
+            .small-text {
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Logo in top-left -->
+    <!-- Logo at the top -->
     <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
 
-    <!-- Bitcoin Price Display -->
-    <div class="data-section">
-        <div class="section-header">Bitcoin Price (USD)</div>
-        <div class="data-value" id="btc-price">Loading...</div>
-    </div>
+    <!-- Container to center content vertically -->
+    <div class="container">
+        <!-- Bitcoin Price Display -->
+        <div class="data-section">
+            <div class="section-header">Bitcoin Price (USD)</div>
+            <div class="data-value" id="btc-price">Loading...</div>
+        </div>
 
-    <!-- Fee Estimates Display -->
-    <div class="data-section">
-        <div class="section-header">Fee Estimates</div>
-        <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
-        <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
-        <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
-    </div>
+        <!-- Fee Estimates Display -->
+        <div class="data-section">
+            <div class="section-header">Fee Estimates</div>
+            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
+            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
+            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+        </div>
 
-    <!-- Block Information Display -->
-    <div class="data-section">
-        <div class="section-header">Block Height</div>
-        <div class="data-value" id="block-height">Loading...</div>
+        <!-- Block Information Display -->
+        <div class="data-section">
+            <div class="section-header">Block Height</div>
+            <div class="data-value" id="block-height">Loading...</div>
+        </div>
     </div>
 
     <!-- JavaScript to fetch and display the data -->
