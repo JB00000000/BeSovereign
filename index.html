@@ -28,33 +28,49 @@
             font-family: 'Open Sans', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        /* Logo styling */
+        /* Header styles */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            position: relative;
+        }
+
         .logo {
             width: 300px; /* Increased size */
             max-width: 90%;
             height: auto;
-            margin-top: 10px; /* Adjusted to bring content higher */
         }
 
-        /* Position logo on desktop */
-        @media (min-width: 769px) {
-            .logo {
-                align-self: flex-start;
-                margin-left: 20px;
-            }
+        .block-height {
+            font-size: 20px;
+            color: var(--accent-color);
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         /* Center logo on mobile */
         @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px 0;
+            }
+
             .logo {
-                align-self: center;
-                margin-left: 0;
+                width: 250px; /* Adjusted logo size on mobile */
+                margin: 10px 0;
+            }
+
+            .block-height {
+                position: static;
+                transform: none;
+                margin-top: 10px;
             }
         }
 
@@ -63,7 +79,7 @@
             width: 100%;
             max-width: 1200px;
             padding: 10px;
-            margin-top: 10px; /* Adjusted to bring content higher */
+            margin: 0 auto;
         }
 
         /* General styling for data sections */
@@ -117,11 +133,8 @@
 
         /* Mobile-specific styles using media queries */
         @media (max-width: 768px) {
-            body {
-                padding-top: 10px; /* Reduce top padding to bring content higher */
-            }
-            .logo {
-                width: 200px; /* Adjusted logo size on mobile */
+            /* Bring data points higher */
+            .container {
                 margin-top: 10px;
             }
 
@@ -151,43 +164,19 @@
 </head>
 <body>
 
-    <!-- Logo at the top -->
-    <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
+    <!-- Header with Logo and Block Height -->
+    <div class="header">
+        <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
+        <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
+    </div>
 
     <!-- Container for all content -->
     <div class="container">
-        <!-- Bitcoin Price Display -->
-        <div class="data-section">
-            <div class="section-header">Bitcoin Price (USD)</div>
-            <div class="data-value" id="btc-price">Loading...</div>
-        </div>
 
         <!-- Exchange Average Price Display -->
         <div class="data-section">
             <div class="section-header">Exchange Average Price</div>
             <div class="data-value" id="average-price">Loading...</div>
-        </div>
-
-        <!-- Exchange Prices Display -->
-        <div class="data-section">
-            <div class="section-header">Exchange Prices</div>
-            <div id="exchange-prices">
-                Loading...
-            </div>
-        </div>
-
-        <!-- Fee Estimates Display -->
-        <div class="data-section">
-            <div class="section-header">Fee Estimates</div>
-            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
-            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
-            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
-        </div>
-
-        <!-- Block Information Display -->
-        <div class="data-section">
-            <div class="section-header">Block Height</div>
-            <div class="data-value" id="block-height">Loading...</div>
         </div>
 
         <!-- Live Bitcoin Price Chart -->
@@ -224,10 +213,45 @@
         <div class="chart-container">
             <canvas id="depth-chart"></canvas>
         </div>
+
+        <!-- Bitcoin Price Display -->
+        <div class="data-section">
+            <div class="section-header">Bitcoin Price (Bitstamp)</div>
+            <div class="data-value" id="btc-price">Loading...</div>
+        </div>
+
+        <!-- Exchange Prices Display -->
+        <div class="data-section">
+            <div class="section-header">Exchange Prices</div>
+            <div id="exchange-prices">
+                Loading...
+            </div>
+        </div>
+
+        <!-- Fee Estimates Display -->
+        <div class="data-section">
+            <div class="section-header">Fee Estimates</div>
+            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
+            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
+            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+        </div>
+
     </div>
 
     <!-- JavaScript to fetch and display the data -->
     <script>
+        async function fetchBlockHeight() {
+            console.log('Fetching block height...');
+            try {
+                const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
+                const height = await response.text();
+                document.getElementById('block-height').innerText = height;
+            } catch (error) {
+                console.error('Error fetching block height:', error);
+                document.getElementById('block-height').innerText = 'Error';
+            }
+        }
+
         async function fetchBitcoinPrice() {
             console.log('Fetching Bitcoin price from Bitstamp...');
             try {
@@ -278,7 +302,7 @@
                             break;
                     }
 
-                    if (price !== null) {
+                    if (price !== null && !isNaN(price)) {
                         exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
                         totalPrice += price;
                         priceCount++;
@@ -318,26 +342,26 @@
             }
         }
 
-        async function fetchBlockHeight() {
-            console.log('Fetching block height...');
-            try {
-                const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
-                const height = await response.text();
-                document.getElementById('block-height').innerText = height;
-            } catch (error) {
-                console.error('Error fetching block height:', error);
-                document.getElementById('block-height').innerText = 'Error';
-            }
-        }
-
         async function loadDepthChart() {
             console.log('Loading depth chart...');
             try {
                 const response = await fetch('https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=100');
                 const data = await response.json();
 
-                const bids = data.bids.map(bid => ({ x: parseFloat(bid[0]), y: parseFloat(bid[1]) }));
-                const asks = data.asks.map(ask => ({ x: parseFloat(ask[0]), y: parseFloat(ask[1]) }));
+                let bids = [];
+                let asks = [];
+                let totalBids = 0;
+                let totalAsks = 0;
+
+                data.bids.forEach(bid => {
+                    totalBids += parseFloat(bid[1]);
+                    bids.push({ x: parseFloat(bid[0]), y: totalBids });
+                });
+
+                data.asks.forEach(ask => {
+                    totalAsks += parseFloat(ask[1]);
+                    asks.push({ x: parseFloat(ask[0]), y: totalAsks });
+                });
 
                 // Load Chart.js library
                 const script = document.createElement('script');
@@ -386,7 +410,7 @@
                                 y: {
                                     title: {
                                         display: true,
-                                        text: 'Volume',
+                                        text: 'Cumulative Volume',
                                         color: '#FFFFFF',
                                     },
                                     ticks: {
@@ -412,10 +436,10 @@
 
         // Fetch all data when the page loads
         window.onload = function() {
-            fetchBitcoinPrice();
-            fetchExchangePrices();
-            fetchFeeEstimates();
             fetchBlockHeight();
+            fetchExchangePrices();
+            fetchBitcoinPrice();
+            fetchFeeEstimates();
             loadDepthChart();
         };
     </script>
