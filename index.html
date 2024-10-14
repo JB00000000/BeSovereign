@@ -25,6 +25,10 @@
             font-weight: bold;
             color: #333;
         }
+        .debug-info {
+            font-size: 16px;
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -37,10 +41,16 @@
     <!-- BeSovereign Logo -->
     <img src="BeSovereign.png" alt="BeSovereign Logo">
 
+    <!-- Debugging Information -->
+    <div class="debug-info" id="debug-info">
+        Debugging Information: <span id="debug-message">Waiting for price data...</span>
+    </div>
+
     <!-- JavaScript to fetch live Bitcoin price using Fetch API -->
     <script>
         async function fetchBitcoinPrice() {
             console.log('Starting to fetch Bitcoin price...');
+            document.getElementById('debug-message').innerText = 'Fetching Bitcoin price from API...';
             try {
                 const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd', {
                     method: 'GET',
@@ -55,13 +65,15 @@
                 console.log('API response received:', data);
                 const price = data.bitcoin.usd;
                 console.log('Bitcoin price:', price);
-                
+
                 // Ensure we update the price in the HTML
                 const priceElement = document.getElementById('btc-price');
                 if (priceElement) {
-                    priceElement.innerHTML = `$${price.toLocaleString()}`; // Fix to ensure price is displayed
+                    priceElement.innerHTML = `$${price.toLocaleString()}`;
+                    document.getElementById('debug-message').innerText = 'Price successfully updated!';
                 } else {
                     console.error('Could not find price element in the HTML!');
+                    document.getElementById('debug-message').innerText = 'Error: Could not find the price element in the HTML.';
                 }
             } catch (error) {
                 const priceElement = document.getElementById('btc-price');
@@ -69,6 +81,7 @@
                     priceElement.innerHTML = 'Error fetching price';
                 }
                 console.error('Error fetching Bitcoin price:', error); 
+                document.getElementById('debug-message').innerText = `Error fetching price: ${error.message}`;
             }
         }
 
