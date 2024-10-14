@@ -271,7 +271,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0"></script>
 
     <script>
-        // No manual registration needed; the financial plugin registers itself
+        // Manually register the candlestick and OHLC controllers and elements
+        Chart.register(Chart.controllers.candlestick, Chart.elements.CandlestickElement);
 
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
