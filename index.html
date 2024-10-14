@@ -9,9 +9,11 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Using 'Open Sans' font -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
+        /* CSS Variables for easy theme management */
         :root {
             --bg-color: #1A1A1A;
             --text-color: #FFFFFF;
@@ -19,6 +21,7 @@
             --card-bg-color: #262626;
         }
 
+        /* Base styles */
         body {
             margin: 0;
             padding: 0;
@@ -27,53 +30,59 @@
             color: var(--text-color);
         }
 
+        /* Header container for logo and block height */
         .header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
+            width: 100%;
+        }
+
+        /* Block height container */
+        .block-height-container {
+            text-align: left;
         }
 
         .block-height {
             font-size: 24px;
             color: var(--accent-color);
-            margin-bottom: 10px;
         }
 
+        .date-time {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        /* Logo styling */
         .logo {
-            width: 300px;
-            max-width: 90%;
+            width: 150px;
+            max-width: 100%;
             height: auto;
+            text-align: right;
         }
 
-        @media (min-width: 769px) {
-            .header {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-            .logo {
-                align-self: flex-start;
-                margin-left: 20px;
-            }
-            .block-height {
-                order: -1;
-                margin-left: 20px;
-                margin-bottom: 0;
-            }
-        }
-
+        /* Flexbox adjustments for mobile */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 align-items: center;
+                justify-content: center;
             }
+            
+            .block-height-container,
             .logo {
-                align-self: center;
-                width: 250px;
+                text-align: center;
+                margin: 0;
+            }
+
+            .logo {
+                margin-top: 10px;
+                width: 120px;
             }
         }
 
+        /* Container for content */
         .container {
             width: 100%;
             max-width: 1200px;
@@ -81,16 +90,32 @@
             margin: 0 auto;
         }
 
+        /* General styling for data sections */
         .data-section {
             font-size: 24px;
+            color: var(--text-color);
             text-align: center;
             background: var(--card-bg-color);
             padding: 20px;
             border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             margin: 15px auto;
             width: 90%;
         }
 
+        /* Adjust width on desktop */
+        @media (min-width: 769px) {
+            .data-section {
+                max-width: 800px;
+            }
+        }
+
+        /* Adjust margins to move content up */
+        .data-section:first-child {
+            margin-top: 10px;
+        }
+
+        /* Headers for each section */
         .section-header {
             font-size: 24px;
             font-weight: 600;
@@ -98,27 +123,44 @@
             margin-bottom: 10px;
         }
 
+        /* Data display formatting */
         .data-value {
             font-size: 36px;
             font-weight: 400;
+            color: var(--text-color);
         }
 
+        /* Smaller text styling for detailed data */
         .small-text {
             font-size: 20px;
+            color: var(--text-color);
             margin: 5px 0;
         }
 
+        /* Time Interval Buttons */
+        .time-buttons button {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .time-buttons button:hover {
+            background-color: #ffb84d;
+        }
+
+        /* Chart container */
         .chart-container {
             width: 100%;
             max-width: 800px;
             margin: 20px auto;
         }
 
-        #depth-chart, #live-chart {
-            height: 400px;
-            margin-top: 20px;
-        }
-
+        /* Mobile-specific styles using media queries */
         @media (max-width: 768px) {
             .container {
                 margin-top: 10px;
@@ -127,6 +169,7 @@
             .data-section {
                 font-size: 20px;
                 padding: 15px;
+                margin: 10px auto;
             }
 
             .data-value {
@@ -149,44 +192,78 @@
 </head>
 <body>
 
+    <!-- Header with Block Height and Logo -->
     <div class="header">
-        <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
+        <!-- Block Height on the left (desktop) or top (mobile) -->
+        <div class="block-height-container">
+               <!-- Block height and date/time -->
+            <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
+            <div class="date-time">Date & Time: <span id="current-date-time">Loading...</span></div>
+        </div>
+
+        <!-- Logo on the right (desktop) or top (mobile) -->
         <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
     </div>
 
+    <!-- Container for all content -->
     <div class="container">
+
+        <!-- Exchange Average Price Display -->
         <div class="data-section">
             <div class="section-header">Exchange Average Price</div>
             <div class="data-value" id="average-price">Loading...</div>
         </div>
 
+        <!-- Time Interval Selection -->
+        <div class="data-section">
+            <div class="section-header">Select Time Interval</div>
+            <div class="time-buttons">
+                <button onclick="updateChart('1m')">1 Minute</button>
+                <button onclick="updateChart('5m')">5 Minutes</button>
+                <button onclick="updateChart('15m')">15 Minutes</button>
+                <button onclick="updateChart('1h')">1 Hour</button>
+                <button onclick="updateChart('1d')">1 Day</button>
+            </div>
+        </div>
+
+        <!-- Live Bitcoin Price Chart -->
         <div class="chart-container">
             <canvas id="live-chart"></canvas>
         </div>
 
+        <!-- Market Depth Chart -->
         <div class="chart-container">
             <canvas id="depth-chart"></canvas>
         </div>
 
+        <!-- Exchange Prices Display -->
         <div class="data-section">
             <div class="section-header">Exchange Prices</div>
-            <div id="exchange-prices">Loading...</div>
+            <div id="exchange-prices">
+                Loading...
+            </div>
         </div>
 
+        <!-- Fee Estimates Display -->
         <div class="data-section">
             <div class="section-header">Fee Estimates</div>
             <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
             <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
             <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
         </div>
+
     </div>
 
     <!-- JavaScript to fetch and display the data -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+    <!-- Load Chart.js and Financial Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
+    <!-- Load Date Adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0"></script>
 
     <script>
+        // No manual registration needed; the financial plugin registers itself
+
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
             try {
@@ -197,6 +274,12 @@
                 console.error('Error fetching block height:', error);
                 document.getElementById('block-height').innerText = 'Error';
             }
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('current-date-time').innerText = now.toLocaleString('en-GB', options);
         }
 
         async function fetchExchangePrices() {
@@ -367,16 +450,16 @@
             }
         }
 
-        async function loadLiveChart() {
+        async function loadLiveChart(initialInterval = '1m') {
             console.log('Loading live price chart...');
 
             const ctx = document.getElementById('live-chart').getContext('2d');
 
             let chart;
 
-            async function fetchHistoricalData() {
+            async function fetchHistoricalData(interval) {
                 try {
-                    const response = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=500');
+                    const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=${interval}&limit=500`);
                     const data = await response.json();
 
                     const chartData = data.map(candle => ({
@@ -394,8 +477,9 @@
                 }
             }
 
-            async function updateChart() {
-                const chartData = await fetchHistoricalData();
+            async function updateChart(interval = initialInterval) {
+                console.log(`Updating chart with interval: ${interval}`);
+                const chartData = await fetchHistoricalData(interval);
 
                 if (!chart) {
                     chart = new Chart(ctx, {
@@ -412,6 +496,7 @@
                             }]
                         },
                         options: {
+                            responsive: true,
                             scales: {
                                 x: {
                                     type: 'time',
@@ -449,12 +534,18 @@
                 }
             }
 
-            updateChart();
-            setInterval(updateChart, 60000);
+            // Make updateChart globally accessible
+            window.updateChart = updateChart;
+
+            // Initial chart load
+            updateChart(initialInterval);
         }
 
+        // Fetch all data when the page loads
         window.onload = function() {
             fetchBlockHeight();
+            updateDateTime();
+            setInterval(updateDateTime, 1000); // Update date/time every second
             fetchExchangePrices();
             fetchFeeEstimates();
             loadDepthChart();
@@ -464,3 +555,4 @@
 
 </body>
 </html>
+        
