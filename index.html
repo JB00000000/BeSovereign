@@ -127,14 +127,14 @@
             margin: 20px auto;
         }
 
-        /* Flexbox for Exchange Prices */
-        .exchange-prices-container {
+        /* Flexbox for smaller statistics boxes */
+        .mempool-stats {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
         }
 
-        .exchange-box {
+        .stat-box {
             flex: 1;
             margin: 10px;
             min-width: 250px;
@@ -142,12 +142,6 @@
             padding: 15px;
             border-radius: 12px;
             text-align: center;
-        }
-
-        /* Fee Estimates in a row */
-        .fee-estimates-row {
-            display: flex;
-            justify-content: space-around;
         }
 
         @media (max-width: 768px) {
@@ -172,12 +166,12 @@
                 width: 100%;
             }
 
-            /* Stack Exchange Boxes on mobile */
-            .exchange-prices-container {
+            /* Stack stat boxes on mobile */
+            .mempool-stats {
                 flex-direction: column;
             }
 
-            .exchange-box {
+            .stat-box {
                 min-width: unset;
                 margin-bottom: 15px;
             }
@@ -201,60 +195,35 @@
     <!-- Container for all content -->
     <div class="container">
 
-        <!-- Exchange Average Price Display -->
-        <div class="data-section">
-            <div class="section-header">Exchange Average Price</div>
-            <div class="data-value" id="average-price">Loading...</div>
-        </div>
-
-        <!-- TradingView Bitcoin Price Chart -->
-        <div class="chart-container">
-            <!-- TradingView Widget BEGIN -->
-            <div class="tradingview-widget-container">
-                <div id="tradingview_btc_chart"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                    new TradingView.widget({
-                        "width": "100%",
-                        "height": 500,
-                        "symbol": "BITSTAMP:BTCUSD",
-                        "interval": "60",
-                        "timezone": "Etc/UTC",
-                        "theme": "dark",
-                        "style": "1",
-                        "locale": "en",
-                        "toolbar_bg": "#f1f3f6",
-                        "enable_publishing": false,
-                        "hide_top_toolbar": true,
-                        "hide_legend": true,
-                        "save_image": false,
-                        "container_id": "tradingview_btc_chart"
-                    });
-                </script>
-            </div>
-            <!-- TradingView Widget END -->
-        </div>
-
-        <!-- Exchange Prices Display (3 Separate Boxes) -->
-        <div class="exchange-prices-container">
-            <div class="exchange-box" id="exchange-box-1">
-                Loading...
-            </div>
-            <div class="exchange-box" id="exchange-box-2">
-                Loading...
-            </div>
-            <div class="exchange-box" id="exchange-box-3">
-                Loading...
-            </div>
-        </div>
-
-        <!-- Fee Estimates Display (Row Format) -->
+        <!-- Fee Estimates Display -->
         <div class="data-section">
             <div class="section-header">Fee Estimates</div>
-            <div class="fee-estimates-row">
-                <div>Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
-                <div>Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
-                <div>Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
+            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
+            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+        </div>
+
+        <!-- Mempool Statistics Display -->
+        <div class="mempool-stats">
+            <div class="stat-box">
+                <div class="section-header">Mempool Transactions</div>
+                <div class="data-value" id="mempool-tx-count">Loading...</div>
+            </div>
+            <div class="stat-box">
+                <div class="section-header">Mempool Size (MB)</div>
+                <div class="data-value" id="mempool-size">Loading...</div>
+            </div>
+            <div class="stat-box">
+                <div class="section-header">Total Fees (sats)</div>
+                <div class="data-value" id="mempool-total-fees">Loading...</div>
+            </div>
+            <div class="stat-box">
+                <div class="section-header">Blocks to Clear</div>
+                <div class="data-value" id="blocks-to-clear">Loading...</div>
+            </div>
+            <div class="stat-box">
+                <div class="section-header">Block Reward (BTC)</div>
+                <div class="data-value" id="block-reward">Loading...</div>
             </div>
         </div>
 
@@ -262,77 +231,18 @@
 
     <!-- JavaScript to fetch and display the data -->
     <script>
-        async function fetchExchangePrices() {
-            const exchanges = [
-                { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
-                { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
-                { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' },
-                { name: 'Gemini', url: 'https://api.gemini.com/v1/pubticker/btcusd' },
-                { name: 'Huobi', url: 'https://api.huobi.pro/market/detail/merged?symbol=btcusdt' },
-                { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
-            ];
+        async function fetchMempoolStats() {
+            try {
+                const response = await fetch('https://mempool.space/api/v1/stats');
+                const data = await response.json();
 
-            let box1HTML = '', box2HTML = '', box3HTML = '';
-            let totalPrice = 0, priceCount = 0;
-
-            for (let i = 0; i < exchanges.length; i++) {
-                try {
-                    const response = await fetch(exchanges[i].url);
-                    const data = await response.json();
-                    let price = null;
-
-                    switch (exchanges[i].name) {
-                        case 'Coinbase':
-                            price = parseFloat(data.data.amount);
-                            break;
-                        case 'Kraken':
-                            const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
-                            if (krakenPair) price = parseFloat(krakenPair.c[0]);
-                            break;
-                        case 'Binance':
-                            price = parseFloat(data.price);
-                            break;
-                        case 'Gemini':
-                            price = parseFloat(data.last);
-                            break;
-                        case 'Huobi':
-                            price = parseFloat(data.tick.close);
-                            break;
-                        case 'OKX':
-                            price = parseFloat(data.data[0].last);
-                            break;
-                    }
-
-                    if (price !== null && !isNaN(price)) {
-                        const exchangeHTML = `<div class="small-text">${exchanges[i].name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
-                        totalPrice += price;
-                        priceCount++;
-
-                        if (i < 2) {
-                            box1HTML += exchangeHTML;
-                        } else if (i < 4) {
-                            box2HTML += exchangeHTML;
-                        } else {
-                            box3HTML += exchangeHTML;
-                        }
-                    }
-                } catch (error) {
-                    console.error(`Error fetching price from ${exchanges[i].name}:`, error);
-                }
-            }
-
-            document.getElementById('exchange-box-1').innerHTML = box1HTML || 'Error loading prices';
-            document.getElementById('exchange-box-2').innerHTML = box2HTML || 'Error loading prices';
-            document.getElementById('exchange-box-3').innerHTML = box3HTML || 'Error loading prices';
-
-            if (priceCount > 0) {
-                const averagePrice = totalPrice / priceCount;
-                const formattedPrice = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                document.getElementById('average-price').innerText = formattedPrice;
-                document.title = `BTC: ${formattedPrice} - BeSovereign`;
-            } else {
-                document.getElementById('average-price').innerText = 'N/A';
-                document.title = 'BeSovereign';
+                document.getElementById('mempool-tx-count').innerText = data.mempool.totalTransactions.toLocaleString();
+                document.getElementById('mempool-size').innerText = (data.mempool.totalWeight / 1_000_000).toFixed(2); // Size in MB
+                document.getElementById('mempool-total-fees').innerText = data.mempool.totalFees.toLocaleString();
+                document.getElementById('blocks-to-clear').innerText = data.mempool.blocksToClear;
+                document.getElementById('block-reward').innerText = (data.blockReward / 1_000_000_000).toFixed(8); // Reward in BTC
+            } catch (error) {
+                console.error('Error fetching mempool stats:', error);
             }
         }
 
@@ -345,14 +255,10 @@
                 document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
             } catch (error) {
                 console.error('Error fetching fee estimates:', error);
-                document.getElementById('fast-fee').innerText = 'Error';
-                document.getElementById('medium-fee').innerText = 'Error';
-                document.getElementById('slow-fee').innerText = 'Error';
             }
         }
 
         async function fetchBlockHeight() {
-            console.log('Fetching block height...');
             try {
                 const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
                 const height = await response.text();
@@ -370,9 +276,9 @@
         }
 
         window.onload = function() {
-            fetchExchangePrices();
-            fetchBlockHeight();
+            fetchMempoolStats();
             fetchFeeEstimates();
+            fetchBlockHeight();
             updateTime();
             setInterval(updateTime, 1000); // Update time every second
         };
