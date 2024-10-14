@@ -6,6 +6,7 @@
     <meta http-equiv="refresh" content="10"> <!-- Auto-refreshes the page every 10 seconds -->
     <title>BeSovereign</title>
     <style>
+        /* Base styles for all devices */
         body {
             margin: 0;
             padding: 0;
@@ -19,25 +20,25 @@
             position: relative;
         }
 
-        /* Logo styling to be larger and in the top-left corner */
+        /* Default logo styling */
         .logo {
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 250px; /* Increased logo size */
+            width: 250px;
         }
 
         /* Bitcoin price with artistic styling */
         .bitcoin-price {
-            font-size: 40px; /* Larger font size */
+            font-size: 40px;
             font-weight: bold;
-            color: #FFA500; /* Orange to match Bitcoin colors */
+            color: #FFA500;
             text-align: center;
-            background: #fff; /* White background */
+            background: #fff;
             padding: 20px;
-            border: 2px solid #FFA500; /* Border in orange */
+            border: 2px solid #FFA500;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
         }
 
@@ -45,7 +46,26 @@
         .debug-info {
             font-size: 16px;
             color: red;
-            display: none; /* Hidden unless needed */
+            display: none;
+        }
+
+        /* Mobile-specific styles using media queries */
+        @media (max-width: 768px) {
+            body {
+                justify-content: flex-start; /* Align content at the top on mobile */
+            }
+
+            .logo {
+                width: 150px; /* Smaller logo on mobile */
+                top: 10px;
+                left: 10px;
+            }
+
+            .bitcoin-price {
+                font-size: 30px; /* Smaller font size for price on mobile */
+                padding: 15px;
+                margin-top: 80px; /* Ensure price is pushed down below the logo */
+            }
         }
     </style>
 </head>
@@ -105,6 +125,7 @@
 
         // Fetch the price when the page loads
         window.onload = fetchBitcoinPrice;
+
     </script>
 
 </body>
