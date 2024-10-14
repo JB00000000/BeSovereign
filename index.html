@@ -177,6 +177,12 @@
     <!-- Container for all content -->
     <div class="container">
 
+        <!-- Exchange Average Price Display -->
+        <div class="data-section">
+            <div class="section-header">Exchange Average Price</div>
+            <div class="data-value" id="average-price">Loading...</div>
+        </div>
+
         <!-- Time Interval Selection -->
         <div class="data-section">
             <div class="section-header">Select Time Interval</div>
@@ -205,11 +211,11 @@
     </div>
 
     <!-- JavaScript to fetch and display the data -->
-    <!-- Load Chart.js and Financial Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@1.0.0-alpha.3"></script>
+    <!-- Load Compatible Chart.js Version and Financial Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
     <!-- Load Date Adapter -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.9.1"></script>
 
     <script>
         const { CandlestickController, CandlestickElement, OhlcController, OhlcElement } = Chart;
@@ -243,9 +249,72 @@
             }
         }
 
-        async function loadLiveChart() {
+        async function fetchExchangePrices() {
+            console.log('Fetching prices from multiple exchanges...');
+            const exchanges = [
+                { name: 'Bitstamp', url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/' },
+                { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
+                { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
+                { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' }
+            ];
+
+            let exchangePricesHTML = '';
+            let totalPrice = 0;
+            let priceCount = 0;
+
+            for (let exchange of exchanges) {
+                try {
+                    const response = await fetch(exchange.url);
+                    const data = await response.json();
+                    let price = null;
+
+                    switch (exchange.name) {
+                        case 'Bitstamp':
+                            price = parseFloat(data.last);
+                            break;
+                        case 'Coinbase':
+                            price = parseFloat(data.data.amount);
+                            break;
+                        case 'Kraken':
+                            const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
+                            if (krakenPair) {
+                                price = parseFloat(krakenPair.c[0]);
+                            }
+                            break;
+                        case 'Binance':
+                            price = parseFloat(data.price);
+                            break;
+                    }
+
+                    if (price !== null && !isNaN(price)) {
+                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                        totalPrice += price;
+                        priceCount++;
+                    } else {
+                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching price from ${exchange.name}:`, error);
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
+                }
+            }
+
+            document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
+
+            // Calculate and display average price
+            if (priceCount > 0) {
+                const averagePrice = totalPrice / priceCount;
+                document.getElementById('average-price').innerText = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('average-price').innerText = 'N/A';
+            }
+        }
+
+        async function loadLiveChart(interval = '1m') {
             console.log('Loading live price chart...');
+
             const ctx = document.getElementById('live-chart').getContext('2d');
+
             let chart;
 
             async function fetchHistoricalData(interval) {
@@ -329,9 +398,11 @@
             updateChart();
         }
 
+        // Fetch all data when the page loads
         window.onload = function() {
             fetchBlockHeight();
             fetchFeeEstimates();
+            fetchExchangePrices();
             loadLiveChart();
         };
     </script>
