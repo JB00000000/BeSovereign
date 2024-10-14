@@ -265,21 +265,13 @@
 
     <!-- JavaScript to fetch and display the data -->
     <!-- Load Chart.js and Financial Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
     <!-- Load Date Adapter -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0"></script>
 
     <script>
-        // Register the financial chart types
-        Chart.register(
-            Chart.FinancialController,
-            Chart.CandlestickController,
-            Chart.OhlcController,
-            Chart.elements.FinancialElement,
-            Chart.elements.CandlestickElement,
-            Chart.elements.OhlcElement
-        );
+        // No manual registration needed; the financial plugin registers itself
 
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
@@ -499,12 +491,11 @@
                             datasets: [{
                                 label: 'BTC/USD',
                                 data: chartData,
-                                borderColor: {
+                                color: {
                                     up: '#00ff00',
                                     down: '#ff0000',
                                     unchanged: '#999999'
-                                },
-                                borderWidth: 1,
+                                }
                             }]
                         },
                         options: {
