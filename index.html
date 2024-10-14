@@ -57,15 +57,18 @@
 
         .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             padding: 10px 20px;
-            text-align: left;
         }
 
         .logo {
             width: 150px;
             height: auto;
+        }
+
+        .header-info {
+            text-align: right;
         }
 
         .block-height {
@@ -84,9 +87,6 @@
             max-width: 1200px;
             padding: 10px;
             margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
         }
 
         .data-section {
@@ -98,8 +98,15 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             margin: 10px;
-            width: 280px; /* Adjusted width for smaller boxes */
             flex: 1 1 280px;
+            box-sizing: border-box;
+        }
+
+        .data-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0 -10px; /* Adjust margin for spacing */
         }
 
         .section-header {
@@ -128,14 +135,27 @@
         }
 
         @media (max-width: 768px) {
-            .container {
+            .header {
                 flex-direction: column;
                 align-items: center;
             }
+
+            .header-info {
+                text-align: center;
+                margin-top: 10px;
+            }
+
+            .data-row {
+                flex-direction: column;
+                align-items: center;
+                margin: 0;
+            }
+
             .data-section {
                 width: 90%;
                 margin: 8px 0;
             }
+
             .chart-container {
                 width: 100%;
             }
@@ -150,7 +170,7 @@
     <!-- Header with Logo and Block Height -->
     <div class="header">
         <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
-        <div>
+        <div class="header-info">
             <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
             <div class="current-time" id="current-time">Loading...</div>
         </div>
@@ -160,77 +180,87 @@
     <div class="container">
 
         <!-- Exchange Average Price Display -->
-        <div class="data-section">
+        <div class="data-section" style="margin: 10px auto; max-width: 400px;">
             <div class="section-header">Exchange Average Price</div>
             <div class="data-value" id="average-price">Loading...</div>
         </div>
 
+        <!-- TradingView Bitcoin Price Chart -->
+        <div class="chart-container">
+            <!-- TradingView Widget BEGIN -->
+            <div class="tradingview-widget-container">
+                <div id="tradingview_btc_chart"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.widget({
+                        "width": "100%",
+                        "height": 500,
+                        "symbol": "BITSTAMP:BTCUSD",
+                        "interval": "60",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "toolbar_bg": "#f1f3f6",
+                        "enable_publishing": false,
+                        "hide_top_toolbar": true,
+                        "hide_legend": true,
+                        "save_image": false,
+                        "container_id": "tradingview_btc_chart"
+                    });
+                </script>
+            </div>
+            <!-- TradingView Widget END -->
+        </div>
+
         <!-- Exchange Prices Display -->
-        <div class="data-section">
-            <div class="section-header">Exchange Prices</div>
-            <div id="exchange-prices">Loading...</div>
+        <div class="data-row" id="exchange-prices-row">
+            <!-- Exchange Prices will be injected here -->
         </div>
 
         <!-- Fee Estimates Display -->
-        <div class="data-section">
-            <div class="section-header">Fee Estimates</div>
-            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
-            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
-            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
+        <div class="data-row">
+            <div class="data-section">
+                <div class="section-header">Fast Fee</div>
+                <div class="data-value" id="fast-fee">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Medium Fee</div>
+                <div class="data-value" id="medium-fee">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Slow Fee</div>
+                <div class="data-value" id="slow-fee">Loading...</div>
+            </div>
         </div>
 
-        <!-- Mempool Transaction Count -->
-        <div class="data-section">
-            <div class="section-header">Unconfirmed Transactions</div>
-            <div class="data-value" id="mempool-tx-count">Loading...</div>
+        <!-- Remaining Data Sections -->
+        <div class="data-row">
+            <!-- Mempool Transaction Count -->
+            <div class="data-section">
+                <div class="section-header">Unconfirmed Transactions</div>
+                <div class="data-value" id="mempool-tx-count">Loading...</div>
+            </div>
+
+            <!-- Mempool Size -->
+            <div class="data-section">
+                <div class="section-header">Mempool Size (MB)</div>
+                <div class="data-value" id="mempool-size">Loading...</div>
+            </div>
+
+            <!-- Total Fees in Mempool -->
+            <div class="data-section">
+                <div class="section-header">Total Fees in Mempool</div>
+                <div class="data-value" id="mempool-total-fees">Loading...</div>
+            </div>
+
+            <!-- Estimated Blocks to Clear Mempool -->
+            <div class="data-section">
+                <div class="section-header">Blocks to Clear Mempool</div>
+                <div class="data-value" id="blocks-to-clear">Loading...</div>
+            </div>
         </div>
 
-        <!-- Mempool Size -->
-        <div class="data-section">
-            <div class="section-header">Mempool Size (MB)</div>
-            <div class="data-value" id="mempool-size">Loading...</div>
-        </div>
-
-        <!-- Total Fees in Mempool -->
-        <div class="data-section">
-            <div class="section-header">Total Fees in Mempool</div>
-            <div class="data-value" id="mempool-total-fees">Loading...</div>
-        </div>
-
-        <!-- Estimated Blocks to Clear Mempool -->
-        <div class="data-section">
-            <div class="section-header">Blocks to Clear Mempool</div>
-            <div class="data-value" id="blocks-to-clear">Loading...</div>
-        </div>
-
-    </div>
-
-    <!-- TradingView Bitcoin Price Chart -->
-    <div class="chart-container">
-        <!-- TradingView Widget BEGIN -->
-        <div class="tradingview-widget-container">
-            <div id="tradingview_btc_chart"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-            <script type="text/javascript">
-                new TradingView.widget({
-                    "width": "100%",
-                    "height": 500,
-                    "symbol": "BITSTAMP:BTCUSD",
-                    "interval": "60",
-                    "timezone": "Etc/UTC",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "en",
-                    "toolbar_bg": "#f1f3f6",
-                    "enable_publishing": false,
-                    "hide_top_toolbar": true,
-                    "hide_legend": true,
-                    "save_image": false,
-                    "container_id": "tradingview_btc_chart"
-                });
-            </script>
-        </div>
-        <!-- TradingView Widget END -->
     </div>
 
     <!-- JavaScript to fetch and display the data -->
@@ -249,7 +279,10 @@
             let totalPrice = 0;
             let priceCount = 0;
 
-            for (let exchange of exchanges) {
+            const exchangeRows = [[], [], []]; // Three arrays for three boxes
+
+            for (let i = 0; i < exchanges.length; i++) {
+                const exchange = exchanges[i];
                 try {
                     const response = await fetch(exchange.url);
                     const data = await response.json();
@@ -280,19 +313,28 @@
                     }
 
                     if (price !== null && !isNaN(price)) {
-                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`);
                         totalPrice += price;
                         priceCount++;
                     } else {
-                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`;
+                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`);
                     }
                 } catch (error) {
                     console.error(`Error fetching price from ${exchange.name}:`, error);
-                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
+                    exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`);
                 }
             }
 
-            document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
+            // Create three boxes with two exchanges each
+            const exchangePricesRow = document.getElementById('exchange-prices-row');
+            exchangePricesRow.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const exchangesHTML = exchangeRows[i].join('');
+                const dataSection = document.createElement('div');
+                dataSection.className = 'data-section';
+                dataSection.innerHTML = `<div class="section-header">Exchange Prices</div>${exchangesHTML}`;
+                exchangePricesRow.appendChild(dataSection);
+            }
 
             if (priceCount > 0) {
                 const averagePrice = totalPrice / priceCount;
@@ -366,7 +408,7 @@
 
         function updateTime() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString();
+            const timeString = now.toLocaleString(); // Full date and time
             document.getElementById('current-time').innerText = timeString;
         }
 
