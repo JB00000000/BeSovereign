@@ -6,11 +6,11 @@
     <meta http-equiv="refresh" content="10"> <!-- Auto-refreshes the page every 10 seconds -->
     <title>BeSovereign</title>
     <style>
-        /* Base styles for all devices */
+        /* Base styles */
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #121212; /* Dark background for dark mode */
             color: #fff; /* Set text to white */
             height: 100vh;
@@ -18,51 +18,53 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative;
-        }
-
-        /* Logo styling */
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 250px; /* Adjust size as needed */
         }
 
         /* General styling for data sections */
         .data-section {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 20px;
             color: #FFA500; /* Orange for Bitcoin */
             text-align: center;
             background: #1e1e1e; /* Dark background for section */
-            padding: 20px;
+            padding: 10px 20px;
             border: 2px solid #FFA500; /* Border in orange */
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-            margin-top: 20px;
+            margin: 10px 0;
             width: 80%; /* Make it more readable on mobile */
+            max-width: 600px; /* Limit the width for better desktop display */
         }
 
-        /* Debugging information hidden by default */
-        .debug-info {
+        /* Headers for each section */
+        .section-header {
             font-size: 16px;
-            color: red;
-            display: none;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        /* Data display formatting */
+        .data-value {
+            font-size: 24px;
+            font-weight: normal;
+            color: #ffffff;
+        }
+
+        /* Smaller text styling for detailed data */
+        .small-text {
+            font-size: 16px;
+            color: #aaa;
         }
 
         /* Mobile-specific styles using media queries */
         @media (max-width: 768px) {
-            .logo {
-                width: 150px; /* Smaller logo on mobile */
-                top: 10px;
-                left: 10px;
+            .data-section {
+                font-size: 18px; /* Slightly smaller font size for mobile */
+                padding: 15px;
             }
 
-            .data-section {
-                font-size: 20px; /* Slightly smaller font size for mobile */
-                padding: 15px;
-                margin-top: 20px;
+            .data-value {
+                font-size: 20px;
             }
         }
     </style>
@@ -74,31 +76,29 @@
 
     <!-- Bitcoin Price Display -->
     <div class="data-section">
-        Bitcoin Price (USD): <span id="btc-price">Loading...</span>
+        <div class="section-header">Bitcoin Price (USD)</div>
+        <div class="data-value" id="btc-price">Loading...</div>
     </div>
 
     <!-- Mempool Summary Display -->
     <div class="data-section">
-        Mempool Summary: <span id="mempool-summary">Loading...</span>
+        <div class="section-header">Mempool Summary</div>
+        <div class="data-value" id="mempool-summary">Loading...</div>
     </div>
 
     <!-- Fee Estimates Display -->
     <div class="data-section">
-        Fee Estimates: 
-        <p>Fast: <span id="fast-fee">Loading...</span></p>
-        <p>Medium: <span id="medium-fee">Loading...</span></p>
-        <p>Slow: <span id="slow-fee">Loading...</span></p>
+        <div class="section-header">Fee Estimates</div>
+        <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
+        <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
+        <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
     </div>
 
     <!-- Block Information Display -->
     <div class="data-section">
-        Block Height: <span id="block-height">Loading...</span><br>
-        Latest Block: <span id="block-info">Loading...</span>
-    </div>
-
-    <!-- Debugging Information -->
-    <div class="debug-info" id="debug-info">
-        Debugging Information: <span id="debug-message">Waiting for data...</span>
+        <div class="section-header">Block Information</div>
+        <div class="small-text">Block Height: <span class="data-value" id="block-height">Loading...</span></div>
+        <div class="small-text">Latest Block Hash: <span class="data-value" id="block-info">Loading...</span></div>
     </div>
 
     <!-- JavaScript to fetch and display the data -->
@@ -151,7 +151,7 @@
                 const height = await heightResponse.json();
                 const block = await blockResponse.json();
                 document.getElementById('block-height').innerText = height;
-                document.getElementById('block-info').innerText = `Block Hash: ${block[0].id}`;
+                document.getElementById('block-info').innerText = block[0].id;
             } catch (error) {
                 console.error('Error fetching block height:', error);
                 document.getElementById('block-height').innerText = 'Error';
