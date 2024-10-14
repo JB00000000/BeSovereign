@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
+    <!-- CSS Styles -->
     <style>
         :root {
             --bg-color: #1A1A1A;
@@ -171,12 +172,12 @@
         <!-- Time Interval Selection -->
         <div class="data-section">
             <div class="section-header">Select Time Interval</div>
-            <div class="time-buttons">
-                <button onclick="updateChart('1m')">1 Minute</button>
-                <button onclick="updateChart('5m')">5 Minutes</button>
-                <button onclick="updateChart('15m')">15 Minutes</button>
-                <button onclick="updateChart('1h')">1 Hour</button>
-                <button onclick="updateChart('1d')">1 Day</button>
+            <div class="time-buttons" id="time-buttons">
+                <button data-interval="1m">1 Minute</button>
+                <button data-interval="5m">5 Minutes</button>
+                <button data-interval="15m">15 Minutes</button>
+                <button data-interval="1h">1 Hour</button>
+                <button data-interval="1d">1 Day</button>
             </div>
         </div>
 
@@ -209,14 +210,16 @@
     </div>
 
     <!-- JavaScript to fetch and display the data -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
 
     <script>
         // Register candlestick controller and elements
-        Chart.register(Chart.FinancialController, Chart.FinancialElement);
+        const { CandlestickController, CandlestickElement, FinancialDataPoint } = Chart.controllers;
+        Chart.register(CandlestickController, CandlestickElement, FinancialDataPoint);
 
-        let chart; // Global chart variable
+        let liveChart; // Global chart variable for the live price chart
+        let depthChart; // Global chart variable for the depth chart
 
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
@@ -239,46 +242,53 @@
                 { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' }
             ];
 
+            const fetchPromises = exchanges.map(exchange =>
+                fetch(exchange.url)
+                    .then(response => response.json())
+                    .then(data => ({ exchange: exchange.name, data }))
+                    .catch(error => ({ exchange: exchange.name, error }))
+            );
+
+            const results = await Promise.all(fetchPromises);
+
             let exchangePricesHTML = '';
             let totalPrice = 0;
             let priceCount = 0;
 
-            for (let exchange of exchanges) {
-                try {
-                    const response = await fetch(exchange.url);
-                    const data = await response.json();
-                    let price = null;
-
-                    switch (exchange.name) {
+            results.forEach(result => {
+                let price = null;
+                if (result.error) {
+                    console.error(`Error fetching price from ${result.exchange}:`, result.error);
+                    exchangePricesHTML += `<div class="small-text">${result.exchange}: <span class="data-value">Error</span></div>`;
+                } else {
+                    switch (result.exchange) {
                         case 'Bitstamp':
-                            price = parseFloat(data.last);
+                            price = parseFloat(result.data.last);
                             break;
                         case 'Coinbase':
-                            price = parseFloat(data.data.amount);
+                            price = parseFloat(result.data.data.amount);
                             break;
                         case 'Kraken':
-                            const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
+                            const pairKey = Object.keys(result.data.result)[0];
+                            const krakenPair = result.data.result[pairKey];
                             if (krakenPair) {
                                 price = parseFloat(krakenPair.c[0]);
                             }
                             break;
                         case 'Binance':
-                            price = parseFloat(data.price);
+                            price = parseFloat(result.data.price);
                             break;
                     }
 
                     if (price !== null && !isNaN(price)) {
-                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                        exchangePricesHTML += `<div class="small-text">${result.exchange}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
                         totalPrice += price;
                         priceCount++;
                     } else {
-                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`;
+                        exchangePricesHTML += `<div class="small-text">${result.exchange}: <span class="data-value">N/A</span></div>`;
                     }
-                } catch (error) {
-                    console.error(`Error fetching price from ${exchange.name}:`, error);
-                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
                 }
-            }
+            });
 
             document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
 
@@ -329,7 +339,11 @@
 
                 const ctx = document.getElementById('depth-chart').getContext('2d');
 
-                new Chart(ctx, {
+                if (depthChart) {
+                    depthChart.destroy();
+                }
+
+                depthChart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         datasets: [
@@ -426,59 +440,66 @@
                 console.log(`Updating chart with interval: ${interval}`);
                 const chartData = await fetchHistoricalData(interval);
 
-                if (chart) {
-                    chart.destroy(); // Destroy the existing chart before re-creating it
-                }
-
-                chart = new Chart(ctx, {
-                    type: 'candlestick',
-                    data: {
-                        datasets: [{
-                            label: 'BTC/USD',
-                            data: chartData,
-                            color: {
-                                up: '#00ff00',
-                                down: '#ff0000',
-                                unchanged: '#999999'
-                            }
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    tooltipFormat: 'MMM d, h:mm a',
+                if (!liveChart) {
+                    liveChart = new Chart(ctx, {
+                        type: 'candlestick',
+                        data: {
+                            datasets: [{
+                                label: 'BTC/USD',
+                                data: chartData,
+                                color: {
+                                    up: '#00ff00',
+                                    down: '#ff0000',
+                                    unchanged: '#999999'
+                                }
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        tooltipFormat: 'MMM d, h:mm a',
+                                    },
+                                    ticks: {
+                                        color: '#FFFFFF',
+                                    },
+                                    grid: {
+                                        color: '#444'
+                                    }
                                 },
-                                ticks: {
-                                    color: '#FFFFFF',
-                                },
-                                grid: {
-                                    color: '#444'
+                                y: {
+                                    ticks: {
+                                        color: '#FFFFFF',
+                                    },
+                                    grid: {
+                                        color: '#444'
+                                    }
                                 }
                             },
-                            y: {
-                                ticks: {
-                                    color: '#FFFFFF',
-                                },
-                                grid: {
-                                    color: '#444'
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#FFFFFF',
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: '#FFFFFF',
+                                    }
                                 }
                             }
                         }
-                    }
+                    });
+                } else {
+                    liveChart.data.datasets[0].data = chartData;
+                    liveChart.update();
+                }
             }
 
-            // Make updateChart globally accessible
-            window.updateChart = updateChart;
+            // Event listener for time interval buttons
+            document.getElementById('time-buttons').addEventListener('click', function(event) {
+                if (event.target.tagName === 'BUTTON') {
+                    const interval = event.target.getAttribute('data-interval');
+                    updateChart(interval);
+                }
+            });
 
             // Initial chart load
             updateChart(initialInterval);
@@ -490,6 +511,12 @@
             fetchFeeEstimates();
             loadDepthChart();
             loadLiveChart();
+
+            // Refresh data periodically (e.g., every minute)
+            setInterval(fetchBlockHeight, 60000);
+            setInterval(fetchExchangePrices, 60000);
+            setInterval(fetchFeeEstimates, 60000);
+            setInterval(loadDepthChart, 60000);
         };
     </script>
 
