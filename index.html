@@ -36,11 +36,11 @@
 
         /* Logo styling */
         .logo {
-            width: 250px; /* Increased size by 25% from 200px */
+            width: 300px; /* Increased size */
             max-width: 90%;
             height: auto;
-            margin-top: 20px;
-            align-self: flex-start; /* Align logo to the left */
+            margin-top: 10px; /* Reduced margin to bring content higher */
+            align-self: flex-start;
             margin-left: 20px;
         }
 
@@ -48,8 +48,8 @@
         .container {
             width: 100%;
             max-width: 1200px;
-            padding: 20px;
-            margin-top: 20px; /* Adjusted to bring content higher */
+            padding: 10px;
+            margin-top: 10px; /* Adjusted to bring content higher */
         }
 
         /* General styling for data sections */
@@ -98,7 +98,7 @@
         /* Mobile-specific styles using media queries */
         @media (max-width: 768px) {
             .logo {
-                width: 180px; /* Reduce logo size on mobile */
+                width: 200px; /* Adjusted logo size on mobile */
                 margin-left: 10px;
             }
 
@@ -183,27 +183,24 @@
             <div class="data-value" id="block-height">Loading...</div>
         </div>
 
-        <!-- Network Hash Rate Display -->
+        <!-- Exchange Prices Display -->
         <div class="data-section">
-            <div class="section-header">Network Hash Rate</div>
-            <div class="data-value" id="hash-rate">Loading...</div>
-        </div>
-
-        <!-- Unconfirmed Transactions Display -->
-        <div class="data-section">
-            <div class="section-header">Unconfirmed Transactions</div>
-            <div class="data-value" id="unconfirmed-tx">Loading...</div>
+            <div class="section-header">Exchange Prices</div>
+            <div id="exchange-prices">
+                Loading...
+            </div>
         </div>
     </div>
 
     <!-- JavaScript to fetch and display the data -->
     <script>
         async function fetchBitcoinPrice() {
-            console.log('Fetching Bitcoin price...');
+            console.log('Fetching Bitcoin price from Bitstamp...');
             try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                const response = await fetch('https://www.bitstamp.net/api/v2/ticker/btcusd/');
                 const data = await response.json();
-                document.getElementById('btc-price').innerText = `$${data.bitcoin.usd.toLocaleString()}`;
+                const price = parseFloat(data.last);
+                document.getElementById('btc-price').innerText = `$${price.toLocaleString()}`;
             } catch (error) {
                 console.error('Error fetching Bitcoin price:', error);
                 document.getElementById('btc-price').innerText = 'Error';
@@ -238,30 +235,49 @@
             }
         }
 
-        async function fetchHashRate() {
-            console.log('Fetching network hash rate...');
-            try {
-                const response = await fetch('https://blockchain.info/q/hashrate?cors=true');
-                const hashRate = await response.text();
-                // Convert hash rate to EH/s (exahashes per second)
-                const hashRateEH = (parseFloat(hashRate) / 1e9).toFixed(2);
-                document.getElementById('hash-rate').innerText = `${hashRateEH} EH/s`;
-            } catch (error) {
-                console.error('Error fetching network hash rate:', error);
-                document.getElementById('hash-rate').innerText = 'Error';
-            }
-        }
+        async function fetchExchangePrices() {
+            console.log('Fetching prices from multiple exchanges...');
+            const exchanges = [
+                { name: 'Bitstamp', url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/' },
+                { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
+                { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
+                { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' }
+            ];
 
-        async function fetchUnconfirmedTransactions() {
-            console.log('Fetching unconfirmed transactions...');
-            try {
-                const response = await fetch('https://blockchain.info/q/unconfirmedcount?cors=true');
-                const unconfirmedTx = await response.text();
-                document.getElementById('unconfirmed-tx').innerText = `${parseInt(unconfirmedTx).toLocaleString()}`;
-            } catch (error) {
-                console.error('Error fetching unconfirmed transactions:', error);
-                document.getElementById('unconfirmed-tx').innerText = 'Error';
+            let exchangePricesHTML = '';
+
+            for (let exchange of exchanges) {
+                try {
+                    const response = await fetch(exchange.url);
+                    const data = await response.json();
+                    let price = 'N/A';
+
+                    switch (exchange.name) {
+                        case 'Bitstamp':
+                            price = parseFloat(data.last);
+                            break;
+                        case 'Coinbase':
+                            price = parseFloat(data.data.amount);
+                            break;
+                        case 'Kraken':
+                            const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
+                            if (krakenPair) {
+                                price = parseFloat(krakenPair.c[0]);
+                            }
+                            break;
+                        case 'Binance':
+                            price = parseFloat(data.price);
+                            break;
+                    }
+
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                } catch (error) {
+                    console.error(`Error fetching price from ${exchange.name}:`, error);
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
+                }
             }
+
+            document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
         }
 
         // Fetch all data when the page loads
@@ -269,8 +285,7 @@
             fetchBitcoinPrice();
             fetchFeeEstimates();
             fetchBlockHeight();
-            fetchHashRate();
-            fetchUnconfirmedTransactions();
+            fetchExchangePrices();
         };
     </script>
 
