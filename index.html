@@ -7,7 +7,7 @@
     <title>BeSovereign</title>
 
     <!-- Favicon -->
-    <link rel="icon" href="Favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -87,6 +87,9 @@
             max-width: 1200px;
             padding: 10px;
             margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .data-section {
@@ -107,6 +110,7 @@
             flex-wrap: wrap;
             justify-content: center;
             margin: 0 -10px; /* Adjust margin for spacing */
+            width: 100%;
         }
 
         .section-header {
@@ -145,6 +149,11 @@
                 margin-top: 10px;
             }
 
+            /* Hide the logo on mobile */
+            .logo {
+                display: none;
+            }
+
             .data-row {
                 flex-direction: column;
                 align-items: center;
@@ -154,6 +163,20 @@
             .data-section {
                 width: 90%;
                 margin: 8px 0;
+                font-size: 16px; /* Reduce font size */
+                padding: 10px; /* Reduce padding */
+            }
+
+            .data-value {
+                font-size: 24px; /* Reduce font size */
+            }
+
+            .section-header {
+                font-size: 18px; /* Reduce font size */
+            }
+
+            .small-text {
+                font-size: 16px; /* Reduce font size */
             }
 
             .chart-container {
@@ -262,6 +285,10 @@
         </div>
 
     </div>
+
+    <!-- TradingView Bitcoin Price Chart (Moved Below Container) -->
+    <!-- Note: If you prefer to have it below the container, you can move this div accordingly -->
+    <!-- <div class="chart-container"> ... </div> -->
 
     <!-- JavaScript to fetch and display the data -->
     <script>
