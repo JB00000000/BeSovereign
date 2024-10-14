@@ -271,8 +271,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0"></script>
 
     <script>
-        // Manually register the candlestick and OHLC controllers and elements
-        Chart.register(Chart.controllers.candlestick, Chart.elements.CandlestickElement);
+        // Register candlestick chart and elements
+        Chart.register(CandlestickController, CandlestickElement, OhlcController, OhlcElement);
 
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
