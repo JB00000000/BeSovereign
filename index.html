@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeSovereign</title>
 
-    <!-- Favicon for browser tab, using the SVG file -->
-    <link rel="icon" href="Favicon.svg" type="image/svg+xml">
+   <!-- Favicon for browser tab, using the SVG file -->
+    <link rel="icon" href="Favicon.svg" type="image/svg+xml"> <!-- Ensure "Favicon.svg" is in your repo -->
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +43,7 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
             opacity: 0.15; /* Adjust transparency */
-            z-index: -1;
+            z-index: -1; /* Push behind the content */
         }
 
         /* Remove the background on mobile */
@@ -117,7 +117,7 @@
 
         .small-text {
             font-size: 20px;
-            color: var (--text-color);
+            color: var(--text-color);
             margin: 5px 0;
         }
 
@@ -158,7 +158,7 @@
 
     <!-- Header with Logo and Block Height -->
     <div class="header">
-        <img src="new-logo.png" alt="BeSovereign Logo" class="logo"> <!-- Ensure this logo exists -->
+        <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
         <div>
             <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
             <div class="current-time" id="current-time">Loading...</div>
@@ -176,6 +176,7 @@
 
         <!-- TradingView Bitcoin Price Chart -->
         <div class="chart-container">
+            <!-- TradingView Widget BEGIN -->
             <div class="tradingview-widget-container">
                 <div id="tradingview_btc_chart"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -198,10 +199,11 @@
                     });
                 </script>
             </div>
+            <!-- TradingView Widget END -->
         </div>
 
         <!-- Exchange Prices Display -->
-        <div class="data-section" id="exchange-prices-section">
+        <div class="data-section">
             <div class="section-header">Exchange Prices</div>
             <div id="exchange-prices">Loading...</div>
         </div>
@@ -217,120 +219,118 @@
     </div>
 
     <!-- JavaScript to fetch and display the data -->
-<script>
-    async function fetchExchangePrices() {
-        const exchanges = [
-            { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
-            { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
-            { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' },
-            { name: 'Gemini', url: 'https://api.gemini.com/v1/pubticker/btcusd' },
-            { name: 'Huobi', url: 'https://api.huobi.pro/market/detail/merged?symbol=btcusdt' },
-            { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
-        ];
+    <script>
+        async function fetchExchangePrices() {
+            const exchanges = [
+                { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
+                { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
+                { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' },
+                { name: 'Gemini', url: 'https://api.gemini.com/v1/pubticker/btcusd' },
+                { name: 'Huobi', url: 'https://api.huobi.pro/market/detail/merged?symbol=btcusdt' },
+                { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
+            ];
 
-        let exchangePricesHTML = '';
-        let totalPrice = 0;
-        let priceCount = 0;
+            let exchangePricesHTML = '';
+            let totalPrice = 0;
+            let priceCount = 0;
 
-        for (let exchange of exchanges) {
+            for (let exchange of exchanges) {
+                try {
+                    const response = await fetch(exchange.url);
+                    const data = await response.json();
+                    let price = null;
+
+                    switch (exchange.name) {
+                        case 'Coinbase':
+                            price = parseFloat(data.data.amount);
+                            break;
+                        case 'Kraken':
+                            const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
+                            if (krakenPair) {
+                                price = parseFloat(krakenPair.c[0]);
+                            }
+                            break;
+                        case 'Binance':
+                            price = parseFloat(data.price);
+                            break;
+                        case 'Gemini':
+                            price = parseFloat(data.last);
+                            break;
+                        case 'Huobi':
+                            price = parseFloat(data.tick.close);
+                            break;
+                        case 'OKX':
+                            price = parseFloat(data.data[0].last);
+                            break;
+                    }
+
+                    if (price !== null && !isNaN(price)) {
+                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                        totalPrice += price;
+                        priceCount++;
+                    } else {
+                        exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching price from ${exchange.name}:`, error);
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
+                }
+            }
+
+            document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
+
+            if (priceCount > 0) {
+                const averagePrice = totalPrice / priceCount;
+                const formattedPrice = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('average-price').innerText = formattedPrice;
+                document.title = `BTC: ${formattedPrice} - BeSovereign`;
+            } else {
+                document.getElementById('average-price').innerText = 'N/A';
+                document.title = 'BeSovereign';
+            }
+        }
+
+        async function fetchFeeEstimates() {
             try {
-                const response = await fetch(exchange.url);
+                const response = await fetch('https://mempool.space/api/v1/fees/recommended');
                 const data = await response.json();
-                let price = null;
-
-                switch (exchange.name) {
-                    case 'Coinbase':
-                        price = parseFloat(data.data.amount);
-                        break;
-                    case 'Kraken':
-                        const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
-                        if (krakenPair) {
-                            price = parseFloat(krakenPair.c[0]);
-                        }
-                        break;
-                    case 'Binance':
-                        price = parseFloat(data.price);
-                        break;
-                    case 'Gemini':
-                        price = parseFloat(data.last);
-                        break;
-                    case 'Huobi':
-                        price = parseFloat(data.tick.close);
-                        break;
-                    case 'OKX':
-                        price = parseFloat(data.data[0].last);
-                        break;
-                }
-
-                if (price !== null && !isNaN(price)) {
-                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
-                    totalPrice += price;
-                    priceCount++;
-                } else {
-                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`;
-                }
+                document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
+                document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
+                document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
             } catch (error) {
-                console.error(`Error fetching price from ${exchange.name}:`, error);
-                exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
+                console.error('Error fetching fee estimates:', error);
+                document.getElementById('fast-fee').innerText = 'Error';
+                document.getElementById('medium-fee').innerText = 'Error';
+                document.getElementById('slow-fee').innerText = 'Error';
             }
         }
 
-        document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
-
-        if (priceCount > 0) {
-            const averagePrice = totalPrice / priceCount;
-            const formattedPrice = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('average-price').innerText = formattedPrice;
-            document.title = `BTC: ${formattedPrice} - BeSovereign`;
-        } else {
-            document.getElementById('average-price').innerText = 'N/A';
-            document.title = 'BeSovereign';
-        }
-    }
-
-    async function fetchFeeEstimates() {
-        try {
-            const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        async function fetchBlockHeight() {
+            console.log('Fetching block height...');
+            try {
+                const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
+                const height = await response.text();
+                document.getElementById('block-height').innerText = height;
+            } catch (error) {
+                console.error('Error fetching block height:', error);
+                document.getElementById('block-height').innerText = 'Error';
             }
-            const data = await response.json();
-            document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
-            document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
-            document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
-        } catch (error) {
-            console.error('Error fetching fee estimates:', error);
-            document.getElementById('fast-fee').innerText = 'Error';
-            document.getElementById('medium-fee').innerText = 'Error';
-            document.getElementById('slow-fee').innerText = 'Error';
         }
-    }
 
-    async function fetchBlockHeight() {
-        try {
-            const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
-            const height = await response.text();
-            document.getElementById('block-height').innerText = height;
-        } catch (error) {
-            console.error('Error fetching block height:', error);
-            document.getElementById('block-height').innerText = 'Error';
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('current-time').innerText = timeString;
         }
-    }
 
-    function updateTime() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString();
-        document.getElementById('current-time').innerText = timeString;
-    }
-
-    window.onload = function() {
-        fetchExchangePrices();
-        fetchFeeEstimates();
-        fetchBlockHeight();
-        updateTime();
-        setInterval(updateTime, 1000); // Update time every second
-    };
-</script>
+        window.onload = function() {
+            fetchExchangePrices();
+            fetchBlockHeight();
+            fetchFeeEstimates();
+            updateTime();
+            setInterval(updateTime, 1000); // Update time every second
+        };
+    </script>
 
 </body>
 </html>
