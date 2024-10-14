@@ -11,7 +11,8 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #121212; /* Dark background for dark mode */
+            color: #fff; /* Set text to white */
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -20,26 +21,26 @@
             position: relative;
         }
 
-        /* Default logo styling */
+        /* Logo styling with new logo */
         .logo {
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 250px;
+            width: 250px; /* Adjust size as needed */
         }
 
-        /* Bitcoin price with artistic styling */
+        /* Bitcoin price with dark mode styling */
         .bitcoin-price {
             font-size: 40px;
             font-weight: bold;
-            color: #FFA500;
+            color: #FFA500; /* Orange to match Bitcoin colors */
             text-align: center;
-            background: #fff;
+            background: #1e1e1e; /* Dark background for the price container */
             padding: 20px;
-            border: 2px solid #FFA500;
+            border: 2px solid #FFA500; /* Border in orange */
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 100px; /* Increased margin to prevent overlap */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+            margin-top: 100px;
         }
 
         /* Debugging information hidden by default */
@@ -62,17 +63,17 @@
             }
 
             .bitcoin-price {
-                font-size: 28px; /* Slightly smaller font size for price on mobile */
+                font-size: 28px; /* Smaller font size for price on mobile */
                 padding: 15px;
-                margin-top: 150px; /* Increased margin to avoid overlap with the logo */
+                margin-top: 150px; /* Ensure enough space between logo and price */
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- BeSovereign Logo in top-left -->
-    <img src="BeSovereign.png" alt="BeSovereign Logo" class="logo">
+    <!-- Updated logo reference -->
+    <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
 
     <!-- Bitcoin price centered with styling -->
     <div class="bitcoin-price">
@@ -125,6 +126,7 @@
 
         // Fetch the price when the page loads
         window.onload = fetchBitcoinPrice;
+
     </script>
 
 </body>
