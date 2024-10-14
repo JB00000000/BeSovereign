@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta Tags and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeSovereign</title>
@@ -9,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-
+    
     <!-- CSS Styles -->
     <style>
         :root {
@@ -210,13 +211,19 @@
     </div>
 
     <!-- JavaScript to fetch and display the data -->
+    <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include the Financial Chart plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
 
     <script>
-        // Register candlestick controller and elements
-        const { CandlestickController, CandlestickElement, FinancialDataPoint } = Chart.controllers;
-        Chart.register(CandlestickController, CandlestickElement, FinancialDataPoint);
+        // Register the financial chart components
+        Chart.register(
+            Chart.controllers.financial,
+            Chart.controllers.candlestick,
+            Chart.elements.Candlestick,
+            Chart.scales.financialLinear
+        );
 
         let liveChart; // Global chart variable for the live price chart
         let depthChart; // Global chart variable for the depth chart
@@ -447,11 +454,6 @@
                             datasets: [{
                                 label: 'BTC/USD',
                                 data: chartData,
-                                color: {
-                                    up: '#00ff00',
-                                    down: '#ff0000',
-                                    unchanged: '#999999'
-                                }
                             }]
                         },
                         options: {
