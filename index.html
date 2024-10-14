@@ -264,17 +264,22 @@
     </div>
 
     <!-- JavaScript to fetch and display the data -->
-    <!-- Load Compatible Chart.js and Financial Plugin Versions -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@1.0.0-alpha.7/dist/chartjs-chart-financial.min.js"></script>
+    <!-- Load Chart.js and Financial Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.0.0"></script>
     <!-- Load Date Adapter -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0"></script>
 
     <script>
         // Register the financial chart types
-        const { CandlestickController, CandlestickElement, OhlcController, OhlcElement } = Chart.controllers;
-        const { FinancialLineAnnotation } = Chart.elements;
-        Chart.register(CandlestickController, CandlestickElement, OhlcController, OhlcElement, FinancialLineAnnotation);
+        Chart.register(
+            Chart.FinancialController,
+            Chart.CandlestickController,
+            Chart.OhlcController,
+            Chart.elements.FinancialElement,
+            Chart.elements.CandlestickElement,
+            Chart.elements.OhlcElement
+        );
 
         async function fetchBlockHeight() {
             console.log('Fetching block height...');
@@ -494,11 +499,12 @@
                             datasets: [{
                                 label: 'BTC/USD',
                                 data: chartData,
-                                color: {
+                                borderColor: {
                                     up: '#00ff00',
                                     down: '#ff0000',
                                     unchanged: '#999999'
-                                }
+                                },
+                                borderWidth: 1,
                             }]
                         },
                         options: {
