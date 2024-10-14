@@ -42,7 +42,7 @@
             background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            opacity: 0.15;
+            opacity: 0.15; /* Adjust transparency */
             z-index: -1; /* Push behind the content */
         }
 
@@ -127,23 +127,6 @@
             margin: 20px auto;
         }
 
-        /* Flexbox for smaller statistics boxes */
-        .mempool-stats {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .stat-box {
-            flex: 1;
-            margin: 10px;
-            min-width: 250px;
-            background: var(--card-bg-color);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
         @media (max-width: 768px) {
             .container {
                 margin-top: 5px;
@@ -164,16 +147,6 @@
             }
             .chart-container {
                 width: 100%;
-            }
-
-            /* Stack stat boxes on mobile */
-            .mempool-stats {
-                flex-direction: column;
-            }
-
-            .stat-box {
-                min-width: unset;
-                margin-bottom: 15px;
             }
         }
     </style>
@@ -203,86 +176,169 @@
             <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
         </div>
 
-        <!-- Mempool Statistics Display -->
-        <div class="mempool-stats">
-            <div class="stat-box">
-                <div class="section-header">Mempool Transactions</div>
-                <div class="data-value" id="mempool-tx-count">Loading...</div>
+        <!-- TradingView Bitcoin Price Chart -->
+        <div class="chart-container">
+            <!-- TradingView Widget BEGIN -->
+            <div class="tradingview-widget-container">
+                <div id="tradingview_btc_chart"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.widget(
+                        {
+                            "width": "100%",
+                            "height": 500,
+                            "symbol": "BITSTAMP:BTCUSD",
+                            "interval": "60",
+                            "timezone": "Etc/UTC",
+                            "theme": "dark",
+                            "style": "1",
+                            "locale": "en",
+                            "toolbar_bg": "#f1f3f6",
+                            "enable_publishing": false,
+                            "hide_top_toolbar": true,
+                            "hide_legend": true,
+                            "save_image": false,
+                            "container_id": "tradingview_btc_chart"
+                        }
+                    );
+                </script>
             </div>
-            <div class="stat-box">
-                <div class="section-header">Mempool Size (MB)</div>
-                <div class="data-value" id="mempool-size">Loading...</div>
+            <!-- TradingView Widget END -->
+        </div>
+
+        <!-- Exchange Prices Display -->
+        <div class="data-section">
+            <div class="section-header">Exchange Prices</div>
+            <div id="exchange-prices">
+                Loading...
             </div>
-            <div class="stat-box">
-                <div class="section-header">Total Fees (sats)</div>
-                <div class="data-value" id="mempool-total-fees">Loading...</div>
-            </div>
-            <div class="stat-box">
-                <div class="section-header">Blocks to Clear</div>
-                <div class="data-value" id="blocks-to-clear">Loading...</div>
-            </div>
-            <div class="stat-box">
-                <div class="section-header">Block Reward (BTC)</div>
-                <div class="data-value" id="block-reward">Loading...</div>
-            </div>
+        </div>
+
+        <!-- Fee Estimates Display -->
+        <div class="data-section">
+            <div class="section-header">Fee Estimates</div>
+            <div class="small-text">Fast: <span class="data-value" id="fast-fee">Loading...</span></div>
+            <div class="small-text">Medium: <span class="data-value" id="medium-fee">Loading...</span></div>
+            <div class="small-text">Slow: <span class="data-value" id="slow-fee">Loading...</span></div>
         </div>
 
     </div>
 
     <!-- JavaScript to fetch and display the data -->
-    <script>
-        async function fetchMempoolStats() {
+<script>
+    async function fetchExchangePrices() {
+        const exchanges = [
+            { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
+            { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
+            { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' },
+            { name: 'Gemini', url: 'https://api.gemini.com/v1/pubticker/btcusd' },
+            { name: 'Huobi', url: 'https://api.huobi.pro/market/detail/merged?symbol=btcusdt' },
+            { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
+        ];
+
+        let exchangePricesHTML = '';
+        let totalPrice = 0;
+        let priceCount = 0;
+
+        for (let exchange of exchanges) {
             try {
-                const response = await fetch('https://mempool.space/api/v1/stats');
+                const response = await fetch(exchange.url);
                 const data = await response.json();
+                let price = null;
 
-                document.getElementById('mempool-tx-count').innerText = data.mempool.totalTransactions.toLocaleString();
-                document.getElementById('mempool-size').innerText = (data.mempool.totalWeight / 1_000_000).toFixed(2); // Size in MB
-                document.getElementById('mempool-total-fees').innerText = data.mempool.totalFees.toLocaleString();
-                document.getElementById('blocks-to-clear').innerText = data.mempool.blocksToClear;
-                document.getElementById('block-reward').innerText = (data.blockReward / 1_000_000_000).toFixed(8); // Reward in BTC
+                switch (exchange.name) {
+                    case 'Coinbase':
+                        price = parseFloat(data.data.amount);
+                        break;
+                    case 'Kraken':
+                        const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
+                        if (krakenPair) {
+                            price = parseFloat(krakenPair.c[0]);
+                        }
+                        break;
+                    case 'Binance':
+                        price = parseFloat(data.price);
+                        break;
+                    case 'Gemini':
+                        price = parseFloat(data.last);
+                        break;
+                    case 'Huobi':
+                        price = parseFloat(data.tick.close);
+                        break;
+                    case 'OKX':
+                        price = parseFloat(data.data[0].last);
+                        break;
+                }
+
+                if (price !== null && !isNaN(price)) {
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`;
+                    totalPrice += price;
+                    priceCount++;
+                } else {
+                    exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`;
+                }
             } catch (error) {
-                console.error('Error fetching mempool stats:', error);
+                console.error(`Error fetching price from ${exchange.name}:`, error);
+                exchangePricesHTML += `<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`;
             }
         }
 
-        async function fetchFeeEstimates() {
-            try {
-                const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-                const data = await response.json();
-                document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
-                document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
-                document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
-            } catch (error) {
-                console.error('Error fetching fee estimates:', error);
+        document.getElementById('exchange-prices').innerHTML = exchangePricesHTML;
+
+        if (priceCount > 0) {
+            const averagePrice = totalPrice / priceCount;
+            const formattedPrice = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('average-price').innerText = formattedPrice;
+            document.title = `BTC: ${formattedPrice} - BeSovereign`;
+        } else {
+            document.getElementById('average-price').innerText = 'N/A';
+            document.title = 'BeSovereign';
+        }
+    }
+
+    async function fetchFeeEstimates() {
+        try {
+            const response = await fetch('https://mempool.space/api/v1/fees/recommended');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            const data = await response.json();
+            document.getElementById('fast-fee').innerText = `${data.fastestFee} sat/vB`;
+            document.getElementById('medium-fee').innerText = `${data.halfHourFee} sat/vB`;
+            document.getElementById('slow-fee').innerText = `${data.hourFee} sat/vB`;
+        } catch (error) {
+            console.error('Error fetching fee estimates:', error);
+            document.getElementById('fast-fee').innerText = 'Error';
+            document.getElementById('medium-fee').innerText = 'Error';
+            document.getElementById('slow-fee').innerText = 'Error';
         }
+    }
 
-        async function fetchBlockHeight() {
-            try {
-                const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
-                const height = await response.text();
-                document.getElementById('block-height').innerText = height;
-            } catch (error) {
-                console.error('Error fetching block height:', error);
-                document.getElementById('block-height').innerText = 'Error';
-            }
+    async function fetchBlockHeight() {
+        try {
+            const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
+            const height = await response.text();
+            document.getElementById('block-height').innerText = height;
+        } catch (error) {
+            console.error('Error fetching block height:', error);
+            document.getElementById('block-height').innerText = 'Error';
         }
+    }
 
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            document.getElementById('current-time').innerText = timeString;
-        }
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        document.getElementById('current-time').innerText = timeString;
+    }
 
-        window.onload = function() {
-            fetchMempoolStats();
-            fetchFeeEstimates();
-            fetchBlockHeight();
-            updateTime();
-            setInterval(updateTime, 1000); // Update time every second
-        };
-    </script>
+    window.onload = function() {
+        fetchExchangePrices();
+        fetchFeeEstimates();
+        fetchBlockHeight();
+        updateTime();
+        setInterval(updateTime, 1000); // Update time every second
+    };
+</script>
 
 </body>
 </html>
