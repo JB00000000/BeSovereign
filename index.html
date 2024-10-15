@@ -167,26 +167,32 @@
             }
 
             .data-section {
-                width: 90%;
-                margin: 8px 0;
-                font-size: 16px; /* Reduce font size */
-                padding: 10px; /* Reduce padding */
+                width: 30%; /* Adjusted width for three boxes per row */
+                margin: 5px;
+                font-size: 14px; /* Reduce font size */
+                padding: 8px; /* Reduce padding */
             }
 
             .data-value {
-                font-size: 24px; /* Reduce font size */
+                font-size: 20px; /* Reduce font size */
             }
 
             .section-header {
-                font-size: 18px; /* Reduce font size */
+                font-size: 16px; /* Reduce font size */
             }
 
             .small-text {
-                font-size: 16px; /* Reduce font size */
+                font-size: 14px; /* Reduce font size */
             }
 
             .chart-container {
                 width: 100%;
+            }
+
+            /* Ensure three boxes per row */
+            .exchange-prices-container {
+                flex-wrap: wrap;
+                justify-content: space-between;
             }
         }
     </style>
