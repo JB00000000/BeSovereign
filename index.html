@@ -121,16 +121,18 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             z-index: 100;
             display: none; /* Initially hidden */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .qr-code.show {
+            display: block;
+            opacity: 1;
         }
 
         .qr-code img {
             width: 200px;
             height: 200px;
-        }
-
-        /* Show QR Code on Hover */
-        .donate-container:hover .qr-code {
-            display: block;
         }
 
         /* Bitcoin Block Height and Time */
@@ -412,10 +414,10 @@
         <!-- Donate Section in the Middle -->
         <div class="donate-section">
             <div class="donate-container">
-                <button class="donate-button" onclick="copyAddress()" title="Click to copy Bitcoin address" aria-label="Donate Bitcoin">
+                <button class="donate-button" onclick="handleDonate()" title="Click to donate Bitcoin" aria-label="Donate Bitcoin">
                     Donate Bitcoin
                 </button>
-                <div class="qr-code" id="qr-code" style="display: none;">
+                <div class="qr-code" id="qr-code">
                     <a href="https://www.bitcoinqrcodemaker.com" target="_blank">
                         <img src="https://www.bitcoinqrcodemaker.com/api/?style=bitcoin&amp;address=bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t" 
                              height="200" width="200" 
@@ -578,44 +580,36 @@
         // Bitcoin Address
         const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
 
-        // Function to set theme (Removed Light/Dark Theme Controls)
-        /*
-        function setTheme(theme) {
-            const body = document.body;
-            const buttons = document.querySelectorAll('.theme-controls button');
+        // Function to handle Donate Button Click
+        function handleDonate() {
+            // Copy the Bitcoin address to clipboard
+            navigator.clipboard.writeText(bitcoinAddress)
+                .then(() => {
+                    // Notify the user
+                    alert('Bitcoin address copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy Bitcoin address. Please try manually.');
+                });
 
-            // Remove existing theme classes
-            body.classList.remove('light-theme', 'dark-theme');
-
-            // Remove active class from all buttons and aria-pressed
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-                btn.setAttribute('aria-pressed', 'false');
-            });
-
-            // Add the selected theme class and active class to the corresponding button
-            if (theme === 'light') {
-                body.classList.add('light-theme');
-                const activeBtn = document.getElementById('theme-light');
-                activeBtn.classList.add('active');
-                activeBtn.setAttribute('aria-pressed', 'true');
-            } else if (theme === 'dark') {
-                body.classList.add('dark-theme');
-                const activeBtn = document.getElementById('theme-dark');
-                activeBtn.classList.add('active');
-                activeBtn.setAttribute('aria-pressed', 'true');
+            // Toggle QR Code Visibility
+            const qrCode = document.getElementById('qr-code');
+            if (qrCode.classList.contains('show')) {
+                qrCode.classList.remove('show');
+            } else {
+                qrCode.classList.add('show');
             }
-
-            // Save the preference in localStorage
-            localStorage.setItem('preferredTheme', theme);
         }
 
-        // Function to initialize theme based on saved preferences
-        function initializePreferences() {
-            const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
-            setTheme(savedTheme);
+        // Optional: Close QR Code When Clicking Outside
+        window.onclick = function(event) {
+            const donateContainer = document.querySelector('.donate-container');
+            const qrCode = document.getElementById('qr-code');
+            if (!donateContainer.contains(event.target)) {
+                qrCode.classList.remove('show');
+            }
         }
-        */
 
         // Initialize Sortable on the main container
         function initializeSortable() {
@@ -651,17 +645,6 @@
                     }
                 });
             }
-        }
-
-        // Function to copy Bitcoin address to clipboard
-        function copyAddress() {
-            navigator.clipboard.writeText(bitcoinAddress)
-                .then(() => {
-                    alert('Bitcoin address copied to clipboard!');
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
-                });
         }
 
         // Fetch Exchange Prices from various exchanges and distribute them into three boxes
