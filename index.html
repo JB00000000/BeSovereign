@@ -70,6 +70,7 @@
             box-sizing: border-box;
             background-color: var(--card-bg-color);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .logo {
@@ -210,12 +211,67 @@
             margin: 5px 0;
         }
 
-        /* Responsive Styles */
+        /* Donate Button Styles */
+        .donate-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 20px; /* Spacing from other header elements */
+        }
+
+        .donate-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: var(--accent-color);
+            color: #fff;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .donate-button:hover {
+            background-color: #e68a00; /* Slightly darker shade for hover */
+            transform: scale(1.05);
+        }
+
+        .donate-button:active {
+            transform: scale(0.95);
+        }
+
+        /* QR Code Styles */
+        .qr-code {
+            position: absolute;
+            top: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: none; /* Initially hidden */
+        }
+
+        .qr-code img {
+            width: 200px;
+            height: 200px;
+        }
+
+        /* Show QR Code on Hover */
+        .donate-container:hover .qr-code {
+            display: block;
+        }
+
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
+            .donate-button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .qr-code img {
+                width: 150px;
+                height: 150px;
             }
 
             /* Hide the logo on mobile */
@@ -407,13 +463,27 @@
             <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
             <div class="current-time" id="current-time">Loading...</div>
         </div>
+        <!-- Donate Button Added Here -->
+        <div class="donate-container">
+            <button class="donate-button" onclick="copyAddress()" title="Click to copy Bitcoin address" aria-label="Donate Bitcoin">
+                Donate Bitcoin
+            </button>
+            <div class="qr-code" id="qr-code" style="display: none;">
+                <a href="https://www.bitcoinqrcodemaker.com" target="_blank">
+                    <img src="https://www.bitcoinqrcodemaker.com/api/?style=bitcoin&amp;address=bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t" 
+                         height="200" width="200" 
+                         alt="Bitcoin QR code" 
+                         title="bitcoin:bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t">
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Controls for Theme Selection -->
     <div class="controls">
         <div class="theme-controls">
-            <button onclick="setTheme('light')" id="theme-light">Light Mode</button>
-            <button onclick="setTheme('dark')" id="theme-dark">Dark Mode</button>
+            <button onclick="setTheme('light')" id="theme-light" aria-pressed="false" aria-label="Switch to Light Mode">Light Mode</button>
+            <button onclick="setTheme('dark')" id="theme-dark" aria-pressed="false" aria-label="Switch to Dark Mode">Dark Mode</button>
             <!-- Removed Blue and Green Theme Buttons -->
         </div>
     </div>
@@ -544,8 +614,11 @@
         </div>
     </div>
 
-    <!-- JavaScript to fetch and display the data, and handle theme changes -->
+    <!-- JavaScript to fetch and display the data, handle theme changes, and handle donate functionality -->
     <script>
+        // Bitcoin Address
+        const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
+
         // Function to set theme
         function setTheme(theme) {
             const body = document.body;
@@ -617,6 +690,17 @@
                     }
                 });
             }
+        }
+
+        // Function to copy Bitcoin address to clipboard
+        function copyAddress() {
+            navigator.clipboard.writeText(bitcoinAddress)
+                .then(() => {
+                    alert('Bitcoin address copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
         }
 
         // Fetch Exchange Prices from various exchanges and distribute them into three boxes
