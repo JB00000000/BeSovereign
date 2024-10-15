@@ -7,11 +7,8 @@
     <title>BeSovereign</title>
 
     <!-- Favicon Links -->
-    <!-- ICO format for older browsers -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- PNG format for modern browsers -->
     <link rel="icon" href="favicon.png" type="image/png">
-    <!-- SVG format -->
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any">
 
     <!-- Google Fonts -->
@@ -224,20 +221,6 @@
     <!-- Container for all content -->
     <div class="container">
 
-        <!-- Top Row: Sats per Dollar | Exchange Average Price | Market Capitalisation -->
-        <div class="data-section" id="sats-per-dollar-section">
-            <div class="section-header">Sats per Dollar</div>
-            <div class="data-value" id="sats-per-dollar">Loading...</div>
-        </div>
-        <div class="data-section" id="average-price-section">
-            <div class="section-header">Exchange Average Price</div>
-            <div class="data-value" id="average-price">Loading...</div>
-        </div>
-        <div class="data-section market-cap-section" id="market-cap-section">
-            <div class="section-header">Market Capitalisation</div>
-            <div class="data-value" id="market-cap">Loading...</div>
-        </div>
-
         <!-- TradingView Bitcoin Price Chart -->
         <div class="chart-container">
             <!-- TradingView Widget BEGIN -->
@@ -298,26 +281,6 @@
             </div>
         </div>
 
-        <!-- New Data Points: All-time High, etc. -->
-        <div class="container">
-            <div class="data-section">
-                <div class="section-header">All-time High Price</div>
-                <div class="data-value" id="ath-price">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">% Decline from ATH</div>
-                <div class="data-value" id="ath-decline">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">ATH Date</div>
-                <div class="data-value" id="ath-date">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Days Since ATH</div>
-                <div class="data-value" id="days-since-ath">Loading...</div>
-            </div>
-        </div>
-
         <!-- Remaining Data Sections -->
         <div class="container">
             <!-- Mempool Transaction Count -->
@@ -349,11 +312,6 @@
 
     <!-- JavaScript to fetch and display the data -->
     <script>
-        // Replace with your serverless proxy URL
-        const COINGECKO_PROXY_URL = 'https://your-netlify-site.netlify.app/.netlify/functions/fetchCoinGecko';
-        // or
-        // const COINGECKO_PROXY_URL = 'https://your-vercel-site.vercel.app/api/fetchCoinGecko';
-
         // Fetch Exchange Prices from various exchanges and distribute them into three boxes
         async function fetchExchangePrices() {
             const exchanges = [
@@ -372,13 +330,7 @@
             for (let i = 0; i < exchanges.length; i++) {
                 const exchange = exchanges[i];
                 try {
-                    let response;
-                    // Use proxy for CoinGecko if needed, but exchanges are different
-                    // If CoinGecko is not involved here, direct fetch should be fine
-                    // Assuming only CoinGecko API calls have issues
-
-                    // Fetch exchange data directly as they support CORS
-                    response = await fetch(exchange.url);
+                    const response = await fetch(exchange.url);
                     const data = await response.json();
                     let price = null;
 
@@ -499,71 +451,6 @@
             }
         }
 
-        // Fetch All-Time High and Related Data from CoinGecko via Proxy
-        async function fetchATHData() {
-            try {
-                const response = await fetch(`${COINGECKO_PROXY_URL}?endpoint=coins/bitcoin`);
-                const data = await response.json();
-
-                // All-time High Price
-                const athPrice = data.market_data.ath.usd;
-                document.getElementById('ath-price').innerText = `$${athPrice.toLocaleString()}`;
-
-                // Current Price
-                const currentPrice = data.market_data.current_price.usd;
-
-                // Percentage Decline from ATH
-                const decline = ((currentPrice - athPrice) / athPrice) * 100;
-                document.getElementById('ath-decline').innerText = `${decline.toFixed(2)}%`;
-
-                // ATH Date
-                const athDate = new Date(data.market_data.ath_date.usd);
-                const options = { day: 'numeric', month: 'long', year: 'numeric' };
-                const formattedATHDate = athDate.toLocaleDateString('en-GB', options);
-                document.getElementById('ath-date').innerText = formattedATHDate;
-
-                // Days Since ATH
-                const now = new Date();
-                const timeDiff = now - athDate;
-                const daysSinceATH = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-                document.getElementById('days-since-ath').innerText = daysSinceATH;
-
-            } catch (error) {
-                console.error('Error fetching ATH data:', error);
-                document.getElementById('ath-price').innerText = 'Error';
-                document.getElementById('ath-decline').innerText = 'Error';
-                document.getElementById('ath-date').innerText = 'Error';
-                document.getElementById('days-since-ath').innerText = 'Error';
-            }
-        }
-
-        // Fetch Sats per Dollar via Proxy
-        async function fetchSatsPerDollar() {
-            try {
-                const response = await fetch(`${COINGECKO_PROXY_URL}?endpoint=simple/price&ids=bitcoin&vs_currencies=usd`);
-                const data = await response.json();
-                const btcPrice = data.bitcoin.usd;
-                const satsPerDollar = (100000000 / btcPrice).toFixed(2);
-                document.getElementById('sats-per-dollar').innerText = `${satsPerDollar} sats/$`;
-            } catch (error) {
-                console.error('Error fetching sats per dollar:', error);
-                document.getElementById('sats-per-dollar').innerText = 'Error';
-            }
-        }
-
-        // Fetch Market Capitalisation via Proxy
-        async function fetchMarketCap() {
-            try {
-                const response = await fetch(`${COINGECKO_PROXY_URL}?endpoint=coins/bitcoin`);
-                const data = await response.json();
-                const marketCap = data.market_data.market_cap.usd;
-                document.getElementById('market-cap').innerText = `$${marketCap.toLocaleString()}`;
-            } catch (error) {
-                console.error('Error fetching market cap:', error);
-                document.getElementById('market-cap').innerText = 'Error';
-            }
-        }
-
         // Update Current Time in British Format
         function updateTime() {
             const now = new Date();
@@ -585,9 +472,6 @@
             fetchBlockHeight();
             fetchFeeEstimates();
             fetchMempoolStats();
-            fetchATHData();
-            fetchSatsPerDollar();
-            fetchMarketCap();
             updateTime();
             setInterval(updateTime, 1000); // Update time every second
 
@@ -596,9 +480,6 @@
             setInterval(fetchBlockHeight, 60000);
             setInterval(fetchFeeEstimates, 60000);
             setInterval(fetchMempoolStats, 60000);
-            setInterval(fetchATHData, 60000);
-            setInterval(fetchSatsPerDollar, 60000);
-            setInterval(fetchMarketCap, 60000);
         };
     </script>
 
