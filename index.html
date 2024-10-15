@@ -79,6 +79,7 @@
         .block-height {
             font-size: 24px;
             color: var(--accent-color);
+            word-wrap: break-word;
         }
 
         .current-time {
@@ -117,6 +118,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             flex: 1 1 200px; /* Adjusted for tighter fit */
             box-sizing: border-box;
+            overflow: hidden; /* Prevent content overflow */
         }
 
         .section-header {
@@ -124,18 +126,21 @@
             font-weight: 600;
             color: var(--accent-color);
             margin-bottom: 10px;
+            word-wrap: break-word;
         }
 
         .data-value {
             font-size: 28px;
             font-weight: 400;
             color: var(--text-color);
+            word-wrap: break-word;
         }
 
         .small-text {
             font-size: 18px;
             color: var(--text-color);
             margin: 5px 0;
+            word-wrap: break-word;
         }
 
         .chart-container {
@@ -195,6 +200,11 @@
                 justify-content: space-between;
             }
         }
+
+        /* Additional CSS to handle Market Cap overflow */
+        .market-cap-section {
+            word-break: break-all; /* Allows breaking long words */
+        }
     </style>
 </head>
 <body>
@@ -223,25 +233,9 @@
             <div class="section-header">Exchange Average Price</div>
             <div class="data-value" id="average-price">Loading...</div>
         </div>
-        <div class="data-section" id="market-cap-section">
+        <div class="data-section market-cap-section" id="market-cap-section">
             <div class="section-header">Market Capitalisation</div>
             <div class="data-value" id="market-cap">Loading...</div>
-        </div>
-
-        <!-- Exchange Prices Display (Three Boxes) -->
-        <div class="exchange-prices-container">
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-1">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-2">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-3">Loading...</div>
-            </div>
         </div>
 
         <!-- TradingView Bitcoin Price Chart -->
@@ -270,6 +264,22 @@
                 </script>
             </div>
             <!-- TradingView Widget END -->
+        </div>
+
+        <!-- Exchange Prices Display (Three Boxes) -->
+        <div class="exchange-prices-container">
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-1">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-2">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-3">Loading...</div>
+            </div>
         </div>
 
         <!-- Fee Estimates Display -->
