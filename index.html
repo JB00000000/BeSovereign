@@ -224,11 +224,45 @@
                 order: 6;
             }
 
-            .main-container > #mempool-data-container {
+            .main-container > #ath-decline-container {
                 order: 7;
             }
 
-            /* Consolidate Fee Estimates into one box */
+            .main-container > #ath-date-container {
+                order: 8;
+            }
+
+            .main-container > #days-since-ath-container {
+                order: 9;
+            }
+
+            .main-container > #mempool-tx-container {
+                order: 10;
+            }
+
+            .main-container > #mempool-size-container {
+                order: 11;
+            }
+
+            .main-container > #mempool-fees-container {
+                order: 12;
+            }
+
+            .main-container > #blocks-clear-container {
+                order: 13;
+            }
+
+            .exchange-prices-container {
+                order: 14;
+                width: 90%;
+            }
+
+            /* Adjust data-section widths within Exchange Prices */
+            .exchange-prices-container .data-section {
+                flex: 1 1 45%; /* Two exchanges per box */
+            }
+
+            /* Adjust Fee Estimates Container */
             .fee-estimates-container .section-header {
                 font-size: 18px;
                 margin-bottom: 5px;
@@ -238,16 +272,8 @@
                 margin: 2px 0;
             }
 
-            /* Ensure Exchange Prices are below fees */
-            .exchange-prices-container {
-                order: 8;
-                width: 90%;
-            }
-
-            /* Adjust data-section widths */
-            .exchange-prices-container .data-section {
-                flex: 1 1 45%; /* Two exchanges per box */
-            }
+            /* Ensure Exchange Prices are below all other sections */
+            /* No additional changes needed as order:14 places it last */
         }
     </style>
 </head>
