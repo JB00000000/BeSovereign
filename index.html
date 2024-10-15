@@ -19,6 +19,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
+    <!-- SortableJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" integrity="sha512-2u0JZ1Kaq3Vm8O+RfKyRI0gJJwI5UR06ZfSY/w+5Fe6Y+wRlR/Z6q1fqBwYP28iycz9+XyXJP2AsEotkGHyVMw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <!-- CSS Styles -->
     <style>
         :root {
@@ -95,7 +98,7 @@
             max-width: 1200px;
             padding: 10px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             box-sizing: border-box;
             background-color: var(--card-bg-color);
@@ -134,19 +137,6 @@
             box-sizing: border-box;
         }
 
-        /* Layout Styles */
-
-        /* Grid Layout */
-        .grid-layout {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .grid-layout .data-section {
-            flex: 1 1 calc(33.333% - 20px); /* Three columns */
-        }
-
         /* Data Sections */
         .data-section {
             font-size: 20px;
@@ -159,6 +149,7 @@
             flex: 1 1 200px; /* Adjusted for flexibility */
             box-sizing: border-box;
             transition: all 0.3s ease;
+            cursor: move; /* Indicate draggable elements */
         }
 
         .section-header {
@@ -234,6 +225,7 @@
 
             .controls {
                 flex-direction: column;
+                align-items: flex-end;
                 gap: 10px;
             }
 
@@ -579,6 +571,40 @@
             setTheme(savedTheme);
         }
 
+        // Initialize Sortable on the main container
+        function initializeSortable() {
+            const mainContainer = document.querySelector('.main-container');
+            Sortable.create(mainContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    saveOrder();
+                }
+            });
+        }
+
+        // Save the current order of elements to localStorage
+        function saveOrder() {
+            const mainContainer = document.querySelector('.main-container');
+            const order = Array.from(mainContainer.children).map(child => child.id);
+            localStorage.setItem('boxOrder', JSON.stringify(order));
+        }
+
+        // Load the saved order from localStorage
+        function loadOrder() {
+            const mainContainer = document.querySelector('.main-container');
+            const savedOrder = JSON.parse(localStorage.getItem('boxOrder'));
+
+            if (savedOrder) {
+                savedOrder.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        mainContainer.appendChild(element);
+                    }
+                });
+            }
+        }
+
         // Fetch Exchange Prices from various exchanges and distribute them into three boxes
         async function fetchExchangePrices() {
             const exchanges = [
@@ -802,6 +828,9 @@
         // Initialize All Fetch Functions and Preferences
         window.onload = function() {
             initializePreferences(); // Apply saved theme preferences
+            initializeSortable();    // Enable drag-and-drop
+
+            loadOrder();             // Load saved order if any
 
             fetchExchangePrices();
             fetchBlockHeight();
