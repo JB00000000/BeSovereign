@@ -98,6 +98,15 @@
             gap: 10px;
         }
 
+        /* Exchange Prices Container */
+        .exchange-prices-container {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
         .data-section {
             font-size: 20px;
             color: var(--text-color);
@@ -106,7 +115,7 @@
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            flex: 1 1 200px; /* Reduced base width for tighter fit */
+            flex: 1 1 200px; /* Adjusted for tighter fit */
             box-sizing: border-box;
         }
 
@@ -152,7 +161,7 @@
                 display: none;
             }
 
-            .container {
+            .container, .exchange-prices-container {
                 flex-direction: column;
                 align-items: center;
             }
@@ -213,6 +222,22 @@
             <div class="data-value" id="market-cap">Loading...</div>
         </div>
 
+        <!-- Exchange Prices Display (Three Boxes) -->
+        <div class="exchange-prices-container">
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-1">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-2">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-3">Loading...</div>
+            </div>
+        </div>
+
         <!-- TradingView Bitcoin Price Chart -->
         <div class="chart-container">
             <!-- TradingView Widget BEGIN -->
@@ -239,14 +264,6 @@
                 </script>
             </div>
             <!-- TradingView Widget END -->
-        </div>
-
-        <!-- Exchange Prices Display -->
-        <div class="container">
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices">Loading...</div>
-            </div>
         </div>
 
         <!-- Fee Estimates Display -->
@@ -316,7 +333,7 @@
 
     <!-- JavaScript to fetch and display the data -->
     <script>
-        // Fetch Exchange Prices from various exchanges
+        // Fetch Exchange Prices from various exchanges and distribute them into three boxes
         async function fetchExchangePrices() {
             const exchanges = [
                 { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
@@ -375,9 +392,11 @@
                 }
             }
 
-            // Display exchange prices
-            const exchangePricesDiv = document.getElementById('exchange-prices');
-            exchangePricesDiv.innerHTML = exchangeRows.flat().join('');
+            // Populate each exchange prices box
+            for (let i = 0; i < 3; i++) {
+                const exchangePricesDiv = document.getElementById(`exchange-prices-${i + 1}`);
+                exchangePricesDiv.innerHTML = exchangeRows[i].join('');
+            }
 
             // Calculate and display average price
             if (priceCount > 0) {
