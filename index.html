@@ -260,6 +260,9 @@
             /* Adjust data-section widths within Exchange Prices */
             .exchange-prices-container .data-section {
                 flex: 1 1 45%; /* Two exchanges per box */
+                /* Ensure adequate height */
+                min-height: 80px;
+                padding: 10px;
             }
 
             /* Adjust Fee Estimates Container */
@@ -274,6 +277,39 @@
 
             /* Ensure Exchange Prices are below all other sections */
             /* No additional changes needed as order:14 places it last */
+        }
+
+        /* Additional Desktop Styles to Ensure Fee Estimates Are Separate */
+        @media (min-width: 769px) {
+            /* Ensure fee estimates are displayed as separate boxes on desktop */
+            .fee-estimates-container {
+                display: none; /* Hide consolidated fee estimates on desktop */
+            }
+
+            /* Display individual fee sections as separate boxes */
+            .main-container .data-section#fast-fee,
+            .main-container .data-section#medium-fee,
+            .main-container .data-section#slow-fee {
+                display: block;
+                width: calc(33.333% - 20px); /* Three boxes in a line with gap */
+                font-size: 20px;
+                padding: 15px;
+                max-height: none; /* Remove height restriction */
+                overflow: visible; /* Allow content to be visible */
+            }
+
+            /* Adjust their order to appear after TradingView chart */
+            .main-container .data-section#fast-fee {
+                order: 4;
+            }
+
+            .main-container .data-section#medium-fee {
+                order: 5;
+            }
+
+            .main-container .data-section#slow-fee {
+                order: 6;
+            }
         }
     </style>
 </head>
@@ -352,12 +388,26 @@
             </div>
         </div>
 
-        <!-- Consolidated Fee Estimates Display -->
+        <!-- Consolidated Fee Estimates Display (Visible on Mobile) -->
         <div class="fee-estimates-container">
             <div class="section-header">Fee Estimates</div>
             <div class="fee" id="fast-fee">Fast Fee: <span class="data-value">Loading...</span></div>
             <div class="fee" id="medium-fee">Medium Fee: <span class="data-value">Loading...</span></div>
             <div class="fee" id="slow-fee">Slow Fee: <span class="data-value">Loading...</span></div>
+        </div>
+
+        <!-- Individual Fee Estimates Display (Visible on Desktop) -->
+        <div class="data-section" id="fast-fee">
+            <div class="section-header">Fast Fee</div>
+            <div class="data-value">Loading...</div>
+        </div>
+        <div class="data-section" id="medium-fee">
+            <div class="section-header">Medium Fee</div>
+            <div class="data-value">Loading...</div>
+        </div>
+        <div class="data-section" id="slow-fee">
+            <div class="section-header">Slow Fee</div>
+            <div class="data-value">Loading...</div>
         </div>
 
         <!-- New Data Points: All-time High, etc. -->
