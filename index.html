@@ -103,7 +103,7 @@
             margin-bottom: 10px;
         }
 
-        .layout-controls, .theme-controls {
+        .theme-controls {
             display: flex;
             gap: 10px;
         }
@@ -120,7 +120,7 @@
         }
 
         .controls button.active, .controls button:hover {
-            background-color: darken(var(--accent-color), 10%);
+            background-color: #e68a00; /* Slightly darker shade for hover */
         }
 
         .main-container {
@@ -145,27 +145,6 @@
 
         .grid-layout .data-section {
             flex: 1 1 calc(33.333% - 20px); /* Three columns */
-        }
-
-        /* List Layout */
-        .list-layout {
-            display: block;
-        }
-
-        .list-layout .data-section {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        /* Columnar Layout */
-        .columnar-layout {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .columnar-layout .data-section {
-            width: 100%;
         }
 
         /* Data Sections */
@@ -433,19 +412,12 @@
         </div>
     </div>
 
-    <!-- Controls for Layout and Theme Selection -->
+    <!-- Controls for Theme Selection -->
     <div class="controls">
-        <div class="layout-controls">
-            <button onclick="setLayout('grid')" id="layout-grid">Grid Layout</button>
-            <button onclick="setLayout('list')" id="layout-list">List Layout</button>
-            <button onclick="setLayout('columnar')" id="layout-columnar">Columnar Layout</button>
-        </div>
         <div class="theme-controls">
             <button onclick="setTheme('light')" id="theme-light">Light Mode</button>
             <button onclick="setTheme('dark')" id="theme-dark">Dark Mode</button>
-            <!-- Optional: Additional Color Themes -->
-            <button onclick="setTheme('blue')" id="theme-blue">Blue Theme</button>
-            <button onclick="setTheme('green')" id="theme-green">Green Theme</button>
+            <!-- Removed Blue and Green Theme Buttons -->
         </div>
     </div>
 
@@ -575,44 +547,15 @@
         </div>
     </div>
 
-    <!-- JavaScript to fetch and display the data, and handle layout/theme changes -->
+    <!-- JavaScript to fetch and display the data, and handle theme changes -->
     <script>
-        // Layout and Theme Selection Functions
-
-        // Function to set layout
-        function setLayout(layout) {
-            const mainContainer = document.querySelector('.main-container');
-            const buttons = document.querySelectorAll('.layout-controls button');
-
-            // Remove existing layout classes
-            mainContainer.classList.remove('grid-layout', 'list-layout', 'columnar-layout');
-
-            // Remove active class from all buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
-
-            // Add the selected layout class and active class to the corresponding button
-            if (layout === 'grid') {
-                mainContainer.classList.add('grid-layout');
-                document.getElementById('layout-grid').classList.add('active');
-            } else if (layout === 'list') {
-                mainContainer.classList.add('list-layout');
-                document.getElementById('layout-list').classList.add('active');
-            } else if (layout === 'columnar') {
-                mainContainer.classList.add('columnar-layout');
-                document.getElementById('layout-columnar').classList.add('active');
-            }
-
-            // Save the preference in localStorage
-            localStorage.setItem('preferredLayout', layout);
-        }
-
         // Function to set theme
         function setTheme(theme) {
             const body = document.body;
             const buttons = document.querySelectorAll('.theme-controls button');
 
             // Remove existing theme classes
-            body.classList.remove('light-theme', 'dark-theme', 'blue-theme', 'green-theme');
+            body.classList.remove('light-theme', 'dark-theme');
 
             // Remove active class from all buttons
             buttons.forEach(btn => btn.classList.remove('active'));
@@ -624,23 +567,14 @@
             } else if (theme === 'dark') {
                 body.classList.add('dark-theme');
                 document.getElementById('theme-dark').classList.add('active');
-            } else if (theme === 'blue') {
-                body.classList.add('blue-theme');
-                document.getElementById('theme-blue').classList.add('active');
-            } else if (theme === 'green') {
-                body.classList.add('green-theme');
-                document.getElementById('theme-green').classList.add('active');
             }
 
             // Save the preference in localStorage
             localStorage.setItem('preferredTheme', theme);
         }
 
-        // Function to initialize layout and theme based on saved preferences
+        // Function to initialize theme based on saved preferences
         function initializePreferences() {
-            const savedLayout = localStorage.getItem('preferredLayout') || 'grid';
-            setLayout(savedLayout);
-
             const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
             setTheme(savedTheme);
         }
@@ -867,7 +801,7 @@
 
         // Initialize All Fetch Functions and Preferences
         window.onload = function() {
-            initializePreferences(); // Apply saved layout and theme preferences
+            initializePreferences(); // Apply saved theme preferences
 
             fetchExchangePrices();
             fetchBlockHeight();
