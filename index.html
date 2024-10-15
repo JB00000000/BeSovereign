@@ -19,8 +19,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- SortableJS Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" integrity="sha512-2u0JZ1Kaq3Vm8O+RfKyRI0gJJwI5UR06ZfSY/w+5Fe6Y+wRlR/Z6q1fqBwYP28iycz9+XyXJP2AsEotkGHyVMw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- SortableJS Library with Correct Integrity -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" integrity="sha512-Eezs+g9Lq4TCCq0wae01s9PuNWzHYoCMkE97e2qdkYthpI0pzC3UGB03lgEHn2XM85hDOUF6qgqqszs+iXU4UA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- CSS Styles -->
     <style>
@@ -235,9 +235,9 @@
             }
 
             /* Hide individual fee estimates on mobile */
-            .main-container .data-section#fast-fee,
-            .main-container .data-section#medium-fee,
-            .main-container .data-section#slow-fee {
+            .main-container .data-section.fast-fee-desktop,
+            .main-container .data-section.medium-fee-desktop,
+            .main-container .data-section.slow-fee-desktop {
                 display: none;
             }
 
@@ -361,9 +361,9 @@
             }
 
             /* Display individual fee sections as separate boxes */
-            .main-container .data-section#fast-fee,
-            .main-container .data-section#medium-fee,
-            .main-container .data-section#slow-fee {
+            .main-container .data-section.fast-fee-desktop,
+            .main-container .data-section.medium-fee-desktop,
+            .main-container .data-section.slow-fee-desktop {
                 display: block;
                 width: calc(33.333% - 20px); /* Three boxes in a line with gap */
                 font-size: 20px;
@@ -373,15 +373,15 @@
             }
 
             /* Adjust their order to appear after TradingView chart */
-            .main-container .data-section#fast-fee {
+            .main-container .data-section.fast-fee-desktop {
                 order: 4;
             }
 
-            .main-container .data-section#medium-fee {
+            .main-container .data-section.medium-fee-desktop {
                 order: 5;
             }
 
-            .main-container .data-section#slow-fee {
+            .main-container .data-section.slow-fee-desktop {
                 order: 6;
             }
         }
@@ -390,6 +390,11 @@
         .controls button.active {
             background-color: #333333;
             color: #FFFFFF;
+        }
+
+        /* Optional: Styles for SortableJS ghost class */
+        .sortable-ghost {
+            opacity: 0.4;
         }
     </style>
 </head>
@@ -464,21 +469,21 @@
         <!-- Consolidated Fee Estimates Display (Visible on Mobile) -->
         <div class="fee-estimates-container">
             <div class="section-header">Fee Estimates</div>
-            <div class="fee" id="fast-fee">Fast Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee" id="medium-fee">Medium Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee" id="slow-fee">Slow Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee fast-fee">Fast Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee medium-fee">Medium Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee slow-fee">Slow Fee: <span class="data-value">Loading...</span></div>
         </div>
 
         <!-- Individual Fee Estimates Display (Visible on Desktop) -->
-        <div class="data-section" id="fast-fee">
+        <div class="data-section fast-fee-desktop">
             <div class="section-header">Fast Fee</div>
             <div class="data-value">Loading...</div>
         </div>
-        <div class="data-section" id="medium-fee">
+        <div class="data-section medium-fee-desktop">
             <div class="section-header">Medium Fee</div>
             <div class="data-value">Loading...</div>
         </div>
-        <div class="data-section" id="slow-fee">
+        <div class="data-section slow-fee-desktop">
             <div class="section-header">Slow Fee</div>
             <div class="data-value">Loading...</div>
         </div>
@@ -549,16 +554,23 @@
             // Remove existing theme classes
             body.classList.remove('light-theme', 'dark-theme');
 
-            // Remove active class from all buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
+            // Remove active class from all buttons and aria-pressed
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
 
             // Add the selected theme class and active class to the corresponding button
             if (theme === 'light') {
                 body.classList.add('light-theme');
-                document.getElementById('theme-light').classList.add('active');
+                const activeBtn = document.getElementById('theme-light');
+                activeBtn.classList.add('active');
+                activeBtn.setAttribute('aria-pressed', 'true');
             } else if (theme === 'dark') {
                 body.classList.add('dark-theme');
-                document.getElementById('theme-dark').classList.add('active');
+                const activeBtn = document.getElementById('theme-dark');
+                activeBtn.classList.add('active');
+                activeBtn.setAttribute('aria-pressed', 'true');
             }
 
             // Save the preference in localStorage
@@ -586,7 +598,9 @@
         // Save the current order of elements to localStorage
         function saveOrder() {
             const mainContainer = document.querySelector('.main-container');
-            const order = Array.from(mainContainer.children).map(child => child.id);
+            const order = Array.from(mainContainer.children)
+                .filter(child => child.id) // Only include elements with an ID
+                .map(child => child.id);
             localStorage.setItem('boxOrder', JSON.stringify(order));
         }
 
@@ -687,14 +701,36 @@
             try {
                 const response = await fetch('https://mempool.space/api/v1/fees/recommended');
                 const data = await response.json();
-                document.getElementById('fast-fee').innerText = `Fast Fee: ${data.fastestFee} sat/vB`;
-                document.getElementById('medium-fee').innerText = `Medium Fee: ${data.halfHourFee} sat/vB`;
-                document.getElementById('slow-fee').innerText = `Slow Fee: ${data.hourFee} sat/vB`;
+
+                // Update Mobile Fee Estimates
+                const fastFees = document.querySelectorAll('.fast-fee .data-value');
+                const mediumFees = document.querySelectorAll('.medium-fee .data-value');
+                const slowFees = document.querySelectorAll('.slow-fee .data-value');
+
+                fastFees.forEach(el => el.innerText = `${data.fastestFee} sat/vB`);
+                mediumFees.forEach(el => el.innerText = `${data.halfHourFee} sat/vB`);
+                slowFees.forEach(el => el.innerText = `${data.hourFee} sat/vB`);
+
+                // Update Desktop Fee Estimates
+                const fastFeesDesktop = document.querySelectorAll('.fast-fee-desktop .data-value');
+                const mediumFeesDesktop = document.querySelectorAll('.medium-fee-desktop .data-value');
+                const slowFeesDesktop = document.querySelectorAll('.slow-fee-desktop .data-value');
+
+                fastFeesDesktop.forEach(el => el.innerText = `${data.fastestFee} sat/vB`);
+                mediumFeesDesktop.forEach(el => el.innerText = `${data.halfHourFee} sat/vB`);
+                slowFeesDesktop.forEach(el => el.innerText = `${data.hourFee} sat/vB`);
             } catch (error) {
                 console.error('Error fetching fee estimates:', error);
-                document.getElementById('fast-fee').innerText = 'Fast Fee: Error';
-                document.getElementById('medium-fee').innerText = 'Medium Fee: Error';
-                document.getElementById('slow-fee').innerText = 'Slow Fee: Error';
+
+                // Update Mobile Fee Estimates with Error
+                document.querySelectorAll('.fast-fee .data-value').forEach(el => el.innerText = 'Fast Fee: Error');
+                document.querySelectorAll('.medium-fee .data-value').forEach(el => el.innerText = 'Medium Fee: Error');
+                document.querySelectorAll('.slow-fee .data-value').forEach(el => el.innerText = 'Slow Fee: Error');
+
+                // Update Desktop Fee Estimates with Error
+                document.querySelectorAll('.fast-fee-desktop .data-value').forEach(el => el.innerText = 'Fast Fee: Error');
+                document.querySelectorAll('.medium-fee-desktop .data-value').forEach(el => el.innerText = 'Medium Fee: Error');
+                document.querySelectorAll('.slow-fee-desktop .data-value').forEach(el => el.innerText = 'Slow Fee: Error');
             }
         }
 
