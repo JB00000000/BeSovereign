@@ -34,14 +34,7 @@
             --light-accent-color: #007BFF;
         }
 
-        /* Theme Styles */
-        .light-theme {
-            --bg-color: #FFFFFF;
-            --text-color: #000000;
-            --accent-color: #007BFF;
-            --card-bg-color: #F0F0F0;
-        }
-
+        /* Theme Styles (Removed Light/Dark Theme Controls) */
         .dark-theme {
             --bg-color: #1A1A1A;
             --text-color: #FFFFFF;
@@ -78,6 +71,69 @@
             height: auto;
         }
 
+        .donate-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .donate-text {
+            margin-top: 10px;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .donate-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .donate-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: var(--accent-color);
+            color: #fff;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .donate-button:hover {
+            background-color: #e68a00; /* Slightly darker shade for hover */
+            transform: scale(1.05);
+        }
+
+        .donate-button:active {
+            transform: scale(0.95);
+        }
+
+        /* QR Code Styles */
+        .qr-code {
+            position: absolute;
+            top: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: none; /* Initially hidden */
+        }
+
+        .qr-code img {
+            width: 200px;
+            height: 200px;
+        }
+
+        /* Show QR Code on Hover */
+        .donate-container:hover .qr-code {
+            display: block;
+        }
+
+        /* Bitcoin Block Height and Time */
         .header-info {
             text-align: right;
         }
@@ -94,39 +150,7 @@
             margin-top: 5px;
         }
 
-        .controls {
-            width: 100%;
-            max-width: 1200px;
-            padding: 10px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            box-sizing: border-box;
-            background-color: var(--card-bg-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
-        }
-
-        .theme-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .controls button {
-            padding: 8px 12px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: var(--accent-color);
-            color: #fff;
-            transition: background-color 0.3s;
-        }
-
-        .controls button.active, .controls button:hover {
-            background-color: #e68a00; /* Slightly darker shade for hover */
-        }
-
+        /* Main Container for all content */
         .main-container {
             width: 100%;
             max-width: 1200px;
@@ -211,64 +235,8 @@
             margin: 5px 0;
         }
 
-        /* Donate Button Styles */
-        .donate-container {
-            position: relative;
-            display: inline-block;
-            margin-left: 20px; /* Spacing from other header elements */
-        }
-
-        .donate-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: var(--accent-color);
-            color: #fff;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .donate-button:hover {
-            background-color: #e68a00; /* Slightly darker shade for hover */
-            transform: scale(1.05);
-        }
-
-        .donate-button:active {
-            transform: scale(0.95);
-        }
-
-        /* QR Code Styles */
-        .qr-code {
-            position: absolute;
-            top: 120%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card-bg-color);
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-            display: none; /* Initially hidden */
-        }
-
-        .qr-code img {
-            width: 200px;
-            height: 200px;
-        }
-
-        /* Show QR Code on Hover */
-        .donate-container:hover .qr-code {
-            display: block;
-        }
-
         /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .donate-button {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-
             .qr-code img {
                 width: 150px;
                 height: 150px;
@@ -277,12 +245,6 @@
             /* Hide the logo on mobile */
             .logo {
                 display: none;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: flex-end;
-                gap: 10px;
             }
 
             /* Show consolidated fee estimates on mobile */
@@ -407,38 +369,24 @@
             .fee-estimates-container .fee {
                 margin: 2px 0;
             }
+
+            /* Donate Section Styling */
+            .donate-section {
+                margin: 0 auto;
+            }
+
+            .donate-text {
+                font-size: 14px;
+                margin-top: 5px;
+            }
         }
 
         /* Desktop Styles for Individual Fee Estimates */
         @media (min-width: 769px) {
-            /* Ensure fee estimates are displayed as separate boxes on desktop */
-            .fee-estimates-container {
-                display: none; /* Hide consolidated fee estimates on desktop */
-            }
-
-            /* Display individual fee sections as separate boxes */
-            .main-container .data-section.fast-fee-desktop,
-            .main-container .data-section.medium-fee-desktop,
-            .main-container .data-section.slow-fee-desktop {
-                display: block;
-                width: calc(33.333% - 20px); /* Three boxes in a line with gap */
-                font-size: 20px;
-                padding: 15px;
-                max-height: none; /* Remove height restriction */
-                overflow: visible; /* Allow content to be visible */
-            }
-
-            /* Adjust their order to appear after TradingView chart */
-            .main-container .data-section.fast-fee-desktop {
-                order: 4;
-            }
-
-            .main-container .data-section.medium-fee-desktop {
-                order: 5;
-            }
-
-            .main-container .data-section.slow-fee-desktop {
-                order: 6;
+            /* Hide the donate text on desktop if desired */
+            .donate-text {
+                font-size: 16px;
+                margin-top: 10px;
             }
         }
 
@@ -456,30 +404,40 @@
 </head>
 <body class="dark-theme"> <!-- Default theme -->
 
-    <!-- Header with Logo and Block Height -->
+    <!-- Header with Logo, Donate Button, and Block Height -->
     <div class="header">
+        <!-- Logo on the Left -->
         <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
+
+        <!-- Donate Section in the Middle -->
+        <div class="donate-section">
+            <div class="donate-container">
+                <button class="donate-button" onclick="copyAddress()" title="Click to copy Bitcoin address" aria-label="Donate Bitcoin">
+                    Donate Bitcoin
+                </button>
+                <div class="qr-code" id="qr-code" style="display: none;">
+                    <a href="https://www.bitcoinqrcodemaker.com" target="_blank">
+                        <img src="https://www.bitcoinqrcodemaker.com/api/?style=bitcoin&amp;address=bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t" 
+                             height="200" width="200" 
+                             alt="Bitcoin QR code" 
+                             title="bitcoin:bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t">
+                    </a>
+                </div>
+            </div>
+            <div class="donate-text">
+                Support the site by donating Bitcoin
+            </div>
+        </div>
+
+        <!-- Block Height and Current Time on the Right -->
         <div class="header-info">
             <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
             <div class="current-time" id="current-time">Loading...</div>
         </div>
-        <!-- Donate Button Added Here -->
-        <div class="donate-container">
-            <button class="donate-button" onclick="copyAddress()" title="Click to copy Bitcoin address" aria-label="Donate Bitcoin">
-                Donate Bitcoin
-            </button>
-            <div class="qr-code" id="qr-code" style="display: none;">
-                <a href="https://www.bitcoinqrcodemaker.com" target="_blank">
-                    <img src="https://www.bitcoinqrcodemaker.com/api/?style=bitcoin&amp;address=bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t" 
-                         height="200" width="200" 
-                         alt="Bitcoin QR code" 
-                         title="bitcoin:bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t">
-                </a>
-            </div>
-        </div>
     </div>
 
-    <!-- Controls for Theme Selection -->
+    <!-- Controls for Theme Selection (Removed) -->
+    <!--
     <div class="controls">
         <div class="theme-controls">
             <button onclick="setTheme('light')" id="theme-light" aria-pressed="false" aria-label="Switch to Light Mode">Light Mode</button>
@@ -487,6 +445,7 @@
             <!-- Removed Blue and Green Theme Buttons -->
         </div>
     </div>
+    -->
 
     <!-- Main Container for all content -->
     <div class="main-container grid-layout"> <!-- Default layout is Grid -->
@@ -614,12 +573,13 @@
         </div>
     </div>
 
-    <!-- JavaScript to fetch and display the data, handle theme changes, and handle donate functionality -->
+    <!-- JavaScript to fetch and display the data, and handle donate functionality -->
     <script>
         // Bitcoin Address
         const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
 
-        // Function to set theme
+        // Function to set theme (Removed Light/Dark Theme Controls)
+        /*
         function setTheme(theme) {
             const body = document.body;
             const buttons = document.querySelectorAll('.theme-controls button');
@@ -655,6 +615,7 @@
             const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
             setTheme(savedTheme);
         }
+        */
 
         // Initialize Sortable on the main container
         function initializeSortable() {
@@ -947,7 +908,7 @@
 
         // Initialize All Fetch Functions and Preferences
         window.onload = function() {
-            initializePreferences(); // Apply saved theme preferences
+            // initializePreferences(); // Removed Theme Preferences
             initializeSortable();    // Enable drag-and-drop
 
             loadOrder();             // Load saved order if any
