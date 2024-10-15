@@ -128,7 +128,7 @@
             margin-top: 20px; /* Added margin for spacing */
         }
 
-        /* Consolidated Fee Estimates Display */
+        /* Consolidated Fee Estimates Display (Visible on Mobile) */
         .fee-estimates-container {
             width: 100%;
             display: flex;
@@ -176,8 +176,8 @@
                 font-size: 16px; /* Reduce font size */
                 padding: 10px; /* Reduce padding */
                 flex: none; /* Remove flex-grow and flex-shrink */
-                max-height: 150px; /* Limit height */
-                overflow: hidden; /* Prevent overflow */
+                max-height: none; /* Remove height restriction */
+                overflow: visible; /* Prevent overflow */
             }
 
             .main-container .data-value {
@@ -275,8 +275,12 @@
                 margin: 2px 0;
             }
 
-            /* Ensure Exchange Prices are below all other sections */
-            /* No additional changes needed as order:14 places it last */
+            /* Hide individual fee sections on mobile */
+            .main-container .data-section#fast-fee,
+            .main-container .data-section#medium-fee,
+            .main-container .data-section#slow-fee {
+                display: none;
+            }
         }
 
         /* Additional Desktop Styles to Ensure Fee Estimates Are Separate */
@@ -370,22 +374,6 @@
                 </script>
             </div>
             <!-- TradingView Widget END -->
-        </div>
-
-        <!-- Exchange Prices Display (Three Boxes) -->
-        <div class="exchange-prices-container">
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-1">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-2">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-3">Loading...</div>
-            </div>
         </div>
 
         <!-- Consolidated Fee Estimates Display (Visible on Mobile) -->
