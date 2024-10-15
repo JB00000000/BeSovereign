@@ -7,11 +7,8 @@
     <title>BeSovereign</title>
 
     <!-- Favicon Links -->
-    <!-- ICO format for older browsers -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- PNG format for modern browsers -->
     <link rel="icon" href="favicon.png" type="image/png">
-    <!-- SVG format -->
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any">
 
     <!-- Google Fonts -->
@@ -60,13 +57,47 @@
         .block-height {
             font-size: 24px;
             color: var(--accent-color);
-            font-weight: bold; /* Made Block Height bold */
+            font-weight: bold; /* Bold Block Height */
         }
 
         .current-time {
             font-size: 16px;
             color: #BBBBBB;
             margin-top: 5px;
+        }
+
+        /* Controls Styling */
+        .controls {
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+
+        .layout-controls button,
+        .theme-controls button,
+        .visibility-controls button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--accent-color);
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .layout-controls button.active,
+        .theme-controls button.active {
+            background-color: #333;
+        }
+
+        .layout-controls button:hover,
+        .theme-controls button:hover,
+        .visibility-controls button:hover {
+            background-color: #555;
         }
 
         .main-container {
@@ -91,6 +122,7 @@
             flex: 1 1 200px; /* Adjusted for tighter fit */
             box-sizing: border-box;
             transition: all 0.3s ease; /* Smooth transition for resizing */
+            position: relative; /* For drag handles or resize indicators if needed */
         }
 
         .section-header {
@@ -151,23 +183,6 @@
             margin: 5px 0;
         }
 
-        /* Desktop Fee Estimates Container */
-        .fee-estimate-desktop-container {
-            display: none; /* Hidden on mobile */
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-top: 20px; /* Added margin for spacing */
-        }
-
-        /* Individual Fee Estimates Display (Visible on Desktop) */
-        .fee-estimate-desktop-container .data-section#fast-fee,
-        .fee-estimate-desktop-container .data-section#medium-fee,
-        .fee-estimate-desktop-container .data-section#slow-fee {
-            width: calc(33.333% - 10px); /* Three boxes in a line with gap */
-        }
-
         /* Responsive Styles */
         @media (max-width: 768px) {
             .header {
@@ -179,6 +194,11 @@
             /* Hide the logo on mobile */
             .logo {
                 display: none;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
             }
 
             .main-container {
@@ -293,37 +313,54 @@
             }
 
             /* Hide individual fee sections on mobile */
-            .fee-estimate-desktop-container {
+            .main-container .data-section#fast-fee,
+            .main-container .data-section#medium-fee,
+            .main-container .data-section#slow-fee {
                 display: none;
             }
         }
 
+        /* Additional Desktop Styles to Ensure Fee Estimates Are Separate */
         @media (min-width: 769px) {
             /* Ensure fee estimates are displayed as separate boxes on desktop */
-            .fee-estimate-desktop-container {
-                display: flex; /* Show on desktop */
-            }
-
-            /* Hide consolidated fee estimates on desktop */
             .fee-estimates-container {
-                display: none;
+                display: none; /* Hide consolidated fee estimates on desktop */
             }
 
-            /* Ensure individual fee sections are visible and styled correctly */
-            .fee-estimate-desktop-container .data-section#fast-fee,
-            .fee-estimate-desktop-container .data-section#medium-fee,
-            .fee-estimate-desktop-container .data-section#slow-fee {
+            /* Display individual fee sections as separate boxes */
+            .main-container .data-section#fast-fee,
+            .main-container .data-section#medium-fee,
+            .main-container .data-section#slow-fee {
                 display: block;
-                width: calc(33.333% - 10px); /* Three boxes in a line with gap */
+                width: calc(33.333% - 20px); /* Three boxes in a line with gap */
                 font-size: 20px;
                 padding: 15px;
                 max-height: none; /* Remove height restriction */
                 overflow: visible; /* Allow content to be visible */
             }
+
+            /* Adjust their order to appear after TradingView chart */
+            .main-container .data-section#fast-fee {
+                order: 4;
+            }
+
+            .main-container .data-section#medium-fee {
+                order: 5;
+            }
+
+            .main-container .data-section#slow-fee {
+                order: 6;
+            }
+        }
+
+        /* Resizable Cursor */
+        .data-section {
+            resize: both;
+            overflow: auto;
         }
     </style>
 </head>
-<body>
+<body class="dark-theme"> <!-- Default Theme -->
 
     <!-- Header with Logo and Block Height -->
     <div class="header">
@@ -334,8 +371,23 @@
         </div>
     </div>
 
+    <!-- Controls for Layout and Theme -->
+    <div class="controls">
+        <div class="layout-controls">
+            <button onclick="setLayout('grid')" id="grid-btn">Grid Layout</button>
+            <button onclick="setLayout('list')" id="list-btn">List Layout</button>
+            <button onclick="setLayout('columnar')" id="columnar-btn">Columnar Layout</button>
+        </div>
+        <div class="theme-controls">
+            <button onclick="setTheme('light')" id="light-theme-btn">Light Theme</button>
+            <button onclick="setTheme('dark')" id="dark-theme-btn">Dark Theme</button>
+            <button onclick="setTheme('blue')" id="blue-theme-btn">Blue Theme</button>
+            <button onclick="setTheme('green')" id="green-theme-btn">Green Theme</button>
+        </div>
+    </div>
+
     <!-- Main Container for all content -->
-    <div class="main-container">
+    <div class="main-container grid-layout"> <!-- Default Layout -->
         <!-- Sats per Dollar Section -->
         <div class="data-section" id="sats-per-dollar-section">
             <div class="section-header">Sats per Dollar</div>
@@ -382,28 +434,26 @@
             <!-- TradingView Widget END -->
         </div>
 
-        <!-- Fee Estimates for Mobile (Consolidated) -->
+        <!-- Consolidated Fee Estimates Display (Visible on Mobile) -->
         <div class="fee-estimates-container">
             <div class="section-header">Fee Estimates</div>
-            <div class="fee" id="fast-fee-mobile">Fast Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee" id="medium-fee-mobile">Medium Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee" id="slow-fee-mobile">Slow Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee" id="fast-fee">Fast Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee" id="medium-fee">Medium Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee" id="slow-fee">Slow Fee: <span class="data-value">Loading...</span></div>
         </div>
 
-        <!-- Fee Estimates for Desktop (Separate Boxes) -->
-        <div class="fee-estimate-desktop-container">
-            <div class="data-section" id="fast-fee">
-                <div class="section-header">Fast Fee</div>
-                <div class="data-value">Loading...</div>
-            </div>
-            <div class="data-section" id="medium-fee">
-                <div class="section-header">Medium Fee</div>
-                <div class="data-value">Loading...</div>
-            </div>
-            <div class="data-section" id="slow-fee">
-                <div class="section-header">Slow Fee</div>
-                <div class="data-value">Loading...</div>
-            </div>
+        <!-- Individual Fee Estimates Display (Visible on Desktop) -->
+        <div class="data-section" id="fast-fee">
+            <div class="section-header">Fast Fee</div>
+            <div class="data-value">Loading...</div>
+        </div>
+        <div class="data-section" id="medium-fee">
+            <div class="section-header">Medium Fee</div>
+            <div class="data-value">Loading...</div>
+        </div>
+        <div class="data-section" id="slow-fee">
+            <div class="section-header">Slow Fee</div>
+            <div class="data-value">Loading...</div>
         </div>
 
         <!-- New Data Points: All-time High, etc. -->
@@ -462,8 +512,173 @@
         </div>
     </div>
 
-    <!-- JavaScript to fetch and display the data -->
+    <!-- Visibility Controls -->
+    <div class="visibility-controls">
+        <button onclick="toggleVisibility('sats-per-dollar-section')">Toggle Sats per Dollar</button>
+        <button onclick="toggleVisibility('market-cap-section')">Toggle Market Cap</button>
+        <!-- Add more as needed -->
+    </div>
+
+    <!-- Include SortableJS and Interact.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+    <!-- JavaScript to fetch and display the data, and implement features -->
     <script>
+        // Layout Styles Functions
+        function setLayout(layout) {
+            const mainContainer = document.querySelector('.main-container');
+            const layoutButtons = document.querySelectorAll('.layout-controls button');
+            
+            // Remove existing layout classes
+            mainContainer.classList.remove('grid-layout', 'list-layout', 'columnar-layout');
+            
+            // Remove active class from all layout buttons
+            layoutButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add the selected layout class and active class to the corresponding button
+            if (layout === 'grid') {
+                mainContainer.classList.add('grid-layout');
+                document.getElementById('grid-btn').classList.add('active');
+            } else if (layout === 'list') {
+                mainContainer.classList.add('list-layout');
+                document.getElementById('list-btn').classList.add('active');
+            } else if (layout === 'columnar') {
+                mainContainer.classList.add('columnar-layout');
+                document.getElementById('columnar-btn').classList.add('active');
+            }
+            
+            // Save the preference in localStorage
+            localStorage.setItem('preferredLayout', layout);
+        }
+
+        // Theme Selection Functions
+        function setTheme(theme) {
+            const body = document.body;
+            const themeButtons = document.querySelectorAll('.theme-controls button');
+            
+            // Remove existing theme classes
+            body.classList.remove('light-theme', 'dark-theme', 'blue-theme', 'green-theme');
+            
+            // Remove active class from all theme buttons
+            themeButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add the selected theme class and active class to the corresponding button
+            if (theme === 'light') {
+                body.classList.add('light-theme');
+                document.getElementById('light-theme-btn').classList.add('active');
+            } else if (theme === 'dark') {
+                body.classList.add('dark-theme');
+                document.getElementById('dark-theme-btn').classList.add('active');
+            } else if (theme === 'blue') {
+                body.classList.add('blue-theme');
+                document.getElementById('blue-theme-btn').classList.add('active');
+            } else if (theme === 'green') {
+                body.classList.add('green-theme');
+                document.getElementById('green-theme-btn').classList.add('active');
+            }
+            
+            // Save the preference in localStorage
+            localStorage.setItem('preferredTheme', theme);
+        }
+
+        // Visibility Functions
+        function toggleVisibility(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+            
+            // Save the visibility state in localStorage
+            saveVisibilityState();
+        }
+
+        function saveVisibilityState() {
+            const sections = document.querySelectorAll('.main-container .data-section');
+            const visibility = {};
+            sections.forEach(section => {
+                visibility[section.id] = section.style.display === 'none' ? 'hidden' : 'visible';
+            });
+            localStorage.setItem('visibilityState', JSON.stringify(visibility));
+        }
+
+        function loadVisibilityState() {
+            const visibility = JSON.parse(localStorage.getItem('visibilityState'));
+            if (visibility) {
+                Object.keys(visibility).forEach(id => {
+                    const section = document.getElementById(id);
+                    if (section) {
+                        section.style.display = visibility[id] === 'hidden' ? 'none' : 'block';
+                    }
+                });
+            }
+        }
+
+        // Initialize SortableJS for Drag-and-Drop
+        document.addEventListener('DOMContentLoaded', function() {
+            const sortable = Sortable.create(document.querySelector('.main-container'), {
+                animation: 150,
+                onEnd: function(evt) {
+                    // Save the new order in localStorage
+                    saveLayoutOrder();
+                }
+            });
+            
+            // Function to save the current order
+            function saveLayoutOrder() {
+                const sections = document.querySelectorAll('.main-container .data-section');
+                const order = Array.from(sections).map(section => section.id);
+                localStorage.setItem('layoutOrder', JSON.stringify(order));
+            }
+            
+            // Function to load the saved order
+            function loadLayoutOrder() {
+                const savedOrder = JSON.parse(localStorage.getItem('layoutOrder'));
+                if (savedOrder) {
+                    const mainContainer = document.querySelector('.main-container');
+                    savedOrder.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            mainContainer.appendChild(element);
+                        }
+                    });
+                }
+            }
+            
+            // Load the saved order on page load
+            loadLayoutOrder();
+        });
+
+        // Initialize Interact.js for Resizing
+        interact('.data-section').resizable({
+            edges: { left: true, right: true, bottom: true, top: true },
+            inertia: true,
+            modifiers: [
+                interact.modifiers.restrictSize({
+                    min: { width: 150, height: 100 },
+                    max: { width: 500, height: 500 }
+                })
+            ],
+            listeners: {
+                move(event) {
+                    let { x, y } = event.target.dataset;
+                    x = (parseFloat(x) || 0) + event.deltaRect.left;
+                    y = (parseFloat(y) || 0) + event.deltaRect.top;
+        
+                    Object.assign(event.target.style, {
+                        width: `${event.rect.width}px`,
+                        height: `${event.rect.height}px`,
+                        transform: `translate(${x}px, ${y}px)`
+                    });
+        
+                    event.target.dataset.x = x;
+                    event.target.dataset.y = y;
+                }
+            }
+        });
+
         // Fetch Exchange Prices from various exchanges and distribute them into three boxes
         async function fetchExchangePrices() {
             const exchanges = [
@@ -546,27 +761,14 @@
             try {
                 const response = await fetch('https://mempool.space/api/v1/fees/recommended');
                 const data = await response.json();
-
-                // Update Desktop Fee Estimates
-                document.getElementById('fast-fee').querySelector('.data-value').innerText = `${data.fastestFee} sat/vB`;
-                document.getElementById('medium-fee').querySelector('.data-value').innerText = `${data.halfHourFee} sat/vB`;
-                document.getElementById('slow-fee').querySelector('.data-value').innerText = `${data.hourFee} sat/vB`;
-
-                // Update Mobile Fee Estimates
-                document.getElementById('fast-fee-mobile').innerHTML = `Fast Fee: <span class="data-value">${data.fastestFee} sat/vB</span>`;
-                document.getElementById('medium-fee-mobile').innerHTML = `Medium Fee: <span class="data-value">${data.halfHourFee} sat/vB</span>`;
-                document.getElementById('slow-fee-mobile').innerHTML = `Slow Fee: <span class="data-value">${data.hourFee} sat/vB</span>`;
+                document.getElementById('fast-fee').innerText = `Fast Fee: ${data.fastestFee} sat/vB`;
+                document.getElementById('medium-fee').innerText = `Medium Fee: ${data.halfHourFee} sat/vB`;
+                document.getElementById('slow-fee').innerText = `Slow Fee: ${data.hourFee} sat/vB`;
             } catch (error) {
                 console.error('Error fetching fee estimates:', error);
-                // Update Desktop Fee Estimates
-                document.getElementById('fast-fee').querySelector('.data-value').innerText = 'Error';
-                document.getElementById('medium-fee').querySelector('.data-value').innerText = 'Error';
-                document.getElementById('slow-fee').querySelector('.data-value').innerText = 'Error';
-
-                // Update Mobile Fee Estimates
-                document.getElementById('fast-fee-mobile').innerHTML = `Fast Fee: <span class="data-value">Error</span>`;
-                document.getElementById('medium-fee-mobile').innerHTML = `Medium Fee: <span class="data-value">Error</span>`;
-                document.getElementById('slow-fee-mobile').innerHTML = `Slow Fee: <span class="data-value">Error</span>`;
+                document.getElementById('fast-fee').innerText = 'Fast Fee: Error';
+                document.getElementById('medium-fee').innerText = 'Medium Fee: Error';
+                document.getElementById('slow-fee').innerText = 'Slow Fee: Error';
             }
         }
 
@@ -697,8 +899,18 @@
             document.getElementById('current-time').innerText = timeString;
         }
 
-        // Initialize All Fetch Functions
+        // Fetch All Data on Page Load
         window.onload = function() {
+            // Apply saved preferences
+            const savedLayout = localStorage.getItem('preferredLayout') || 'grid';
+            setLayout(savedLayout);
+            
+            const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
+            setTheme(savedTheme);
+            
+            loadVisibilityState();
+
+            // Fetch all data
             fetchExchangePrices();
             fetchBlockHeight();
             fetchFeeEstimates();
@@ -707,7 +919,9 @@
             fetchSatsPerDollar();
             fetchMarketCap();
             updateTime();
-            setInterval(updateTime, 1000); // Update time every second
+
+            // Update time every second
+            setInterval(updateTime, 1000);
 
             // Refresh data periodically (e.g., every minute)
             setInterval(fetchExchangePrices, 60000);
