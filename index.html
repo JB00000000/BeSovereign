@@ -37,28 +37,7 @@
             position: relative;
         }
 
-        /* Transparent background container */
-        .background-image {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('BeSo.png'); /* Ensure BeSo.png is in your repo */
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            opacity: 0.15; /* Adjust transparency */
-            z-index: -1; /* Push behind the content */
-        }
-
-        /* Remove the background on mobile */
-        @media (max-width: 768px) {
-            .background-image {
-                display: none;
-            }
-        }
+        /* Removed background-image styles */
 
         .header {
             display: flex;
@@ -79,6 +58,7 @@
         .block-height {
             font-size: 24px;
             color: var(--accent-color);
+            font-weight: bold; /* Made Block Height bold */
         }
 
         .current-time {
@@ -105,6 +85,7 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
+            margin-top: 20px; /* Added margin for spacing */
         }
 
         .data-section {
@@ -193,8 +174,7 @@
 </head>
 <body>
 
-    <!-- Transparent Background Image -->
-    <div class="background-image"></div>
+    <!-- Removed: Transparent Background Image -->
 
     <!-- Header with Logo and Block Height -->
     <div class="header">
@@ -220,22 +200,6 @@
         <div class="data-section" id="market-cap-section">
             <div class="section-header">Market Capitalisation</div>
             <div class="data-value" id="market-cap">Loading...</div>
-        </div>
-
-        <!-- Exchange Prices Display (Three Boxes) -->
-        <div class="exchange-prices-container">
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-1">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-2">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-3">Loading...</div>
-            </div>
         </div>
 
         <!-- TradingView Bitcoin Price Chart -->
@@ -264,6 +228,22 @@
                 </script>
             </div>
             <!-- TradingView Widget END -->
+        </div>
+
+        <!-- Exchange Prices Display (Three Boxes) -->
+        <div class="exchange-prices-container">
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-1">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-2">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-3">Loading...</div>
+            </div>
         </div>
 
         <!-- Fee Estimates Display -->
