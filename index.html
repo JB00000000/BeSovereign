@@ -281,6 +281,33 @@
             </div>
         </div>
 
+        <!-- Additional Mempool Data Points -->
+        <div class="container">
+            <!-- Average Fee per Transaction -->
+            <div class="data-section">
+                <div class="section-header">Average Fee per Transaction</div>
+                <div class="data-value" id="average-fee">Loading...</div>
+            </div>
+
+            <!-- Average Transaction Size -->
+            <div class="data-section">
+                <div class="section-header">Average Transaction Size</div>
+                <div class="data-value" id="average-tx-size">Loading...</div>
+            </div>
+
+            <!-- Total Mempool VSize -->
+            <div class="data-section">
+                <div class="section-header">Total Mempool VSize</div>
+                <div class="data-value" id="total-mempool-vsize">Loading...</div>
+            </div>
+
+            <!-- Fee Rate Distribution (Placeholder) -->
+            <div class="data-section">
+                <div class="section-header">Fee Rate Distribution</div>
+                <div class="data-value" id="fee-rate-distribution">Loading...</div>
+            </div>
+        </div>
+
         <!-- Remaining Data Sections -->
         <div class="container">
             <!-- Mempool Transaction Count -->
@@ -418,7 +445,7 @@
             }
         }
 
-        // Fetch Mempool Statistics from Mempool.space
+        // Fetch Mempool Statistics from mempool.space
         async function fetchMempoolStats() {
             console.log('Fetching mempool statistics...');
             try {
@@ -426,7 +453,8 @@
                 const data = await response.json();
 
                 // Unconfirmed Transactions
-                document.getElementById('mempool-tx-count').innerText = data.count.toLocaleString();
+                const txCount = data.count;
+                document.getElementById('mempool-tx-count').innerText = txCount.toLocaleString();
 
                 // Mempool Size in MB
                 const sizeMB = (data.vsize / 1e6).toFixed(2);
@@ -442,13 +470,43 @@
                 const blocksToClear = blocksData.length;
                 document.getElementById('blocks-to-clear').innerText = blocksToClear;
 
+                // Calculate Average Fee per Transaction
+                const averageFeeSat = txCount > 0 ? (data.total_fee / txCount).toFixed(2) : 0;
+                document.getElementById('average-fee').innerText = `${averageFeeSat} sat/B`;
+
+                // Calculate Average Transaction Size
+                const averageTxSize = txCount > 0 ? (data.vsize / txCount).toFixed(2) : 0;
+                document.getElementById('average-tx-size').innerText = `${averageTxSize} vbytes`;
+
+                // Calculate Total Mempool VSize
+                const totalVSizeMB = (data.vsize / 1e6).toFixed(2);
+                document.getElementById('total-mempool-vsize').innerText = `${totalVSizeMB} MB`;
+
+                // Fee Rate Distribution Placeholder
+                const feeDistribution = await fetchFeeRateDistribution();
+                document.getElementById('fee-rate-distribution').innerText = feeDistribution;
+
             } catch (error) {
                 console.error('Error fetching mempool statistics:', error);
                 document.getElementById('mempool-tx-count').innerText = 'Error';
                 document.getElementById('mempool-size').innerText = 'Error';
                 document.getElementById('mempool-total-fees').innerText = 'Error';
                 document.getElementById('blocks-to-clear').innerText = 'Error';
+                document.getElementById('average-fee').innerText = 'Error';
+                document.getElementById('average-tx-size').innerText = 'Error';
+                document.getElementById('total-mempool-vsize').innerText = 'Error';
+                document.getElementById('fee-rate-distribution').innerText = 'Error';
             }
+        }
+
+        // Placeholder function for Fee Rate Distribution
+        async function fetchFeeRateDistribution() {
+            // mempool.space API does not provide a direct endpoint for fee rate distribution.
+            // Implementing this would require fetching individual transactions and categorizing them.
+            // This is beyond the current scope and adds complexity.
+            // Therefore, we'll display a simple message.
+
+            return 'Fee rate distribution data is currently unavailable.';
         }
 
         // Update Current Time in British Format
