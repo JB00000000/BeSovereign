@@ -34,16 +34,18 @@
             font-family: 'Open Sans', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Removed background-image styles */
-
         .header {
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 10px 20px;
+            box-sizing: border-box;
         }
 
         .logo {
@@ -67,25 +69,15 @@
             margin-top: 5px;
         }
 
-        .container {
+        .main-container {
             width: 100%;
             max-width: 1200px;
             padding: 10px;
-            margin: 0 auto;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-        }
-
-        /* Exchange Prices Container */
-        .exchange-prices-container {
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px; /* Added margin for spacing */
+            box-sizing: border-box;
         }
 
         .data-section {
@@ -126,16 +118,45 @@
             margin: 20px auto;
         }
 
+        /* Exchange Prices Container */
+        .exchange-prices-container {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px; /* Added margin for spacing */
+        }
+
+        /* Consolidated Fee Estimates Display */
+        .fee-estimates-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--card-bg-color);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            font-size: 20px;
+            box-sizing: border-box;
+        }
+
+        .fee-estimates-container .section-header {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .fee-estimates-container .fee {
+            margin: 5px 0;
+        }
+
         /* Responsive Styles */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 align-items: center;
-            }
-
-            .header-info {
                 text-align: center;
-                margin-top: 10px;
             }
 
             /* Hide the logo on mobile */
@@ -143,13 +164,13 @@
                 display: none;
             }
 
-            .container, .exchange-prices-container {
+            .main-container {
                 flex-direction: column;
                 align-items: center;
             }
 
             /* Adjust data-section for smaller height */
-            .data-section {
+            .main-container .data-section {
                 width: 90%;
                 margin: 8px 0;
                 font-size: 16px; /* Reduce font size */
@@ -159,24 +180,25 @@
                 overflow: hidden; /* Prevent overflow */
             }
 
-            .data-value {
+            .main-container .data-value {
                 font-size: 24px; /* Reduce font size */
             }
 
-            .section-header {
+            .main-container .section-header {
                 font-size: 18px; /* Reduce font size */
             }
 
-            .small-text {
+            .main-container .small-text {
                 font-size: 16px; /* Reduce font size */
             }
 
             .chart-container {
                 width: 100%;
+                margin: 10px 0;
             }
 
             /* Reorder Elements on Mobile */
-            .container > .data-section#average-price-section {
+            .main-container > #average-price-section {
                 order: 1;
             }
 
@@ -184,24 +206,29 @@
                 order: 2;
             }
 
-            .exchange-prices-container {
-                order: 3;
-                width: 100%;
-            }
-
-            /* Consolidate Fee Estimates into one box */
             .fee-estimates-container {
+                order: 3;
                 width: 90%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                background: var(--card-bg-color);
-                padding: 10px;
-                border-radius: 12px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
                 font-size: 14px; /* Smaller text */
             }
 
+            .main-container > #sats-per-dollar-section {
+                order: 4;
+            }
+
+            .main-container > #market-cap-section {
+                order: 5;
+            }
+
+            .main-container > #ath-data-container {
+                order: 6;
+            }
+
+            .main-container > #mempool-data-container {
+                order: 7;
+            }
+
+            /* Consolidate Fee Estimates into one box */
             .fee-estimates-container .section-header {
                 font-size: 18px;
                 margin-bottom: 5px;
@@ -211,18 +238,20 @@
                 margin: 2px 0;
             }
 
-            /* Hide individual fee data sections on mobile */
-            .container .data-section#fast-fee,
-            .container .data-section#medium-fee,
-            .container .data-section#slow-fee {
-                display: none;
+            /* Ensure Exchange Prices are below fees */
+            .exchange-prices-container {
+                order: 8;
+                width: 90%;
+            }
+
+            /* Adjust data-section widths */
+            .exchange-prices-container .data-section {
+                flex: 1 1 45%; /* Two exchanges per box */
             }
         }
     </style>
 </head>
 <body>
-
-    <!-- Removed: Transparent Background Image -->
 
     <!-- Header with Logo and Block Height -->
     <div class="header">
@@ -233,18 +262,21 @@
         </div>
     </div>
 
-    <!-- Container for all content -->
-    <div class="container">
-
-        <!-- Top Row: Sats per Dollar | Exchange Average Price | Market Capitalisation -->
+    <!-- Main Container for all content -->
+    <div class="main-container">
+        <!-- Sats per Dollar Section -->
         <div class="data-section" id="sats-per-dollar-section">
             <div class="section-header">Sats per Dollar</div>
             <div class="data-value" id="sats-per-dollar">Loading...</div>
         </div>
+
+        <!-- Exchange Average Price Section -->
         <div class="data-section" id="average-price-section">
             <div class="section-header">Exchange Average Price</div>
             <div class="data-value" id="average-price">Loading...</div>
         </div>
+
+        <!-- Market Capitalisation Section -->
         <div class="data-section" id="market-cap-section">
             <div class="section-header">Market Capitalisation</div>
             <div class="data-value" id="market-cap">Loading...</div>
@@ -303,52 +335,43 @@
         </div>
 
         <!-- New Data Points: All-time High, etc. -->
-        <div class="container">
-            <div class="data-section">
-                <div class="section-header">All-time High Price</div>
-                <div class="data-value" id="ath-price">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">% Decline from ATH</div>
-                <div class="data-value" id="ath-decline">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">ATH Date</div>
-                <div class="data-value" id="ath-date">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Days Since ATH</div>
-                <div class="data-value" id="days-since-ath">Loading...</div>
-            </div>
+        <div class="data-section" id="ath-data-container">
+            <div class="section-header">All-time High Price</div>
+            <div class="data-value" id="ath-price">Loading...</div>
+        </div>
+        <div class="data-section" id="ath-decline-container">
+            <div class="section-header">% Decline from ATH</div>
+            <div class="data-value" id="ath-decline">Loading...</div>
+        </div>
+        <div class="data-section" id="ath-date-container">
+            <div class="section-header">ATH Date</div>
+            <div class="data-value" id="ath-date">Loading...</div>
+        </div>
+        <div class="data-section" id="days-since-ath-container">
+            <div class="section-header">Days Since ATH</div>
+            <div class="data-value" id="days-since-ath">Loading...</div>
         </div>
 
         <!-- Remaining Data Sections -->
-        <div class="container">
-            <!-- Mempool Transaction Count -->
-            <div class="data-section">
-                <div class="section-header">Unconfirmed Transactions</div>
-                <div class="data-value" id="mempool-tx-count">Loading...</div>
-            </div>
-
-            <!-- Mempool Size -->
-            <div class="data-section">
-                <div class="section-header">Mempool Size (MB)</div>
-                <div class="data-value" id="mempool-size">Loading...</div>
-            </div>
-
-            <!-- Total Fees in Mempool -->
-            <div class="data-section">
-                <div class="section-header">Total Fees in Mempool</div>
-                <div class="data-value" id="mempool-total-fees">Loading...</div>
-            </div>
-
-            <!-- Estimated Blocks to Clear Mempool -->
-            <div class="data-section">
-                <div class="section-header">Blocks to Clear Mempool</div>
-                <div class="data-value" id="blocks-to-clear">Loading...</div>
-            </div>
+        <div class="data-section" id="mempool-tx-container">
+            <div class="section-header">Unconfirmed Transactions</div>
+            <div class="data-value" id="mempool-tx-count">Loading...</div>
         </div>
 
+        <div class="data-section" id="mempool-size-container">
+            <div class="section-header">Mempool Size (MB)</div>
+            <div class="data-value" id="mempool-size">Loading...</div>
+        </div>
+
+        <div class="data-section" id="mempool-fees-container">
+            <div class="section-header">Total Fees in Mempool</div>
+            <div class="data-value" id="mempool-total-fees">Loading...</div>
+        </div>
+
+        <div class="data-section" id="blocks-clear-container">
+            <div class="section-header">Blocks to Clear Mempool</div>
+            <div class="data-value" id="blocks-to-clear">Loading...</div>
+        </div>
     </div>
 
     <!-- JavaScript to fetch and display the data -->
@@ -440,9 +463,9 @@
                 document.getElementById('slow-fee').innerText = `Slow Fee: ${data.hourFee} sat/vB`;
             } catch (error) {
                 console.error('Error fetching fee estimates:', error);
-                document.getElementById('fast-fee').innerText = 'Error';
-                document.getElementById('medium-fee').innerText = 'Error';
-                document.getElementById('slow-fee').innerText = 'Error';
+                document.getElementById('fast-fee').innerText = 'Fast Fee: Error';
+                document.getElementById('medium-fee').innerText = 'Medium Fee: Error';
+                document.getElementById('slow-fee').innerText = 'Slow Fee: Error';
             }
         }
 
