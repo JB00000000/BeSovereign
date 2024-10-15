@@ -7,8 +7,11 @@
     <title>BeSovereign</title>
 
     <!-- Favicon Links -->
+    <!-- ICO format for older browsers -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- PNG format for modern browsers -->
     <link rel="icon" href="favicon.png" type="image/png">
+    <!-- SVG format -->
     <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any">
 
     <!-- Google Fonts -->
@@ -19,6 +22,24 @@
     <!-- CSS Styles -->
     <style>
         :root {
+            --bg-color: #1A1A1A;
+            --text-color: #FFFFFF;
+            --accent-color: #FF9900;
+            --card-bg-color: #262626;
+            --light-bg-color: #FFFFFF;
+            --light-text-color: #000000;
+            --light-accent-color: #007BFF;
+        }
+
+        /* Theme Styles */
+        .light-theme {
+            --bg-color: #FFFFFF;
+            --text-color: #000000;
+            --accent-color: #007BFF;
+            --card-bg-color: #F0F0F0;
+        }
+
+        .dark-theme {
             --bg-color: #1A1A1A;
             --text-color: #FFFFFF;
             --accent-color: #FF9900;
@@ -34,6 +55,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .header {
@@ -43,6 +65,8 @@
             justify-content: space-between;
             padding: 10px 20px;
             box-sizing: border-box;
+            background-color: var(--card-bg-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
@@ -57,7 +81,7 @@
         .block-height {
             font-size: 24px;
             color: var(--accent-color);
-            font-weight: bold; /* Bold Block Height */
+            font-weight: bold;
         }
 
         .current-time {
@@ -66,38 +90,37 @@
             margin-top: 5px;
         }
 
-        /* Controls Styling */
         .controls {
             width: 100%;
             max-width: 1200px;
             padding: 10px;
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            align-items: center;
             box-sizing: border-box;
+            background-color: var(--card-bg-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
         }
 
-        .layout-controls button,
-        .theme-controls button,
-        .visibility-controls button {
+        .layout-controls, .theme-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .controls button {
             padding: 8px 12px;
+            font-size: 14px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            cursor: pointer;
             background-color: var(--accent-color);
             color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
-        .layout-controls button.active,
-        .theme-controls button.active {
-            background-color: #333;
-        }
-
-        .layout-controls button:hover,
-        .theme-controls button:hover,
-        .visibility-controls button:hover {
-            background-color: #555;
+        .controls button.active, .controls button:hover {
+            background-color: darken(var(--accent-color), 10%);
         }
 
         .main-container {
@@ -111,6 +134,41 @@
             box-sizing: border-box;
         }
 
+        /* Layout Styles */
+
+        /* Grid Layout */
+        .grid-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .grid-layout .data-section {
+            flex: 1 1 calc(33.333% - 20px); /* Three columns */
+        }
+
+        /* List Layout */
+        .list-layout {
+            display: block;
+        }
+
+        .list-layout .data-section {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        /* Columnar Layout */
+        .columnar-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .columnar-layout .data-section {
+            width: 100%;
+        }
+
+        /* Data Sections */
         .data-section {
             font-size: 20px;
             color: var(--text-color);
@@ -119,10 +177,9 @@
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            flex: 1 1 200px; /* Adjusted for tighter fit */
+            flex: 1 1 200px; /* Adjusted for flexibility */
             box-sizing: border-box;
-            transition: all 0.3s ease; /* Smooth transition for resizing */
-            position: relative; /* For drag handles or resize indicators if needed */
+            transition: all 0.3s ease;
         }
 
         .section-header {
@@ -157,13 +214,13 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-            margin-top: 20px; /* Added margin for spacing */
+            margin-top: 20px;
         }
 
-        /* Consolidated Fee Estimates Display (Visible on Mobile) */
+        /* Fee Estimates Container (Consolidated for Mobile) */
         .fee-estimates-container {
             width: 100%;
-            display: flex;
+            display: none; /* Hidden by default, visible on mobile */
             flex-direction: column;
             align-items: center;
             background: var(--card-bg-color);
@@ -198,7 +255,19 @@
 
             .controls {
                 flex-direction: column;
-                align-items: center;
+                gap: 10px;
+            }
+
+            /* Show consolidated fee estimates on mobile */
+            .fee-estimates-container {
+                display: flex;
+            }
+
+            /* Hide individual fee estimates on mobile */
+            .main-container .data-section#fast-fee,
+            .main-container .data-section#medium-fee,
+            .main-container .data-section#slow-fee {
+                display: none;
             }
 
             .main-container {
@@ -311,16 +380,9 @@
             .fee-estimates-container .fee {
                 margin: 2px 0;
             }
-
-            /* Hide individual fee sections on mobile */
-            .main-container .data-section#fast-fee,
-            .main-container .data-section#medium-fee,
-            .main-container .data-section#slow-fee {
-                display: none;
-            }
         }
 
-        /* Additional Desktop Styles to Ensure Fee Estimates Are Separate */
+        /* Desktop Styles for Individual Fee Estimates */
         @media (min-width: 769px) {
             /* Ensure fee estimates are displayed as separate boxes on desktop */
             .fee-estimates-container {
@@ -353,14 +415,14 @@
             }
         }
 
-        /* Resizable Cursor */
-        .data-section {
-            resize: both;
-            overflow: auto;
+        /* Highlight active buttons */
+        .controls button.active {
+            background-color: #333333;
+            color: #FFFFFF;
         }
     </style>
 </head>
-<body class="dark-theme"> <!-- Default Theme -->
+<body class="dark-theme"> <!-- Default theme -->
 
     <!-- Header with Logo and Block Height -->
     <div class="header">
@@ -371,23 +433,24 @@
         </div>
     </div>
 
-    <!-- Controls for Layout and Theme -->
+    <!-- Controls for Layout and Theme Selection -->
     <div class="controls">
         <div class="layout-controls">
-            <button onclick="setLayout('grid')" id="grid-btn">Grid Layout</button>
-            <button onclick="setLayout('list')" id="list-btn">List Layout</button>
-            <button onclick="setLayout('columnar')" id="columnar-btn">Columnar Layout</button>
+            <button onclick="setLayout('grid')" id="layout-grid">Grid Layout</button>
+            <button onclick="setLayout('list')" id="layout-list">List Layout</button>
+            <button onclick="setLayout('columnar')" id="layout-columnar">Columnar Layout</button>
         </div>
         <div class="theme-controls">
-            <button onclick="setTheme('light')" id="light-theme-btn">Light Theme</button>
-            <button onclick="setTheme('dark')" id="dark-theme-btn">Dark Theme</button>
-            <button onclick="setTheme('blue')" id="blue-theme-btn">Blue Theme</button>
-            <button onclick="setTheme('green')" id="green-theme-btn">Green Theme</button>
+            <button onclick="setTheme('light')" id="theme-light">Light Mode</button>
+            <button onclick="setTheme('dark')" id="theme-dark">Dark Mode</button>
+            <!-- Optional: Additional Color Themes -->
+            <button onclick="setTheme('blue')" id="theme-blue">Blue Theme</button>
+            <button onclick="setTheme('green')" id="theme-green">Green Theme</button>
         </div>
     </div>
 
     <!-- Main Container for all content -->
-    <div class="main-container grid-layout"> <!-- Default Layout -->
+    <div class="main-container grid-layout"> <!-- Default layout is Grid -->
         <!-- Sats per Dollar Section -->
         <div class="data-section" id="sats-per-dollar-section">
             <div class="section-header">Sats per Dollar</div>
@@ -494,190 +557,93 @@
             <div class="section-header">Blocks to Clear Mempool</div>
             <div class="data-value" id="blocks-to-clear">Loading...</div>
         </div>
+
+        <!-- Exchange Prices Display (Three Boxes) -->
+        <div class="exchange-prices-container">
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-1">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-2">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-3">Loading...</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Exchange Prices Display (Three Boxes) -->
-    <div class="exchange-prices-container">
-        <div class="data-section">
-            <div class="section-header">Exchange Prices</div>
-            <div id="exchange-prices-1">Loading...</div>
-        </div>
-        <div class="data-section">
-            <div class="section-header">Exchange Prices</div>
-            <div id="exchange-prices-2">Loading...</div>
-        </div>
-        <div class="data-section">
-            <div class="section-header">Exchange Prices</div>
-            <div id="exchange-prices-3">Loading...</div>
-        </div>
-    </div>
-
-    <!-- Visibility Controls -->
-    <div class="visibility-controls">
-        <button onclick="toggleVisibility('sats-per-dollar-section')">Toggle Sats per Dollar</button>
-        <button onclick="toggleVisibility('market-cap-section')">Toggle Market Cap</button>
-        <!-- Add more as needed -->
-    </div>
-
-    <!-- Include SortableJS and Interact.js via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
-
-    <!-- JavaScript to fetch and display the data, and implement features -->
+    <!-- JavaScript to fetch and display the data, and handle layout/theme changes -->
     <script>
-        // Layout Styles Functions
+        // Layout and Theme Selection Functions
+
+        // Function to set layout
         function setLayout(layout) {
             const mainContainer = document.querySelector('.main-container');
-            const layoutButtons = document.querySelectorAll('.layout-controls button');
-            
+            const buttons = document.querySelectorAll('.layout-controls button');
+
             // Remove existing layout classes
             mainContainer.classList.remove('grid-layout', 'list-layout', 'columnar-layout');
-            
-            // Remove active class from all layout buttons
-            layoutButtons.forEach(btn => btn.classList.remove('active'));
-            
+
+            // Remove active class from all buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+
             // Add the selected layout class and active class to the corresponding button
             if (layout === 'grid') {
                 mainContainer.classList.add('grid-layout');
-                document.getElementById('grid-btn').classList.add('active');
+                document.getElementById('layout-grid').classList.add('active');
             } else if (layout === 'list') {
                 mainContainer.classList.add('list-layout');
-                document.getElementById('list-btn').classList.add('active');
+                document.getElementById('layout-list').classList.add('active');
             } else if (layout === 'columnar') {
                 mainContainer.classList.add('columnar-layout');
-                document.getElementById('columnar-btn').classList.add('active');
+                document.getElementById('layout-columnar').classList.add('active');
             }
-            
+
             // Save the preference in localStorage
             localStorage.setItem('preferredLayout', layout);
         }
 
-        // Theme Selection Functions
+        // Function to set theme
         function setTheme(theme) {
             const body = document.body;
-            const themeButtons = document.querySelectorAll('.theme-controls button');
-            
+            const buttons = document.querySelectorAll('.theme-controls button');
+
             // Remove existing theme classes
             body.classList.remove('light-theme', 'dark-theme', 'blue-theme', 'green-theme');
-            
-            // Remove active class from all theme buttons
-            themeButtons.forEach(btn => btn.classList.remove('active'));
-            
+
+            // Remove active class from all buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+
             // Add the selected theme class and active class to the corresponding button
             if (theme === 'light') {
                 body.classList.add('light-theme');
-                document.getElementById('light-theme-btn').classList.add('active');
+                document.getElementById('theme-light').classList.add('active');
             } else if (theme === 'dark') {
                 body.classList.add('dark-theme');
-                document.getElementById('dark-theme-btn').classList.add('active');
+                document.getElementById('theme-dark').classList.add('active');
             } else if (theme === 'blue') {
                 body.classList.add('blue-theme');
-                document.getElementById('blue-theme-btn').classList.add('active');
+                document.getElementById('theme-blue').classList.add('active');
             } else if (theme === 'green') {
                 body.classList.add('green-theme');
-                document.getElementById('green-theme-btn').classList.add('active');
+                document.getElementById('theme-green').classList.add('active');
             }
-            
+
             // Save the preference in localStorage
             localStorage.setItem('preferredTheme', theme);
         }
 
-        // Visibility Functions
-        function toggleVisibility(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (section.style.display === 'none') {
-                section.style.display = 'block';
-            } else {
-                section.style.display = 'none';
-            }
-            
-            // Save the visibility state in localStorage
-            saveVisibilityState();
+        // Function to initialize layout and theme based on saved preferences
+        function initializePreferences() {
+            const savedLayout = localStorage.getItem('preferredLayout') || 'grid';
+            setLayout(savedLayout);
+
+            const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
+            setTheme(savedTheme);
         }
-
-        function saveVisibilityState() {
-            const sections = document.querySelectorAll('.main-container .data-section');
-            const visibility = {};
-            sections.forEach(section => {
-                visibility[section.id] = section.style.display === 'none' ? 'hidden' : 'visible';
-            });
-            localStorage.setItem('visibilityState', JSON.stringify(visibility));
-        }
-
-        function loadVisibilityState() {
-            const visibility = JSON.parse(localStorage.getItem('visibilityState'));
-            if (visibility) {
-                Object.keys(visibility).forEach(id => {
-                    const section = document.getElementById(id);
-                    if (section) {
-                        section.style.display = visibility[id] === 'hidden' ? 'none' : 'block';
-                    }
-                });
-            }
-        }
-
-        // Initialize SortableJS for Drag-and-Drop
-        document.addEventListener('DOMContentLoaded', function() {
-            const sortable = Sortable.create(document.querySelector('.main-container'), {
-                animation: 150,
-                onEnd: function(evt) {
-                    // Save the new order in localStorage
-                    saveLayoutOrder();
-                }
-            });
-            
-            // Function to save the current order
-            function saveLayoutOrder() {
-                const sections = document.querySelectorAll('.main-container .data-section');
-                const order = Array.from(sections).map(section => section.id);
-                localStorage.setItem('layoutOrder', JSON.stringify(order));
-            }
-            
-            // Function to load the saved order
-            function loadLayoutOrder() {
-                const savedOrder = JSON.parse(localStorage.getItem('layoutOrder'));
-                if (savedOrder) {
-                    const mainContainer = document.querySelector('.main-container');
-                    savedOrder.forEach(id => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            mainContainer.appendChild(element);
-                        }
-                    });
-                }
-            }
-            
-            // Load the saved order on page load
-            loadLayoutOrder();
-        });
-
-        // Initialize Interact.js for Resizing
-        interact('.data-section').resizable({
-            edges: { left: true, right: true, bottom: true, top: true },
-            inertia: true,
-            modifiers: [
-                interact.modifiers.restrictSize({
-                    min: { width: 150, height: 100 },
-                    max: { width: 500, height: 500 }
-                })
-            ],
-            listeners: {
-                move(event) {
-                    let { x, y } = event.target.dataset;
-                    x = (parseFloat(x) || 0) + event.deltaRect.left;
-                    y = (parseFloat(y) || 0) + event.deltaRect.top;
-        
-                    Object.assign(event.target.style, {
-                        width: `${event.rect.width}px`,
-                        height: `${event.rect.height}px`,
-                        transform: `translate(${x}px, ${y}px)`
-                    });
-        
-                    event.target.dataset.x = x;
-                    event.target.dataset.y = y;
-                }
-            }
-        });
 
         // Fetch Exchange Prices from various exchanges and distribute them into three boxes
         async function fetchExchangePrices() {
@@ -899,18 +865,10 @@
             document.getElementById('current-time').innerText = timeString;
         }
 
-        // Fetch All Data on Page Load
+        // Initialize All Fetch Functions and Preferences
         window.onload = function() {
-            // Apply saved preferences
-            const savedLayout = localStorage.getItem('preferredLayout') || 'grid';
-            setLayout(savedLayout);
-            
-            const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
-            setTheme(savedTheme);
-            
-            loadVisibilityState();
+            initializePreferences(); // Apply saved layout and theme preferences
 
-            // Fetch all data
             fetchExchangePrices();
             fetchBlockHeight();
             fetchFeeEstimates();
@@ -919,9 +877,7 @@
             fetchSatsPerDollar();
             fetchMarketCap();
             updateTime();
-
-            // Update time every second
-            setInterval(updateTime, 1000);
+            setInterval(updateTime, 1000); // Update time every second
 
             // Refresh data periodically (e.g., every minute)
             setInterval(fetchExchangePrices, 60000);
@@ -933,6 +889,5 @@
             setInterval(fetchMarketCap, 60000);
         };
     </script>
-
 </body>
 </html>
