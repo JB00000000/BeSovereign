@@ -402,98 +402,6 @@
         .sortable-ghost {
             opacity: 0.4;
         }
-
-        /* Real Bedford Information Section */
-        #real-bedford-info {
-            width: 100%;
-            max-width: 1200px;
-            background-color: var(--card-bg-color);
-            color: var(--text-color);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            margin-top: 40px;
-        }
-
-        #real-bedford-info h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--accent-color);
-        }
-
-        #real-bedford-info h3 {
-            margin-top: 30px;
-            margin-bottom: 10px;
-            color: var(--accent-color);
-        }
-
-        #league-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        #league-table th, #league-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        #league-table th {
-            background-color: var(--accent-color);
-            color: #fff;
-        }
-
-        #league-table tr:nth-child(even) {
-            background-color: var(--bg-color);
-        }
-
-        #league-table tr:hover {
-            background-color: #575757;
-        }
-
-        .highlight {
-            background-color: #FFD700 !important; /* Gold color to highlight Real Bedford */
-            color: #000 !important;
-            font-weight: bold;
-        }
-
-        #latest-result, #upcoming-fixtures {
-            font-size: 18px;
-        }
-
-        #upcoming-fixtures li {
-            margin-bottom: 5px;
-        }
-
-        #real-bedford-info a {
-            display: inline-block;
-            margin-top: 20px;
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-
-        #real-bedford-info a:hover {
-            color: #e68a00;
-        }
-
-        /* Responsive Adjustments for Real Bedford Section */
-        @media (max-width: 768px) {
-            #league-table th, #league-table td {
-                font-size: 14px;
-                padding: 6px;
-            }
-
-            #latest-result, #upcoming-fixtures {
-                font-size: 16px;
-            }
-
-            #real-bedford-info a {
-                font-size: 16px;
-            }
-        }
     </style>
 </head>
 <body class="dark-theme"> <!-- Default theme -->
@@ -510,10 +418,10 @@
                     Donate Bitcoin
                 </button>
                 <div class="qr-code" id="qr-code">
-                    <a href="https://www.bitcoinqrcodemaker.com" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.bitcoinqrcodemaker.com" target="_blank">
                         <img src="https://www.bitcoinqrcodemaker.com/api/?style=bitcoin&amp;address=bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t" 
                              height="200" width="200" 
-                             alt="Scan this QR code to donate Bitcoin" 
+                             alt="Bitcoin QR code" 
                              title="bitcoin:bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t">
                     </a>
                 </div>
@@ -529,6 +437,17 @@
             <div class="current-time" id="current-time">Loading...</div>
         </div>
     </div>
+
+    <!-- Controls for Theme Selection (Removed) -->
+    <!--
+    <div class="controls">
+        <div class="theme-controls">
+            <button onclick="setTheme('light')" id="theme-light" aria-pressed="false" aria-label="Switch to Light Mode">Light Mode</button>
+            <button onclick="setTheme('dark')" id="theme-dark" aria-pressed="false" aria-label="Switch to Dark Mode">Dark Mode</button>
+            <!-- Removed Blue and Green Theme Buttons -->
+        </div>
+    </div>
+    -->
 
     <!-- Main Container for all content -->
     <div class="main-container grid-layout"> <!-- Default layout is Grid -->
@@ -656,46 +575,6 @@
         </div>
     </div>
 
-    <!-- Real Bedford Information Section -->
-    <section id="real-bedford-info">
-        <h2>Real Bedford</h2>
-        
-        <!-- League Table -->
-        <h3>League Table</h3>
-        <table id="league-table">
-            <thead>
-                <tr>
-                    <th>Position</th>
-                    <th>Team</th>
-                    <th>Played</th>
-                    <th>Won</th>
-                    <th>Drawn</th>
-                    <th>Lost</th>
-                    <th>GF</th>
-                    <th>GA</th>
-                    <th>GD</th>
-                    <th>Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- League table data will be inserted here -->
-            </tbody>
-        </table>
-
-        <!-- Latest Result -->
-        <h3>Latest Result</h3>
-        <div id="latest-result">Loading latest result...</div>
-
-        <!-- Upcoming Fixtures -->
-        <h3>Upcoming Fixtures</h3>
-        <ul id="upcoming-fixtures">
-            <!-- Upcoming fixtures will be listed here -->
-        </ul>
-
-        <!-- Link to Official Website -->
-        <a href="https://www.realbedford.com/" target="_blank" rel="noopener noreferrer">Visit Real Bedford's Official Website</a>
-    </section>
-
     <!-- JavaScript to fetch and display the data, and handle donate functionality -->
     <script>
         // Bitcoin Address
@@ -766,136 +645,6 @@
                     }
                 });
             }
-        }
-
-        // Function to fetch Real Bedford Data
-        async function fetchRealBedfordData() {
-            // Replace with your backend proxy or serverless function URL
-            const apiUrl = 'https://your-app-name.herokuapp.com/api/real-bedford'; 
-
-            try {
-                const response = await fetch(apiUrl);
-                
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-
-                const data = await response.json();
-                processRealBedfordData(data);
-            } catch (error) {
-                console.error('Error fetching Real Bedford data:', error);
-                displayError();
-            }
-        }
-
-        // Function to process and display Real Bedford Data
-        function processRealBedfordData(data) {
-            console.log('API Response:', data); // Debugging line
-
-            const { leagueTable, latestResult, upcomingFixtures } = data;
-
-            // Validate leagueTable
-            if (leagueTable && Array.isArray(leagueTable)) {
-                populateLeagueTable(leagueTable);
-            } else {
-                console.warn('League table data is unavailable or not an array.');
-                document.querySelector('#league-table tbody').innerHTML = '<tr><td colspan="10">League table data is unavailable.</td></tr>';
-            }
-
-            // Validate latestResult
-            if (latestResult) {
-                document.getElementById('latest-result').innerText = latestResult;
-            } else {
-                console.warn('Latest result data is unavailable.');
-                document.getElementById('latest-result').innerText = 'Latest result data is unavailable.';
-            }
-
-            // Validate upcomingFixtures
-            if (upcomingFixtures && Array.isArray(upcomingFixtures)) {
-                populateUpcomingFixtures(upcomingFixtures);
-            } else {
-                console.warn('Upcoming fixtures data is unavailable or not an array.');
-                document.getElementById('upcoming-fixtures').innerHTML = '<li>Upcoming fixtures data is unavailable.</li>';
-            }
-        }
-
-        // Function to populate League Table
-        function populateLeagueTable(tableData) {
-            const leagueTableBody = document.querySelector('#league-table tbody');
-            leagueTableBody.innerHTML = ''; // Clear existing data
-
-            tableData.forEach(team => {
-                const row = document.createElement('tr');
-
-                // Highlight Real Bedford
-                if (team.team === 'Real Bedford') {
-                    row.classList.add('highlight');
-                }
-
-                // Create table cells
-                const positionCell = document.createElement('td');
-                positionCell.textContent = team.position;
-
-                const teamCell = document.createElement('td');
-                teamCell.textContent = team.team;
-
-                const playedCell = document.createElement('td');
-                playedCell.textContent = team.played || 'N/A'; // Adjust based on available data
-
-                const wonCell = document.createElement('td');
-                wonCell.textContent = team.won || 'N/A';
-
-                const drawnCell = document.createElement('td');
-                drawnCell.textContent = team.drawn || 'N/A';
-
-                const lostCell = document.createElement('td');
-                lostCell.textContent = team.lost || 'N/A';
-
-                const gfCell = document.createElement('td');
-                gfCell.textContent = team.gf || 'N/A';
-
-                const gaCell = document.createElement('td');
-                gaCell.textContent = team.ga || 'N/A';
-
-                const gdCell = document.createElement('td');
-                gdCell.textContent = team.gd || 'N/A';
-
-                const pointsCell = document.createElement('td');
-                pointsCell.textContent = team.points;
-
-                // Append cells to row
-                row.appendChild(positionCell);
-                row.appendChild(teamCell);
-                row.appendChild(playedCell);
-                row.appendChild(wonCell);
-                row.appendChild(drawnCell);
-                row.appendChild(lostCell);
-                row.appendChild(gfCell);
-                row.appendChild(gaCell);
-                row.appendChild(gdCell);
-                row.appendChild(pointsCell);
-
-                // Append row to table body
-                leagueTableBody.appendChild(row);
-            });
-        }
-
-        // Function to populate Upcoming Fixtures
-        function populateUpcomingFixtures(fixturesData) {
-            const fixturesList = document.getElementById('upcoming-fixtures');
-            fixturesList.innerHTML = ''; // Clear existing fixtures
-
-            fixturesData.forEach(fixture => {
-                const listItem = document.createElement('li');
-                listItem.textContent = fixture;
-                fixturesList.appendChild(listItem);
-            });
-        }
-
-        // Function to display error message
-        function displayError() {
-            const realBedfordInfo = document.getElementById('real-bedford-info');
-            realBedfordInfo.innerHTML = `<p>Unable to load Real Bedford data at this time. Please try again later.</p>`;
         }
 
         // Fetch Exchange Prices from various exchanges and distribute them into three boxes
@@ -1152,7 +901,6 @@
             fetchFeeEstimates();
             fetchMempoolStats();
             fetchATHData();
-            fetchRealBedfordData(); // Fetch Real Bedford Data
             fetchSatsPerDollar();
             fetchMarketCap();
             updateTime();
@@ -1164,7 +912,6 @@
             setInterval(fetchFeeEstimates, 60000);
             setInterval(fetchMempoolStats, 60000);
             setInterval(fetchATHData, 60000);
-            setInterval(fetchRealBedfordData, 60000); // Refresh Real Bedford Data every minute
             setInterval(fetchSatsPerDollar, 60000);
             setInterval(fetchMarketCap, 60000);
         };
