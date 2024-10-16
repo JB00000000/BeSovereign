@@ -773,17 +773,12 @@
 
         // Function to fetch Real Bedford Data
         async function fetchRealBedfordData() {
-            const apiUrl = 'https://football-web-pages1.p.rapidapi.com/vidiprinter.json?comp=1&team=1&date=2020-09-26'; // Replace with your backend proxy or serverless function URL
-            
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'x-rapidapi-host': 'football-web-pages1.p.rapidapi.com',
-                        'x-rapidapi-key': 'af164f4372msh136e51faa556a2fp18ea19jsn6b839e43eb93' // Remove this when using a backend proxy
-                    }
-                });
+            // Replace with your backend proxy or serverless function URL
+            const apiUrl = 'https://your-backend-domain.com/api/real-bedford'; 
 
+            try {
+                const response = await fetch(apiUrl);
+                
                 if (!response.ok) {
                     throw new Error(`API request failed with status ${response.status}`);
                 }
@@ -800,29 +795,154 @@
         function processRealBedfordData(data) {
             console.log('API Response:', data); // Debugging line
 
-            // Adjust based on actual API response structure
-            const leagueTable = data.leagueTable || null;
-            const latestResult = data.latestResult || null;
-            const upcomingFixtures = data.upcomingFixtures || null;
-
-            if (leagueTable && Array.isArray(leagueTable)) {
-                populateLeagueTable(leagueTable);
-            } else {
-                console.warn('League table data is unavailable or not an array.');
-                document.querySelector('#league-table tbody').innerHTML = '<tr><td colspan="10">League table data is unavailable.</td></tr>';
+            const vidiprinterContent = data.vidiprinter;
+            if (!vidiprinterContent) {
+                console.warn('vidiprinter data is unavailable.');
+                displayError();
+                return;
             }
 
-            if (latestResult) {
-                populateLatestResult(latestResult);
+            // Determine if vidiprinterContent is HTML or plain text
+            // Adjust the parsing logic accordingly
+
+            // Example: If vidiprinterContent is HTML
+            if (typeof vidiprinterContent === 'string' && vidiprinterContent.includes('<table')) {
+                parseHTMLVidiprinter(vidiprinterContent);
+            }
+            // Example: If vidiprinterContent is plain text
+            else if (typeof vidiprinterContent === 'string') {
+                parseTextVidiprinter(vidiprinterContent);
+            }
+            else {
+                console.warn('Unknown vidiprinter data format.');
+                displayError();
+            }
+        }
+
+        // Function to parse HTML vidiprinter content
+        function parseHTMLVidiprinter(htmlString) {
+            const leagueTableBody = document.querySelector('#league-table tbody');
+            leagueTableBody.innerHTML = ''; // Clear existing data
+
+            // Parse the HTML string
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
+
+            // Example selectors - adjust based on actual HTML structure
+            const leagueRows = doc.querySelectorAll('.league-table tr'); // Adjust selector
+
+            leagueRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 10) { // Ensure enough cells
+                    const teamName = cells[1].textContent.trim();
+                    const rowElement = document.createElement('tr');
+
+                    // Highlight Real Bedford
+                    if (teamName === 'Real Bedford') {
+                        rowElement.classList.add('highlight');
+                    }
+
+                    cells.forEach(cell => {
+                        const cellElement = document.createElement('td');
+                        cellElement.textContent = cell.textContent.trim();
+                        rowElement.appendChild(cellElement);
+                    });
+
+                    leagueTableBody.appendChild(rowElement);
+                }
+            });
+
+            // Parse Latest Result
+            const latestResultElement = doc.querySelector('.latest-result'); // Adjust selector
+            if (latestResultElement) {
+                const latestResult = latestResultElement.textContent.trim();
+                document.getElementById('latest-result').innerText = latestResult;
             } else {
                 console.warn('Latest result data is unavailable.');
                 document.getElementById('latest-result').innerText = 'Latest result data is unavailable.';
             }
 
-            if (upcomingFixtures && Array.isArray(upcomingFixtures)) {
-                populateUpcomingFixtures(upcomingFixtures);
+            // Parse Upcoming Fixtures
+            const fixturesElements = doc.querySelectorAll('.upcoming-fixtures li'); // Adjust selector
+            if (fixturesElements.length > 0) {
+                const fixtures = Array.from(fixturesElements).map(li => li.textContent.trim());
+                populateUpcomingFixtures(fixtures);
             } else {
-                console.warn('Upcoming fixtures data is unavailable or not an array.');
+                console.warn('Upcoming fixtures data is unavailable.');
+                document.getElementById('upcoming-fixtures').innerHTML = '<li>Upcoming fixtures data is unavailable.</li>';
+            }
+        }
+
+        // Function to parse plain text vidiprinter content
+        function parseTextVidiprinter(text) {
+            // Split the content into sections based on double newlines
+            const sections = text.split('\n\n');
+
+            let leagueTableText = '';
+            let latestResultText = '';
+            let upcomingFixturesText = '';
+
+            sections.forEach(section => {
+                if (section.startsWith('League Table:')) {
+                    leagueTableText = section.replace('League Table:', '').trim();
+                } else if (section.startsWith('Latest Result:')) {
+                    latestResultText = section.replace('Latest Result:', '').trim();
+                } else if (section.startsWith('Upcoming Fixtures:')) {
+                    upcomingFixturesText = section.replace('Upcoming Fixtures:', '').trim();
+                }
+            });
+
+            // Parse League Table
+            if (leagueTableText) {
+                const lines = leagueTableText.split('\n');
+                const leagueTable = lines.map(line => {
+                    // Example line: "2. Real Bedford - 41 pts"
+                    const regex = /^(\d+)\.\s+(.*?)\s+-\s+(\d+)\s+pts$/;
+                    const match = line.match(regex);
+                    if (match) {
+                        return {
+                            position: parseInt(match[1]),
+                            team: match[2],
+                            points: parseInt(match[3])
+                            // Add more fields as needed
+                        };
+                    }
+                    return null;
+                }).filter(item => item !== null);
+
+                populateLeagueTable(leagueTable);
+            } else {
+                console.warn('League table data is unavailable.');
+                document.querySelector('#league-table tbody').innerHTML = '<tr><td colspan="10">League table data is unavailable.</td></tr>';
+            }
+
+            // Populate Latest Result
+            if (latestResultText) {
+                document.getElementById('latest-result').innerText = latestResultText;
+            } else {
+                console.warn('Latest result data is unavailable.');
+                document.getElementById('latest-result').innerText = 'Latest result data is unavailable.';
+            }
+
+            // Parse Upcoming Fixtures
+            if (upcomingFixturesText) {
+                const lines = upcomingFixturesText.split('\n');
+                const fixtures = lines.map(line => {
+                    // Example line: "2020-10-03: vs Team C"
+                    const regex = /^(\d{4}-\d{2}-\d{2}):\s+vs\s+(.*)$/;
+                    const match = line.match(regex);
+                    if (match) {
+                        return {
+                            date: match[1],
+                            opponent: match[2]
+                        };
+                    }
+                    return null;
+                }).filter(item => item !== null);
+
+                populateUpcomingFixtures(fixtures);
+            } else {
+                console.warn('Upcoming fixtures data is unavailable.');
                 document.getElementById('upcoming-fixtures').innerHTML = '<li>Upcoming fixtures data is unavailable.</li>';
             }
         }
@@ -848,25 +968,25 @@
                 teamCell.textContent = team.team;
 
                 const playedCell = document.createElement('td');
-                playedCell.textContent = team.played;
+                playedCell.textContent = team.played || 'N/A'; // Adjust based on available data
 
                 const wonCell = document.createElement('td');
-                wonCell.textContent = team.won;
+                wonCell.textContent = team.won || 'N/A';
 
                 const drawnCell = document.createElement('td');
-                drawnCell.textContent = team.drawn;
+                drawnCell.textContent = team.drawn || 'N/A';
 
                 const lostCell = document.createElement('td');
-                lostCell.textContent = team.lost;
+                lostCell.textContent = team.lost || 'N/A';
 
                 const gfCell = document.createElement('td');
-                gfCell.textContent = team.gf;
+                gfCell.textContent = team.gf || 'N/A';
 
                 const gaCell = document.createElement('td');
-                gaCell.textContent = team.ga;
+                gaCell.textContent = team.ga || 'N/A';
 
                 const gdCell = document.createElement('td');
-                gdCell.textContent = team.gd;
+                gdCell.textContent = team.gd || 'N/A';
 
                 const pointsCell = document.createElement('td');
                 pointsCell.textContent = team.points;
@@ -886,14 +1006,6 @@
                 // Append row to table body
                 leagueTableBody.appendChild(row);
             });
-        }
-
-        // Function to populate Latest Result
-        function populateLatestResult(resultData) {
-            const latestResultDiv = document.getElementById('latest-result');
-            // Example: "Real Bedford 2-1 Team B on 2020-09-26"
-            const resultText = `Real Bedford ${resultData.score} ${resultData.opponent} on ${resultData.date}`;
-            latestResultDiv.textContent = resultText;
         }
 
         // Function to populate Upcoming Fixtures
