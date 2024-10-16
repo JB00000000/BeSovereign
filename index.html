@@ -773,14 +773,14 @@
 
         // Function to fetch Real Bedford Data
         async function fetchRealBedfordData() {
-            const apiUrl = 'https://football-web-pages1.p.rapidapi.com/vidiprinter.json?comp=1&team=1&date=2020-09-26';
+            const apiUrl = 'https://football-web-pages1.p.rapidapi.com/vidiprinter.json?comp=1&team=1&date=2020-09-26'; // Replace with your backend proxy or serverless function URL
             
             try {
                 const response = await fetch(apiUrl, {
                     method: 'GET',
                     headers: {
                         'x-rapidapi-host': 'football-web-pages1.p.rapidapi.com',
-                        'x-rapidapi-key': 'af164f4372msh136e51faa556a2fp18ea19jsn6b839e43eb93'
+                        'x-rapidapi-key': 'af164f4372msh136e51faa556a2fp18ea19jsn6b839e43eb93' // Remove this when using a backend proxy
                     }
                 });
 
@@ -798,20 +798,33 @@
 
         // Function to process and display Real Bedford Data
         function processRealBedfordData(data) {
+            console.log('API Response:', data); // Debugging line
+
             // Adjust based on actual API response structure
-            // For demonstration, we'll assume the response structure as mentioned earlier
+            const leagueTable = data.leagueTable || null;
+            const latestResult = data.latestResult || null;
+            const upcomingFixtures = data.upcomingFixtures || null;
 
-            // Parse League Table
-            const leagueTable = data.leagueTable; // Adjust based on actual response
-            populateLeagueTable(leagueTable);
+            if (leagueTable && Array.isArray(leagueTable)) {
+                populateLeagueTable(leagueTable);
+            } else {
+                console.warn('League table data is unavailable or not an array.');
+                document.querySelector('#league-table tbody').innerHTML = '<tr><td colspan="10">League table data is unavailable.</td></tr>';
+            }
 
-            // Parse Latest Result
-            const latestResult = data.latestResult; // Adjust based on actual response
-            populateLatestResult(latestResult);
+            if (latestResult) {
+                populateLatestResult(latestResult);
+            } else {
+                console.warn('Latest result data is unavailable.');
+                document.getElementById('latest-result').innerText = 'Latest result data is unavailable.';
+            }
 
-            // Parse Upcoming Fixtures
-            const upcomingFixtures = data.upcomingFixtures; // Adjust based on actual response
-            populateUpcomingFixtures(upcomingFixtures);
+            if (upcomingFixtures && Array.isArray(upcomingFixtures)) {
+                populateUpcomingFixtures(upcomingFixtures);
+            } else {
+                console.warn('Upcoming fixtures data is unavailable or not an array.');
+                document.getElementById('upcoming-fixtures').innerHTML = '<li>Upcoming fixtures data is unavailable.</li>';
+            }
         }
 
         // Function to populate League Table
