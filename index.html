@@ -183,11 +183,11 @@
         .main-container {
             width: 100%;
             max-width: 1200px;
-            padding: 10px;
+            padding: 20px;
             display: flex;
-            flex-direction: column; /* Changed to column to arrange top, middle, bottom */
+            flex-direction: column; /* Arrange rows vertically */
             align-items: center;
-            gap: 20px; /* Increased gap for better separation */
+            gap: 20px; /* Space between sections */
             box-sizing: border-box;
         }
 
@@ -294,13 +294,13 @@
         @media (max-width: 1024px) {
             /* Adjust top-row to stack if necessary */
             .top-row {
-                flex-direction: column;
-                align-items: center;
+                flex-direction: row;
+                justify-content: space-between;
             }
 
             /* Adjust bottom-row to wrap properly */
             .bottom-row {
-                justify-content: center;
+                justify-content: space-between;
             }
         }
 
@@ -327,14 +327,9 @@
                 display: none;
             }
 
-            .main-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
             /* Adjust data-section for smaller height */
             .main-container .data-section {
-                width: 90%;
+                width: 100%;
                 margin: 8px 0;
                 font-size: 16px; /* Reduce font size */
                 padding: 10px; /* Reduce padding */
@@ -374,53 +369,13 @@
 
             .main-container > .fee-estimates-container {
                 order: 3;
-                width: 90%;
+                width: 100%;
                 font-size: 14px; /* Smaller text */
             }
 
-            .main-container > #sats-per-dollar-section {
-                order: 4;
-            }
-
-            .main-container > #market-cap-section {
-                order: 5;
-            }
-
-            .main-container > #ath-data-container {
-                order: 6;
-            }
-
-            .main-container > #ath-decline-container {
-                order: 7;
-            }
-
-            .main-container > #ath-date-container {
-                order: 8;
-            }
-
-            .main-container > #days-since-ath-container {
-                order: 9;
-            }
-
-            .main-container > #mempool-tx-container {
-                order: 10;
-            }
-
-            .main-container > #mempool-size-container {
-                order: 11;
-            }
-
-            .main-container > #mempool-fees-container {
-                order: 12;
-            }
-
-            .main-container > #blocks-clear-container {
-                order: 13;
-            }
-
             .exchange-prices-container {
-                order: 14;
-                width: 90%;
+                order: 4;
+                width: 100%;
                 flex-direction: column;
                 align-items: center;
             }
@@ -516,8 +471,8 @@
     </div>
 
     <!-- Main Container for all content -->
-    <div class="main-container grid-layout"> <!-- Default layout is Grid -->
-        
+    <div class="main-container"> <!-- Removed grid-layout class for clarity -->
+
         <!-- Top Row: Exchange Average Price, All-time High Price, Sats per $ -->
         <div class="top-row">
             <!-- Exchange Average Price Section with Integrated Currency Selector -->
@@ -531,6 +486,7 @@
                         <option value="usd" selected>USD</option>
                         <option value="gbp">GBP</option>
                         <option value="ron">RON</option>
+                        <!-- Add more currencies as needed -->
                     </select>
                 </div>
             </div>
@@ -603,36 +559,43 @@
             <div class="data-value" id="market-cap">Loading...</div>
         </div>
 
-        <!-- New Data Points: Percentage Decline from ATH, ATH Date, Days Since ATH -->
+        <!-- Percentage Decline from ATH -->
         <div class="data-section" id="ath-decline-container">
             <div class="section-header">% Decline from ATH</div>
             <div class="data-value" id="ath-decline">Loading...</div>
         </div>
+
+        <!-- ATH Date -->
         <div class="data-section" id="ath-date-container">
             <div class="section-header">ATH Date</div>
             <div class="data-value" id="ath-date">Loading...</div>
         </div>
+
+        <!-- Days Since ATH -->
         <div class="data-section" id="days-since-ath-container">
             <div class="section-header">Days Since ATH</div>
             <div class="data-value" id="days-since-ath">Loading...</div>
         </div>
 
-        <!-- Remaining Data Sections -->
+        <!-- Unconfirmed Transactions -->
         <div class="data-section" id="mempool-tx-container">
             <div class="section-header">Unconfirmed Transactions</div>
             <div class="data-value" id="mempool-tx-count">Loading...</div>
         </div>
 
+        <!-- Mempool Size in MB -->
         <div class="data-section" id="mempool-size-container">
             <div class="section-header">Mempool Size (MB)</div>
             <div class="data-value" id="mempool-size">Loading...</div>
         </div>
 
+        <!-- Total Fees in Mempool -->
         <div class="data-section" id="mempool-fees-container">
             <div class="section-header">Total Fees in Mempool</div>
             <div class="data-value" id="mempool-total-fees">Loading...</div>
         </div>
 
+        <!-- Blocks to Clear Mempool -->
         <div class="data-section" id="blocks-clear-container">
             <div class="section-header">Blocks to Clear Mempool</div>
             <div class="data-value" id="blocks-to-clear">Loading...</div>
