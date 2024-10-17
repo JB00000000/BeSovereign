@@ -152,6 +152,32 @@
             margin-top: 5px;
         }
 
+        /* Currency Selector Styles */
+        .currency-selector {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        .currency-selector label {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .currency-selector select {
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .currency-selector select:focus {
+            outline: none;
+        }
+
         /* Main Container for all content */
         .main-container {
             width: 100%;
@@ -402,11 +428,103 @@
         .sortable-ghost {
             opacity: 0.4;
         }
+
+        /* Real Bedford Information Section */
+        #real-bedford-info {
+            width: 100%;
+            max-width: 1200px;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-top: 40px;
+        }
+
+        #real-bedford-info h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        #real-bedford-info h3 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        #league-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        #league-table th, #league-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        #league-table th {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+
+        #league-table tr:nth-child(even) {
+            background-color: var(--bg-color);
+        }
+
+        #league-table tr:hover {
+            background-color: #575757;
+        }
+
+        .highlight {
+            background-color: #FFD700 !important; /* Gold color to highlight Real Bedford */
+            color: #000 !important;
+            font-weight: bold;
+        }
+
+        #latest-result, #upcoming-fixtures {
+            font-size: 18px;
+        }
+
+        #upcoming-fixtures li {
+            margin-bottom: 5px;
+        }
+
+        #real-bedford-info a {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        #real-bedford-info a:hover {
+            color: #e68a00;
+        }
+
+        /* Responsive Adjustments for Real Bedford Section */
+        @media (max-width: 768px) {
+            #league-table th, #league-table td {
+                font-size: 14px;
+                padding: 6px;
+            }
+
+            #latest-result, #upcoming-fixtures {
+                font-size: 16px;
+            }
+
+            #real-bedford-info a {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body class="dark-theme"> <!-- Default theme -->
 
-    <!-- Header with Logo, Donate Button, and Block Height -->
+    <!-- Header with Logo, Donate Button, Currency Selector, and Block Height -->
     <div class="header">
         <!-- Logo on the Left -->
         <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
@@ -431,6 +549,16 @@
             </div>
         </div>
 
+        <!-- Currency Selector -->
+        <div class="currency-selector">
+            <label for="currency-select">Currency:</label>
+            <select id="currency-select">
+                <option value="usd" selected>USD</option>
+                <option value="gbp">GBP</option>
+                <option value="ron">RON</option>
+            </select>
+        </div>
+
         <!-- Block Height and Current Time on the Right -->
         <div class="header-info">
             <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
@@ -451,9 +579,9 @@
 
     <!-- Main Container for all content -->
     <div class="main-container grid-layout"> <!-- Default layout is Grid -->
-        <!-- Sats per Dollar Section -->
+        <!-- Sats per Currency Section -->
         <div class="data-section" id="sats-per-dollar-section">
-            <div class="section-header">Sats per Dollar</div>
+            <div class="section-header">Sats per $</div>
             <div class="data-value" id="sats-per-dollar">Loading...</div>
         </div>
 
@@ -575,13 +703,81 @@
         </div>
     </div>
 
+    <!-- Real Bedford Information Section -->
+    <section id="real-bedford-info">
+        <h2>Real Bedford</h2>
+        
+        <!-- League Table -->
+        <h3>League Table</h3>
+        <table id="league-table">
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Team</th>
+                    <th>Played</th>
+                    <th>Won</th>
+                    <th>Drawn</th>
+                    <th>Lost</th>
+                    <th>GF</th>
+                    <th>GA</th>
+                    <th>GD</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- League table data will be inserted here -->
+            </tbody>
+        </table>
+
+        <!-- Latest Result -->
+        <h3>Latest Result</h3>
+        <div id="latest-result">Loading latest result...</div>
+
+        <!-- Upcoming Fixtures -->
+        <h3>Upcoming Fixtures</h3>
+        <ul id="upcoming-fixtures">
+            <!-- Upcoming fixtures will be listed here -->
+        </ul>
+
+        <!-- Link to Official Website -->
+        <a href="https://www.realbedford.com/" target="_blank" rel="noopener noreferrer">Visit Real Bedford's Official Website</a>
+    </section>
+
     <!-- JavaScript to fetch and display the data, and handle donate functionality -->
     <script>
-        // Bitcoin Address
-        const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
+        // Current selected currency (default: USD)
+        let currentCurrency = 'usd';
+
+        // Object to store Bitcoin prices in different currencies
+        let priceData = {
+            usd: 0,
+            gbp: 0,
+            ron: 0
+        };
+
+        // Function to map currency codes to symbols
+        function getCurrencySymbol(currency) {
+            const symbols = {
+                usd: '$',
+                gbp: '£',
+                ron: 'lei'
+            };
+            return symbols[currency] || '';
+        }
+
+        // Function to format currency values
+        function formatCurrency(amount, currency) {
+            const symbol = getCurrencySymbol(currency);
+            // Format number with thousand separators and two decimals
+            const formattedNumber = amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return `${symbol}${formattedNumber}`;
+        }
 
         // Function to handle Donate Button Click
         function handleDonate() {
+            // Bitcoin Address
+            const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
+
             // Copy the Bitcoin address to clipboard
             navigator.clipboard.writeText(bitcoinAddress)
                 .then(() => {
@@ -647,7 +843,20 @@
             }
         }
 
-        // Fetch Exchange Prices from various exchanges and distribute them into three boxes
+        // Function to fetch Bitcoin prices in USD, GBP, and RON
+        async function fetchBitcoinPrices() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,gbp,ron');
+                const data = await response.json();
+                priceData.usd = data.bitcoin.usd;
+                priceData.gbp = data.bitcoin.gbp;
+                priceData.ron = data.bitcoin.ron;
+            } catch (error) {
+                console.error('Error fetching Bitcoin prices:', error);
+            }
+        }
+
+        // Function to fetch Exchange Prices and calculate average
         async function fetchExchangePrices() {
             const exchanges = [
                 { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
@@ -658,7 +867,7 @@
                 { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
             ];
 
-            let totalPrice = 0;
+            let totalPriceUSD = 0;
             let priceCount = 0;
             const exchangeRows = [[], [], []]; // Three arrays for three boxes
 
@@ -694,9 +903,9 @@
                     }
 
                     if (price !== null && !isNaN(price)) {
-                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`);
-                        totalPrice += price;
+                        totalPriceUSD += price;
                         priceCount++;
+                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`);
                     } else {
                         exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`);
                     }
@@ -712,19 +921,24 @@
                 exchangePricesDiv.innerHTML = exchangeRows[i].join('');
             }
 
-            // Calculate and display average price
-            if (priceCount > 0) {
-                const averagePrice = totalPrice / priceCount;
-                const formattedPrice = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                document.getElementById('average-price').innerText = formattedPrice;
-                document.title = `BTC: ${formattedPrice} - BeSovereign`;
-            } else {
-                document.getElementById('average-price').innerText = 'N/A';
-                document.title = 'BeSovereign';
-            }
+            // Calculate averagePriceUSD
+            const averagePriceUSD = priceCount > 0 ? (totalPriceUSD / priceCount) : 0;
+
+            // Get exchange rate: currentCurrency per USD
+            const exchangeRate = currentCurrency === 'usd' ? 1 : (priceData[currentCurrency] / priceData['usd']);
+
+            const averagePriceSelectedCurrency = averagePriceUSD * exchangeRate;
+
+            // Format with appropriate currency symbol
+            const formattedPrice = formatCurrency(averagePriceSelectedCurrency, currentCurrency);
+
+            document.getElementById('average-price').innerText = formattedPrice;
+
+            // Update document title if desired
+            document.title = `BTC: ${formattedPrice} - BeSovereign`;
         }
 
-        // Fetch Fee Estimates from Mempool.space
+        // Function to fetch Fee Estimates from Mempool.space
         async function fetchFeeEstimates() {
             try {
                 const response = await fetch('https://mempool.space/api/v1/fees/recommended');
@@ -811,23 +1025,23 @@
         // Fetch All-Time High and Related Data from CoinGecko
         async function fetchATHData() {
             try {
-                // Fetch BTC data from CoinGecko
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
+                // Fetch BTC data from CoinGecko in multiple currencies
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
                 const data = await response.json();
 
                 // All-time High Price
-                const athPrice = data.market_data.ath.usd;
-                document.getElementById('ath-price').innerText = `$${athPrice.toLocaleString()}`;
+                const athPrice = data.market_data.ath[currentCurrency];
+                document.getElementById('ath-price').innerText = formatCurrency(athPrice, currentCurrency);
 
                 // Current Price
-                const currentPrice = data.market_data.current_price.usd;
+                const currentPrice = data.market_data.current_price[currentCurrency];
 
                 // Percentage Decline from ATH
                 const decline = ((currentPrice - athPrice) / athPrice) * 100;
                 document.getElementById('ath-decline').innerText = `${decline.toFixed(2)}%`;
 
                 // ATH Date
-                const athDate = new Date(data.market_data.ath_date.usd);
+                const athDate = new Date(data.market_data.ath_date.usd); // Using USD date as it's consistent
                 const options = { day: 'numeric', month: 'long', year: 'numeric' };
                 const formattedATHDate = athDate.toLocaleDateString('en-GB', options);
                 document.getElementById('ath-date').innerText = formattedATHDate;
@@ -847,32 +1061,160 @@
             }
         }
 
-        // Fetch Sats per Dollar
-        async function fetchSatsPerDollar() {
+        // Fetch Sats per Currency
+        async function fetchSatsPerCurrency() {
             try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-                const data = await response.json();
-                const btcPrice = data.bitcoin.usd;
-                const satsPerDollar = (100000000 / btcPrice).toFixed(2);
-                document.getElementById('sats-per-dollar').innerText = `${satsPerDollar} sats/$`;
+                // 'priceData[currentCurrency]' is the price of BTC in 'currentCurrency'
+                const satsPerCurrency = (100000000 / priceData[currentCurrency]).toFixed(2);
+                document.getElementById('sats-per-dollar').innerText = `${satsPerCurrency} sats/${getCurrencySymbol(currentCurrency)}`;
+                updateSatsSectionHeader();
             } catch (error) {
-                console.error('Error fetching sats per dollar:', error);
+                console.error('Error fetching sats per currency:', error);
                 document.getElementById('sats-per-dollar').innerText = 'Error';
             }
+        }
+
+        // Update the section header for Sats per Currency
+        function updateSatsSectionHeader() {
+            const header = document.querySelector('#sats-per-dollar-section .section-header');
+            header.innerText = `Sats per ${getCurrencySymbol(currentCurrency)}`;
         }
 
         // Fetch Market Capitalisation
         async function fetchMarketCap() {
             try {
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
+                // Fetch BTC data from CoinGecko
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
                 const data = await response.json();
-                const marketCap = data.market_data.market_cap.usd;
-                document.getElementById('market-cap').innerText = `$${marketCap.toLocaleString()}`;
+                const marketCap = data.market_data.market_cap[currentCurrency];
+                document.getElementById('market-cap').innerText = formatCurrency(marketCap, currentCurrency);
             } catch (error) {
                 console.error('Error fetching market cap:', error);
                 document.getElementById('market-cap').innerText = 'Error';
             }
         }
+
+        // Function to populate League Table (Assuming Real Bedford Data is fetched separately)
+        function populateLeagueTable(tableData) {
+            const leagueTableBody = document.querySelector('#league-table tbody');
+            leagueTableBody.innerHTML = ''; // Clear existing data
+
+            tableData.forEach(team => {
+                const row = document.createElement('tr');
+
+                // Highlight Real Bedford
+                if (team.team === 'Real Bedford') {
+                    row.classList.add('highlight');
+                }
+
+                // Create table cells
+                const positionCell = document.createElement('td');
+                positionCell.textContent = team.position;
+
+                const teamCell = document.createElement('td');
+                teamCell.textContent = team.team;
+
+                const playedCell = document.createElement('td');
+                playedCell.textContent = team.played || 'N/A'; // Adjust based on available data
+
+                const wonCell = document.createElement('td');
+                wonCell.textContent = team.won || 'N/A';
+
+                const drawnCell = document.createElement('td');
+                drawnCell.textContent = team.drawn || 'N/A';
+
+                const lostCell = document.createElement('td');
+                lostCell.textContent = team.lost || 'N/A';
+
+                const gfCell = document.createElement('td');
+                gfCell.textContent = team.gf || 'N/A';
+
+                const gaCell = document.createElement('td');
+                gaCell.textContent = team.ga || 'N/A';
+
+                const gdCell = document.createElement('td');
+                gdCell.textContent = team.gd || 'N/A';
+
+                const pointsCell = document.createElement('td');
+                pointsCell.textContent = team.points;
+
+                // Append cells to row
+                row.appendChild(positionCell);
+                row.appendChild(teamCell);
+                row.appendChild(playedCell);
+                row.appendChild(wonCell);
+                row.appendChild(drawnCell);
+                row.appendChild(lostCell);
+                row.appendChild(gfCell);
+                row.appendChild(gaCell);
+                row.appendChild(gdCell);
+                row.appendChild(pointsCell);
+
+                // Append row to table body
+                leagueTableBody.appendChild(row);
+            });
+        }
+
+        // Function to populate Upcoming Fixtures
+        function populateUpcomingFixtures(fixturesData) {
+            const fixturesList = document.getElementById('upcoming-fixtures');
+            fixturesList.innerHTML = ''; // Clear existing fixtures
+
+            fixturesData.forEach(fixture => {
+                const listItem = document.createElement('li');
+                listItem.textContent = fixture;
+                fixturesList.appendChild(listItem);
+            });
+        }
+
+        // Function to display error message
+        function displayError() {
+            const realBedfordInfo = document.getElementById('real-bedford-info');
+            realBedfordInfo.innerHTML = `<p>Unable to load Real Bedford data at this time. Please try again later.</p>`;
+        }
+
+        // Function to handle Currency Selection
+        function handleCurrencyChange() {
+            const currencySelect = document.getElementById('currency-select');
+            currentCurrency = currencySelect.value;
+            // Re-fetch Bitcoin prices
+            fetchBitcoinPrices().then(() => {
+                // Update all data sections with the new currency
+                fetchExchangePrices();
+                fetchSatsPerCurrency();
+                fetchMarketCap();
+                fetchATHData();
+            });
+        }
+
+        // Add event listener to Currency Selector
+        document.getElementById('currency-select').addEventListener('change', handleCurrencyChange);
+
+        // Initialize All Fetch Functions and Preferences
+        window.onload = async function() {
+            initializeSortable();    // Enable drag-and-drop
+            loadOrder();             // Load saved order if any
+
+            await fetchBitcoinPrices();
+            fetchExchangePrices();
+            fetchBlockHeight();
+            fetchFeeEstimates();
+            fetchMempoolStats();
+            fetchATHData();
+            fetchSatsPerCurrency();
+            fetchMarketCap();
+            updateTime();
+            setInterval(updateTime, 1000); // Update time every second
+
+            // Refresh data periodically (e.g., every minute)
+            setInterval(fetchExchangePrices, 60000);
+            setInterval(fetchBlockHeight, 60000);
+            setInterval(fetchFeeEstimates, 60000);
+            setInterval(fetchMempoolStats, 60000);
+            setInterval(fetchATHData, 60000);
+            setInterval(fetchSatsPerCurrency, 60000);
+            setInterval(fetchMarketCap, 60000);
+        };
 
         // Update Current Time in British Format
         function updateTime() {
@@ -888,33 +1230,6 @@
             const timeString = now.toLocaleString('en-GB', options); // British format
             document.getElementById('current-time').innerText = timeString;
         }
-
-        // Initialize All Fetch Functions and Preferences
-        window.onload = function() {
-            // initializePreferences(); // Removed Theme Preferences
-            initializeSortable();    // Enable drag-and-drop
-
-            loadOrder();             // Load saved order if any
-
-            fetchExchangePrices();
-            fetchBlockHeight();
-            fetchFeeEstimates();
-            fetchMempoolStats();
-            fetchATHData();
-            fetchSatsPerDollar();
-            fetchMarketCap();
-            updateTime();
-            setInterval(updateTime, 1000); // Update time every second
-
-            // Refresh data periodically (e.g., every minute)
-            setInterval(fetchExchangePrices, 60000);
-            setInterval(fetchBlockHeight, 60000);
-            setInterval(fetchFeeEstimates, 60000);
-            setInterval(fetchMempoolStats, 60000);
-            setInterval(fetchATHData, 60000);
-            setInterval(fetchSatsPerDollar, 60000);
-            setInterval(fetchMarketCap, 60000);
-        };
     </script>
 </body>
 </html>
