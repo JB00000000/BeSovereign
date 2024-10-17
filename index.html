@@ -34,7 +34,7 @@
             --light-accent-color: #007BFF;
         }
 
-        /* Theme Styles (Removed Light/Dark Theme Controls) */
+        /* Theme Styles */
         .dark-theme {
             --bg-color: #1A1A1A;
             --text-color: #FFFFFF;
@@ -157,6 +157,7 @@
             display: flex;
             align-items: center;
             color: var(--text-color);
+            margin-bottom: 10px;
         }
 
         .currency-selector label {
@@ -238,6 +239,8 @@
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* Fee Estimates Container (Consolidated for Mobile) */
@@ -432,7 +435,7 @@
 </head>
 <body class="dark-theme"> <!-- Default theme -->
 
-    <!-- Header with Logo, Donate Button, Currency Selector, and Block Height -->
+    <!-- Header with Logo, Donate Button, and Block Height -->
     <div class="header">
         <!-- Logo on the Left -->
         <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
@@ -455,16 +458,6 @@
             <div class="donate-text">
                 Support the site by donating Bitcoin
             </div>
-        </div>
-
-        <!-- Currency Selector -->
-        <div class="currency-selector">
-            <label for="currency-select">Currency:</label>
-            <select id="currency-select">
-                <option value="usd" selected>USD</option>
-                <option value="gbp">GBP</option>
-                <option value="ron">RON</option>
-            </select>
         </div>
 
         <!-- Block Height and Current Time on the Right -->
@@ -585,6 +578,17 @@
 
         <!-- Exchange Prices Display (Three Boxes) -->
         <div class="exchange-prices-container">
+            <!-- Currency Selector within Exchange Prices Section -->
+            <div class="currency-selector">
+                <label for="currency-select">Currency:</label>
+                <select id="currency-select">
+                    <option value="usd" selected>USD</option>
+                    <option value="gbp">GBP</option>
+                    <option value="ron">RON</option>
+                </select>
+            </div>
+
+            <!-- Exchange Prices Boxes -->
             <div class="data-section">
                 <div class="section-header">Exchange Prices</div>
                 <div id="exchange-prices-1">Loading...</div>
@@ -625,6 +629,10 @@
         // Function to format currency values
         function formatCurrency(amount, currency) {
             const symbol = getCurrencySymbol(currency);
+            // Check if amount is a number
+            if (typeof amount !== 'number') {
+                return `${symbol}N/A`;
+            }
             // Format number with thousand separators and two decimals
             const formattedNumber = amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             return `${symbol}${formattedNumber}`;
@@ -922,6 +930,9 @@
         async function fetchSatsPerCurrency() {
             try {
                 // 'priceData[currentCurrency]' is the price of BTC in 'currentCurrency'
+                if (priceData[currentCurrency] === 0) {
+                    throw new Error('Price data not available');
+                }
                 const satsPerCurrency = (100000000 / priceData[currentCurrency]).toFixed(2);
                 document.getElementById('sats-per-dollar').innerText = `${satsPerCurrency} sats/${getCurrencySymbol(currentCurrency)}`;
                 updateSatsSectionHeader();
