@@ -185,10 +185,35 @@
             max-width: 1200px;
             padding: 10px;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
+            flex-direction: column; /* Changed to column to arrange top, middle, bottom */
+            align-items: center;
+            gap: 20px; /* Increased gap for better separation */
             box-sizing: border-box;
+        }
+
+        /* Top Row: Exchange Average Price, All-time High Price, Sats per $ */
+        .top-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Middle Section: TradingView Bitcoin Price Chart */
+        .middle-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Bottom Row: Exchange Prices Boxes */
+        .bottom-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         /* Data Sections */
@@ -200,7 +225,8 @@
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            flex: 1 1 200px; /* Adjusted for flexibility */
+            flex: 1; /* Flex grow to fill available space */
+            min-width: 200px; /* Minimum width to maintain layout */
             box-sizing: border-box;
             transition: all 0.3s ease;
             cursor: move; /* Indicate draggable elements */
@@ -237,11 +263,8 @@
             width: 100%;
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            flex-direction: column;
-            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
         }
 
         /* Fee Estimates Container (Consolidated for Mobile) */
@@ -268,6 +291,19 @@
         }
 
         /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            /* Adjust top-row to stack if necessary */
+            .top-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* Adjust bottom-row to wrap properly */
+            .bottom-row {
+                justify-content: center;
+            }
+        }
+
         @media (max-width: 768px) {
             .qr-code img {
                 width: 150px;
@@ -325,15 +361,18 @@
             }
 
             /* Reorder Elements on Mobile */
-            .main-container > #average-price-section {
+            .main-container > .top-row {
                 order: 1;
+                width: 100%;
+                justify-content: center;
             }
 
-            .chart-container {
+            .main-container > .middle-section {
                 order: 2;
+                width: 100%;
             }
 
-            .fee-estimates-container {
+            .main-container > .fee-estimates-container {
                 order: 3;
                 width: 90%;
                 font-size: 14px; /* Smaller text */
@@ -382,11 +421,13 @@
             .exchange-prices-container {
                 order: 14;
                 width: 90%;
+                flex-direction: column;
+                align-items: center;
             }
 
             /* Adjust data-section widths within Exchange Prices */
             .exchange-prices-container .data-section {
-                flex: 1 1 45%; /* Two exchanges per box */
+                flex: 1 1 100%; /* Full width on mobile */
                 /* Ensure adequate height */
                 min-height: 100px; /* Increased from 80px to 100px */
                 padding: 15px; /* Increased padding for better visibility */
@@ -419,6 +460,12 @@
             .donate-text {
                 font-size: 16px;
                 margin-top: 10px;
+            }
+
+            /* Arrange bottom-row exchange prices left to right */
+            .exchange-prices-container {
+                flex-direction: row;
+                align-items: flex-start;
             }
         }
 
@@ -470,24 +517,83 @@
 
     <!-- Main Container for all content -->
     <div class="main-container grid-layout"> <!-- Default layout is Grid -->
-        <!-- Sats per Currency Section -->
-        <div class="data-section" id="sats-per-dollar-section">
-            <div class="section-header">Sats per $</div>
-            <div class="data-value" id="sats-per-dollar">Loading...</div>
+        
+        <!-- Top Row: Exchange Average Price, All-time High Price, Sats per $ -->
+        <div class="top-row">
+            <!-- Exchange Average Price Section with Integrated Currency Selector -->
+            <div class="data-section" id="average-price-section">
+                <div class="section-header">Exchange Average Price</div>
+                <div class="data-value" id="average-price">Loading...</div>
+                <!-- Integrated Currency Selector -->
+                <div class="currency-selector">
+                    <label for="currency-select">Currency:</label>
+                    <select id="currency-select">
+                        <option value="usd" selected>USD</option>
+                        <option value="gbp">GBP</option>
+                        <option value="ron">RON</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- All-time High Price Section -->
+            <div class="data-section" id="ath-data-container">
+                <div class="section-header">All-time High Price</div>
+                <div class="data-value" id="ath-price">Loading...</div>
+            </div>
+
+            <!-- Sats per $ Section -->
+            <div class="data-section" id="sats-per-dollar-section">
+                <div class="section-header">Sats per $</div>
+                <div class="data-value" id="sats-per-dollar">Loading...</div>
+            </div>
         </div>
 
-        <!-- Exchange Average Price Section with Integrated Currency Selector -->
-        <div class="data-section" id="average-price-section">
-            <div class="section-header">Exchange Average Price</div>
-            <div class="data-value" id="average-price">Loading...</div>
-            <!-- Integrated Currency Selector -->
-            <div class="currency-selector">
-                <label for="currency-select">Currency:</label>
-                <select id="currency-select">
-                    <option value="usd" selected>USD</option>
-                    <option value="gbp">GBP</option>
-                    <option value="ron">RON</option>
-                </select>
+        <!-- Middle Section: TradingView Bitcoin Price Chart -->
+        <div class="middle-section">
+            <div class="chart-container">
+                <!-- TradingView Widget BEGIN -->
+                <div class="tradingview-widget-container">
+                    <div id="tradingview_btc_chart"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <script type="text/javascript">
+                        new TradingView.widget({
+                            "width": "100%",
+                            "height": 500,
+                            "symbol": "BITSTAMP:BTCUSD",
+                            "interval": "60",
+                            "timezone": "Etc/UTC",
+                            "theme": "dark",
+                            "style": "1",
+                            "locale": "en",
+                            "toolbar_bg": "#f1f3f6",
+                            "enable_publishing": false,
+                            "hide_top_toolbar": true,
+                            "hide_legend": true,
+                            "save_image": false,
+                            "container_id": "tradingview_btc_chart"
+                        });
+                    </script>
+                </div>
+                <!-- TradingView Widget END -->
+            </div>
+        </div>
+
+        <!-- Bottom Row: Exchange Prices Boxes -->
+        <div class="bottom-row">
+            <!-- Exchange Prices Display (Three Boxes) -->
+            <div class="exchange-prices-container">
+                <div class="data-section">
+                    <div class="section-header">Exchange Prices</div>
+                    <div id="exchange-prices-1">Loading...</div>
+                </div>
+                <div class="data-section">
+                    <div class="section-header">Exchange Prices</div>
+                    <div id="exchange-prices-2">Loading...</div>
+                </div>
+                <div class="data-section">
+                    <div class="section-header">Exchange Prices</div>
+                    <div id="exchange-prices-3">Loading...</div>
+                </div>
             </div>
         </div>
 
@@ -497,61 +603,7 @@
             <div class="data-value" id="market-cap">Loading...</div>
         </div>
 
-        <!-- TradingView Bitcoin Price Chart -->
-        <div class="chart-container">
-            <!-- TradingView Widget BEGIN -->
-            <div class="tradingview-widget-container">
-                <div id="tradingview_btc_chart"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                    new TradingView.widget({
-                        "width": "100%",
-                        "height": 500,
-                        "symbol": "BITSTAMP:BTCUSD",
-                        "interval": "60",
-                        "timezone": "Etc/UTC",
-                        "theme": "dark",
-                        "style": "1",
-                        "locale": "en",
-                        "toolbar_bg": "#f1f3f6",
-                        "enable_publishing": false,
-                        "hide_top_toolbar": true,
-                        "hide_legend": true,
-                        "save_image": false,
-                        "container_id": "tradingview_btc_chart"
-                    });
-                </script>
-            </div>
-            <!-- TradingView Widget END -->
-        </div>
-
-        <!-- Consolidated Fee Estimates Display (Visible on Mobile) -->
-        <div class="fee-estimates-container">
-            <div class="section-header">Fee Estimates</div>
-            <div class="fee fast-fee">Fast Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee medium-fee">Medium Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee slow-fee">Slow Fee: <span class="data-value">Loading...</span></div>
-        </div>
-
-        <!-- Individual Fee Estimates Display (Visible on Desktop) -->
-        <div class="data-section fast-fee-desktop">
-            <div class="section-header">Fast Fee</div>
-            <div class="data-value">Loading...</div>
-        </div>
-        <div class="data-section medium-fee-desktop">
-            <div class="section-header">Medium Fee</div>
-            <div class="data-value">Loading...</div>
-        </div>
-        <div class="data-section slow-fee-desktop">
-            <div class="section-header">Slow Fee</div>
-            <div class="data-value">Loading...</div>
-        </div>
-
-        <!-- New Data Points: All-time High, etc. -->
-        <div class="data-section" id="ath-data-container">
-            <div class="section-header">All-time High Price</div>
-            <div class="data-value" id="ath-price">Loading...</div>
-        </div>
+        <!-- New Data Points: Percentage Decline from ATH, ATH Date, Days Since ATH -->
         <div class="data-section" id="ath-decline-container">
             <div class="section-header">% Decline from ATH</div>
             <div class="data-value" id="ath-decline">Loading...</div>
@@ -586,22 +638,6 @@
             <div class="data-value" id="blocks-to-clear">Loading...</div>
         </div>
 
-        <!-- Exchange Prices Display (Three Boxes) -->
-        <div class="exchange-prices-container">
-            <!-- Exchange Prices Boxes -->
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-1">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-2">Loading...</div>
-            </div>
-            <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-3">Loading...</div>
-            </div>
-        </div>
     </div>
 
     <!-- JavaScript to fetch and display the data, and handle donate functionality -->
@@ -770,7 +806,10 @@
                     if (price !== null && !isNaN(price)) {
                         totalPriceUSD += price;
                         priceCount++;
-                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`);
+                        // Convert price to selected currency
+                        const exchangeRate = currentCurrency === 'usd' ? 1 : (priceData[currentCurrency] / priceData['usd']);
+                        const priceInSelectedCurrency = price * exchangeRate;
+                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">${getCurrencySymbol(currentCurrency)}${priceInSelectedCurrency.toLocaleString()}</span></div>`);
                     } else {
                         exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`);
                     }
