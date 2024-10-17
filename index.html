@@ -34,7 +34,7 @@
             --light-accent-color: #007BFF;
         }
 
-        /* Theme Styles */
+        /* Theme Styles (Removed Light/Dark Theme Controls) */
         .dark-theme {
             --bg-color: #1A1A1A;
             --text-color: #FFFFFF;
@@ -152,69 +152,16 @@
             margin-top: 5px;
         }
 
-        /* Currency Selector Styles */
-        .currency-selector {
-            display: flex;
-            align-items: center;
-            color: var(--text-color);
-            margin-top: 10px; /* Added margin-top for spacing within the box */
-            justify-content: center;
-        }
-
-        .currency-selector label {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .currency-selector select {
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-            background-color: var(--card-bg-color);
-            color: var(--text-color);
-            cursor: pointer;
-        }
-
-        .currency-selector select:focus {
-            outline: none;
-        }
-
         /* Main Container for all content */
         .main-container {
             width: 100%;
             max-width: 1200px;
-            padding: 20px;
+            padding: 10px;
             display: flex;
-            flex-direction: column; /* Arrange rows vertically */
-            align-items: center;
-            gap: 20px; /* Space between sections */
-            box-sizing: border-box;
-        }
-
-        /* Top Row: Exchange Average Price, All-time High Price, Sats per $ */
-        .top-row {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
             flex-wrap: wrap;
-        }
-
-        /* Middle Section: TradingView Bitcoin Price Chart */
-        .middle-section {
-            width: 100%;
-            display: flex;
             justify-content: center;
-        }
-
-        /* Bottom Row: Exchange Prices Boxes */
-        .bottom-row {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
+            gap: 10px;
+            box-sizing: border-box;
         }
 
         /* Data Sections */
@@ -226,12 +173,10 @@
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            flex: 1; /* Flex grow to fill available space */
-            min-width: 200px; /* Minimum width to maintain layout */
+            flex: 1 1 200px; /* Adjusted for flexibility */
             box-sizing: border-box;
             transition: all 0.3s ease;
             cursor: move; /* Indicate draggable elements */
-            position: relative; /* For potential positioning of child elements */
         }
 
         .section-header {
@@ -264,39 +209,35 @@
             width: 100%;
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 20px;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        /* Additional Data Row: Market Cap, % Decline, ATH Date, Days Since ATH, etc. */
-        .additional-data-row {
+        /* Fee Estimates Container (Consolidated for Mobile) */
+        .fee-estimates-container {
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
+            display: none; /* Hidden by default, visible on mobile */
+            flex-direction: column;
+            align-items: center;
+            background: var(--card-bg-color);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            font-size: 20px;
+            box-sizing: border-box;
+        }
+
+        .fee-estimates-container .section-header {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .fee-estimates-container .fee {
+            margin: 5px 0;
         }
 
         /* Responsive Adjustments */
-        @media (max-width: 1024px) {
-            /* Adjust top-row to stack if necessary */
-            .top-row {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-
-            /* Adjust bottom-row to wrap properly */
-            .bottom-row {
-                justify-content: space-between;
-            }
-
-            /* Adjust additional-data-row to wrap */
-            .additional-data-row {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-        }
-
         @media (max-width: 768px) {
             .qr-code img {
                 width: 150px;
@@ -320,9 +261,14 @@
                 display: none;
             }
 
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
             /* Adjust data-section for smaller height */
             .main-container .data-section {
-                width: 100%;
+                width: 90%;
                 margin: 8px 0;
                 font-size: 16px; /* Reduce font size */
                 padding: 10px; /* Reduce padding */
@@ -349,33 +295,68 @@
             }
 
             /* Reorder Elements on Mobile */
-            .main-container > .top-row {
+            .main-container > #average-price-section {
                 order: 1;
-                width: 100%;
-                justify-content: center;
             }
 
-            .main-container > .middle-section {
+            .chart-container {
                 order: 2;
-                width: 100%;
             }
 
-            .main-container > .fee-estimates-container {
+            .fee-estimates-container {
                 order: 3;
-                width: 100%;
+                width: 90%;
                 font-size: 14px; /* Smaller text */
             }
 
-            .exchange-prices-container {
+            .main-container > #sats-per-dollar-section {
                 order: 4;
-                width: 100%;
-                flex-direction: column;
-                align-items: center;
+            }
+
+            .main-container > #market-cap-section {
+                order: 5;
+            }
+
+            .main-container > #ath-data-container {
+                order: 6;
+            }
+
+            .main-container > #ath-decline-container {
+                order: 7;
+            }
+
+            .main-container > #ath-date-container {
+                order: 8;
+            }
+
+            .main-container > #days-since-ath-container {
+                order: 9;
+            }
+
+            .main-container > #mempool-tx-container {
+                order: 10;
+            }
+
+            .main-container > #mempool-size-container {
+                order: 11;
+            }
+
+            .main-container > #mempool-fees-container {
+                order: 12;
+            }
+
+            .main-container > #blocks-clear-container {
+                order: 13;
+            }
+
+            .exchange-prices-container {
+                order: 14;
+                width: 90%;
             }
 
             /* Adjust data-section widths within Exchange Prices */
             .exchange-prices-container .data-section {
-                flex: 1 1 100%; /* Full width on mobile */
+                flex: 1 1 45%; /* Two exchanges per box */
                 /* Ensure adequate height */
                 min-height: 100px; /* Increased from 80px to 100px */
                 padding: 15px; /* Increased padding for better visibility */
@@ -400,17 +381,6 @@
                 font-size: 14px;
                 margin-top: 5px;
             }
-
-            /* Additional Data Row on Mobile: Stack vertically */
-            .additional-data-row {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .additional-data-row .data-section {
-                width: 100%;
-                margin: 8px 0;
-            }
         }
 
         /* Desktop Styles for Individual Fee Estimates */
@@ -419,18 +389,6 @@
             .donate-text {
                 font-size: 16px;
                 margin-top: 10px;
-            }
-
-            /* Arrange bottom-row exchange prices left to right */
-            .exchange-prices-container {
-                flex-direction: row;
-                align-items: flex-start;
-            }
-
-            /* Arrange additional-data-row to align horizontally */
-            .additional-data-row {
-                flex-direction: row;
-                align-items: flex-start;
             }
         }
 
@@ -480,184 +438,150 @@
         </div>
     </div>
 
+    <!-- Controls for Theme Selection (Removed) -->
+    <!--
+    <div class="controls">
+        <div class="theme-controls">
+            <button onclick="setTheme('light')" id="theme-light" aria-pressed="false" aria-label="Switch to Light Mode">Light Mode</button>
+            <button onclick="setTheme('dark')" id="theme-dark" aria-pressed="false" aria-label="Switch to Dark Mode">Dark Mode</button>
+            <!-- Removed Blue and Green Theme Buttons -->
+        </div>
+    </div>
+    -->
+
     <!-- Main Container for all content -->
-    <div class="main-container"> <!-- Removed grid-layout class for clarity -->
-
-        <!-- Top Row: Exchange Average Price, All-time High Price, Sats per $ -->
-        <div class="top-row">
-            <!-- Exchange Average Price Section with Integrated Currency Selector -->
-            <div class="data-section" id="average-price-section">
-                <div class="section-header">Exchange Average Price</div>
-                <div class="data-value" id="average-price">Loading...</div>
-                <!-- Integrated Currency Selector -->
-                <div class="currency-selector">
-                    <label for="currency-select">Currency:</label>
-                    <select id="currency-select">
-                        <option value="usd" selected>USD</option>
-                        <option value="gbp">GBP</option>
-                        <option value="ron">RON</option>
-                        <!-- Add more currencies as needed -->
-                    </select>
-                </div>
-            </div>
-
-            <!-- All-time High Price Section -->
-            <div class="data-section" id="ath-data-container">
-                <div class="section-header">All-time High Price</div>
-                <div class="data-value" id="ath-price">Loading...</div>
-            </div>
-
-            <!-- Sats per $ Section -->
-            <div class="data-section" id="sats-per-dollar-section">
-                <div class="section-header">Sats per $</div>
-                <div class="data-value" id="sats-per-dollar">Loading...</div>
-            </div>
+    <div class="main-container grid-layout"> <!-- Default layout is Grid -->
+        <!-- Sats per Dollar Section -->
+        <div class="data-section" id="sats-per-dollar-section">
+            <div class="section-header">Sats per Dollar</div>
+            <div class="data-value" id="sats-per-dollar">Loading...</div>
         </div>
 
-        <!-- Middle Section: TradingView Bitcoin Price Chart -->
-        <div class="middle-section">
-            <div class="chart-container">
-                <!-- TradingView Widget BEGIN -->
-                <div class="tradingview-widget-container">
-                    <div id="tradingview_btc_chart"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                    <script type="text/javascript">
-                        new TradingView.widget({
-                            "width": "100%",
-                            "height": 500,
-                            "symbol": "BITSTAMP:BTCUSD",
-                            "interval": "60",
-                            "timezone": "Etc/UTC",
-                            "theme": "dark",
-                            "style": "1",
-                            "locale": "en",
-                            "toolbar_bg": "#f1f3f6",
-                            "enable_publishing": false,
-                            "hide_top_toolbar": true,
-                            "hide_legend": true,
-                            "save_image": false,
-                            "container_id": "tradingview_btc_chart"
-                        });
-                    </script>
-                </div>
-                <!-- TradingView Widget END -->
-            </div>
+        <!-- Exchange Average Price Section -->
+        <div class="data-section" id="average-price-section">
+            <div class="section-header">Exchange Average Price</div>
+            <div class="data-value" id="average-price">Loading...</div>
         </div>
 
-        <!-- Bottom Row: Exchange Prices Boxes -->
-        <div class="bottom-row">
-            <!-- Exchange Prices Display (Three Boxes) -->
-            <div class="exchange-prices-container">
-                <div class="data-section">
-                    <div class="section-header">Exchange Prices</div>
-                    <div id="exchange-prices-1">Loading...</div>
-                </div>
-                <div class="data-section">
-                    <div class="section-header">Exchange Prices</div>
-                    <div id="exchange-prices-2">Loading...</div>
-                </div>
-                <div class="data-section">
-                    <div class="section-header">Exchange Prices</div>
-                    <div id="exchange-prices-3">Loading...</div>
-                </div>
-            </div>
+        <!-- Market Capitalisation Section -->
+        <div class="data-section" id="market-cap-section">
+            <div class="section-header">Market Capitalisation</div>
+            <div class="data-value" id="market-cap">Loading...</div>
         </div>
 
-        <!-- Additional Data Row: Market Cap, % Decline, ATH Date, Days Since ATH -->
-        <div class="additional-data-row">
-            <!-- Market Capitalisation Section -->
-            <div class="data-section" id="market-cap-section">
-                <div class="section-header">Market Capitalisation</div>
-                <div class="data-value" id="market-cap">Loading...</div>
+        <!-- TradingView Bitcoin Price Chart -->
+        <div class="chart-container">
+            <!-- TradingView Widget BEGIN -->
+            <div class="tradingview-widget-container">
+                <div id="tradingview_btc_chart"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.widget({
+                        "width": "100%",
+                        "height": 500,
+                        "symbol": "BITSTAMP:BTCUSD",
+                        "interval": "60",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "toolbar_bg": "#f1f3f6",
+                        "enable_publishing": false,
+                        "hide_top_toolbar": true,
+                        "hide_legend": true,
+                        "save_image": false,
+                        "container_id": "tradingview_btc_chart"
+                    });
+                </script>
             </div>
-
-            <!-- Percentage Decline from ATH -->
-            <div class="data-section" id="ath-decline-container">
-                <div class="section-header">% Decline from ATH</div>
-                <div class="data-value" id="ath-decline">Loading...</div>
-            </div>
-
-            <!-- ATH Date -->
-            <div class="data-section" id="ath-date-container">
-                <div class="section-header">ATH Date</div>
-                <div class="data-value" id="ath-date">Loading...</div>
-            </div>
-
-            <!-- Days Since ATH -->
-            <div class="data-section" id="days-since-ath-container">
-                <div class="section-header">Days Since ATH</div>
-                <div class="data-value" id="days-since-ath">Loading...</div>
-            </div>
+            <!-- TradingView Widget END -->
         </div>
 
-        <!-- Mempool Data Row: Unconfirmed Transactions, Mempool Size, Total Fees, Blocks to Clear -->
-        <div class="additional-data-row">
-            <!-- Unconfirmed Transactions -->
-            <div class="data-section" id="mempool-tx-container">
-                <div class="section-header">Unconfirmed Transactions</div>
-                <div class="data-value" id="mempool-tx-count">Loading...</div>
-            </div>
-
-            <!-- Mempool Size in MB -->
-            <div class="data-section" id="mempool-size-container">
-                <div class="section-header">Mempool Size (MB)</div>
-                <div class="data-value" id="mempool-size">Loading...</div>
-            </div>
-
-            <!-- Total Fees in Mempool -->
-            <div class="data-section" id="mempool-fees-container">
-                <div class="section-header">Total Fees in Mempool</div>
-                <div class="data-value" id="mempool-total-fees">Loading...</div>
-            </div>
-
-            <!-- Blocks to Clear Mempool -->
-            <div class="data-section" id="blocks-clear-container">
-                <div class="section-header">Blocks to Clear Mempool</div>
-                <div class="data-value" id="blocks-to-clear">Loading...</div>
-            </div>
+        <!-- Consolidated Fee Estimates Display (Visible on Mobile) -->
+        <div class="fee-estimates-container">
+            <div class="section-header">Fee Estimates</div>
+            <div class="fee fast-fee">Fast Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee medium-fee">Medium Fee: <span class="data-value">Loading...</span></div>
+            <div class="fee slow-fee">Slow Fee: <span class="data-value">Loading...</span></div>
         </div>
 
+        <!-- Individual Fee Estimates Display (Visible on Desktop) -->
+        <div class="data-section fast-fee-desktop">
+            <div class="section-header">Fast Fee</div>
+            <div class="data-value">Loading...</div>
+        </div>
+        <div class="data-section medium-fee-desktop">
+            <div class="section-header">Medium Fee</div>
+            <div class="data-value">Loading...</div>
+        </div>
+        <div class="data-section slow-fee-desktop">
+            <div class="section-header">Slow Fee</div>
+            <div class="data-value">Loading...</div>
+        </div>
+
+        <!-- New Data Points: All-time High, etc. -->
+        <div class="data-section" id="ath-data-container">
+            <div class="section-header">All-time High Price</div>
+            <div class="data-value" id="ath-price">Loading...</div>
+        </div>
+        <div class="data-section" id="ath-decline-container">
+            <div class="section-header">% Decline from ATH</div>
+            <div class="data-value" id="ath-decline">Loading...</div>
+        </div>
+        <div class="data-section" id="ath-date-container">
+            <div class="section-header">ATH Date</div>
+            <div class="data-value" id="ath-date">Loading...</div>
+        </div>
+        <div class="data-section" id="days-since-ath-container">
+            <div class="section-header">Days Since ATH</div>
+            <div class="data-value" id="days-since-ath">Loading...</div>
+        </div>
+
+        <!-- Remaining Data Sections -->
+        <div class="data-section" id="mempool-tx-container">
+            <div class="section-header">Unconfirmed Transactions</div>
+            <div class="data-value" id="mempool-tx-count">Loading...</div>
+        </div>
+
+        <div class="data-section" id="mempool-size-container">
+            <div class="section-header">Mempool Size (MB)</div>
+            <div class="data-value" id="mempool-size">Loading...</div>
+        </div>
+
+        <div class="data-section" id="mempool-fees-container">
+            <div class="section-header">Total Fees in Mempool</div>
+            <div class="data-value" id="mempool-total-fees">Loading...</div>
+        </div>
+
+        <div class="data-section" id="blocks-clear-container">
+            <div class="section-header">Blocks to Clear Mempool</div>
+            <div class="data-value" id="blocks-to-clear">Loading...</div>
+        </div>
+
+        <!-- Exchange Prices Display (Three Boxes) -->
+        <div class="exchange-prices-container">
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-1">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-2">Loading...</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Exchange Prices</div>
+                <div id="exchange-prices-3">Loading...</div>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript to fetch and display the data, and handle donate functionality -->
     <script>
-        // Current selected currency (default: USD)
-        let currentCurrency = 'usd';
-
-        // Object to store Bitcoin prices in different currencies
-        let priceData = {
-            usd: 0,
-            gbp: 0,
-            ron: 0
-        };
-
-        // Function to map currency codes to symbols
-        function getCurrencySymbol(currency) {
-            const symbols = {
-                usd: '$',
-                gbp: '£',
-                ron: 'lei'
-            };
-            return symbols[currency] || '';
-        }
-
-        // Function to format currency values
-        function formatCurrency(amount, currency) {
-            const symbol = getCurrencySymbol(currency);
-            // Check if amount is a number
-            if (typeof amount !== 'number') {
-                return `${symbol}N/A`;
-            }
-            // Format number with thousand separators and two decimals
-            const formattedNumber = amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            return `${symbol}${formattedNumber}`;
-        }
+        // Bitcoin Address
+        const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
 
         // Function to handle Donate Button Click
         function handleDonate() {
-            // Bitcoin Address
-            const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
-
             // Copy the Bitcoin address to clipboard
             navigator.clipboard.writeText(bitcoinAddress)
                 .then(() => {
@@ -723,20 +647,7 @@
             }
         }
 
-        // Function to fetch Bitcoin prices in USD, GBP, and RON
-        async function fetchBitcoinPrices() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,gbp,ron');
-                const data = await response.json();
-                priceData.usd = data.bitcoin.usd;
-                priceData.gbp = data.bitcoin.gbp;
-                priceData.ron = data.bitcoin.ron;
-            } catch (error) {
-                console.error('Error fetching Bitcoin prices:', error);
-            }
-        }
-
-        // Function to fetch Exchange Prices and calculate average
+        // Fetch Exchange Prices from various exchanges and distribute them into three boxes
         async function fetchExchangePrices() {
             const exchanges = [
                 { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
@@ -747,7 +658,7 @@
                 { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
             ];
 
-            let totalPriceUSD = 0;
+            let totalPrice = 0;
             let priceCount = 0;
             const exchangeRows = [[], [], []]; // Three arrays for three boxes
 
@@ -783,12 +694,9 @@
                     }
 
                     if (price !== null && !isNaN(price)) {
-                        totalPriceUSD += price;
+                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`);
+                        totalPrice += price;
                         priceCount++;
-                        // Convert price to selected currency
-                        const exchangeRate = currentCurrency === 'usd' ? 1 : (priceData[currentCurrency] / priceData['usd']);
-                        const priceInSelectedCurrency = price * exchangeRate;
-                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">${getCurrencySymbol(currentCurrency)}${priceInSelectedCurrency.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>`);
                     } else {
                         exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`);
                     }
@@ -804,58 +712,53 @@
                 exchangePricesDiv.innerHTML = exchangeRows[i].join('');
             }
 
-            // Calculate averagePriceUSD
-            const averagePriceUSD = priceCount > 0 ? (totalPriceUSD / priceCount) : 0;
-
-            // Get exchange rate: currentCurrency per USD
-            const exchangeRate = currentCurrency === 'usd' ? 1 : (priceData[currentCurrency] / priceData['usd']);
-
-            const averagePriceSelectedCurrency = averagePriceUSD * exchangeRate;
-
-            // Format with appropriate currency symbol
-            const formattedPrice = formatCurrency(averagePriceSelectedCurrency, currentCurrency);
-
-            document.getElementById('average-price').innerText = formattedPrice;
-
-            // Update document title if desired
-            document.title = `BTC: ${formattedPrice} - BeSovereign`;
+            // Calculate and display average price
+            if (priceCount > 0) {
+                const averagePrice = totalPrice / priceCount;
+                const formattedPrice = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('average-price').innerText = formattedPrice;
+                document.title = `BTC: ${formattedPrice} - BeSovereign`;
+            } else {
+                document.getElementById('average-price').innerText = 'N/A';
+                document.title = 'BeSovereign';
+            }
         }
 
-        // Function to fetch Fee Estimates from Mempool.space
+        // Fetch Fee Estimates from Mempool.space
         async function fetchFeeEstimates() {
             try {
                 const response = await fetch('https://mempool.space/api/v1/fees/recommended');
                 const data = await response.json();
 
-                // Update Fee Estimates (both mobile and desktop)
-                const feeElements = [
-                    { selector: '.fast-fee .data-value', value: `${data.fastestFee} sat/vB` },
-                    { selector: '.medium-fee .data-value', value: `${data.halfHourFee} sat/vB` },
-                    { selector: '.slow-fee .data-value', value: `${data.hourFee} sat/vB` },
-                    { selector: '.fast-fee-desktop .data-value', value: `${data.fastestFee} sat/vB` },
-                    { selector: '.medium-fee-desktop .data-value', value: `${data.halfHourFee} sat/vB` },
-                    { selector: '.slow-fee-desktop .data-value', value: `${data.hourFee} sat/vB` }
-                ];
+                // Update Mobile Fee Estimates
+                const fastFees = document.querySelectorAll('.fast-fee .data-value');
+                const mediumFees = document.querySelectorAll('.medium-fee .data-value');
+                const slowFees = document.querySelectorAll('.slow-fee .data-value');
 
-                feeElements.forEach(fee => {
-                    document.querySelectorAll(fee.selector).forEach(el => el.innerText = fee.value);
-                });
+                fastFees.forEach(el => el.innerText = `${data.fastestFee} sat/vB`);
+                mediumFees.forEach(el => el.innerText = `${data.halfHourFee} sat/vB`);
+                slowFees.forEach(el => el.innerText = `${data.hourFee} sat/vB`);
+
+                // Update Desktop Fee Estimates
+                const fastFeesDesktop = document.querySelectorAll('.fast-fee-desktop .data-value');
+                const mediumFeesDesktop = document.querySelectorAll('.medium-fee-desktop .data-value');
+                const slowFeesDesktop = document.querySelectorAll('.slow-fee-desktop .data-value');
+
+                fastFeesDesktop.forEach(el => el.innerText = `${data.fastestFee} sat/vB`);
+                mediumFeesDesktop.forEach(el => el.innerText = `${data.halfHourFee} sat/vB`);
+                slowFeesDesktop.forEach(el => el.innerText = `${data.hourFee} sat/vB`);
             } catch (error) {
                 console.error('Error fetching fee estimates:', error);
 
-                // Update Fee Estimates with Error
-                const errorText = 'Error';
-                const feeSelectors = [
-                    '.fast-fee .data-value',
-                    '.medium-fee .data-value',
-                    '.slow-fee .data-value',
-                    '.fast-fee-desktop .data-value',
-                    '.medium-fee-desktop .data-value',
-                    '.slow-fee-desktop .data-value'
-                ];
-                feeSelectors.forEach(selector => {
-                    document.querySelectorAll(selector).forEach(el => el.innerText = errorText);
-                });
+                // Update Mobile Fee Estimates with Error
+                document.querySelectorAll('.fast-fee .data-value').forEach(el => el.innerText = 'Fast Fee: Error');
+                document.querySelectorAll('.medium-fee .data-value').forEach(el => el.innerText = 'Medium Fee: Error');
+                document.querySelectorAll('.slow-fee .data-value').forEach(el => el.innerText = 'Slow Fee: Error');
+
+                // Update Desktop Fee Estimates with Error
+                document.querySelectorAll('.fast-fee-desktop .data-value').forEach(el => el.innerText = 'Fast Fee: Error');
+                document.querySelectorAll('.medium-fee-desktop .data-value').forEach(el => el.innerText = 'Medium Fee: Error');
+                document.querySelectorAll('.slow-fee-desktop .data-value').forEach(el => el.innerText = 'Slow Fee: Error');
             }
         }
 
@@ -908,23 +811,23 @@
         // Fetch All-Time High and Related Data from CoinGecko
         async function fetchATHData() {
             try {
-                // Fetch BTC data from CoinGecko in multiple currencies
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
+                // Fetch BTC data from CoinGecko
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
                 const data = await response.json();
 
                 // All-time High Price
-                const athPrice = data.market_data.ath[currentCurrency];
-                document.getElementById('ath-price').innerText = formatCurrency(athPrice, currentCurrency);
+                const athPrice = data.market_data.ath.usd;
+                document.getElementById('ath-price').innerText = `$${athPrice.toLocaleString()}`;
 
                 // Current Price
-                const currentPrice = data.market_data.current_price[currentCurrency];
+                const currentPrice = data.market_data.current_price.usd;
 
                 // Percentage Decline from ATH
                 const decline = ((currentPrice - athPrice) / athPrice) * 100;
                 document.getElementById('ath-decline').innerText = `${decline.toFixed(2)}%`;
 
                 // ATH Date
-                const athDate = new Date(data.market_data.ath_date.usd); // Using USD date as it's consistent
+                const athDate = new Date(data.market_data.ath_date.usd);
                 const options = { day: 'numeric', month: 'long', year: 'numeric' };
                 const formattedATHDate = athDate.toLocaleDateString('en-GB', options);
                 document.getElementById('ath-date').innerText = formattedATHDate;
@@ -944,84 +847,32 @@
             }
         }
 
-        // Fetch Sats per Currency
-        async function fetchSatsPerCurrency() {
+        // Fetch Sats per Dollar
+        async function fetchSatsPerDollar() {
             try {
-                // 'priceData[currentCurrency]' is the price of BTC in 'currentCurrency'
-                if (priceData[currentCurrency] === 0) {
-                    throw new Error('Price data not available');
-                }
-                const satsPerCurrency = (100000000 / priceData[currentCurrency]).toFixed(2);
-                document.getElementById('sats-per-dollar').innerText = `${satsPerCurrency} sats/${getCurrencySymbol(currentCurrency)}`;
-                updateSatsSectionHeader();
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                const data = await response.json();
+                const btcPrice = data.bitcoin.usd;
+                const satsPerDollar = (100000000 / btcPrice).toFixed(2);
+                document.getElementById('sats-per-dollar').innerText = `${satsPerDollar} sats/$`;
             } catch (error) {
-                console.error('Error fetching sats per currency:', error);
+                console.error('Error fetching sats per dollar:', error);
                 document.getElementById('sats-per-dollar').innerText = 'Error';
             }
-        }
-
-        // Update the section header for Sats per Currency
-        function updateSatsSectionHeader() {
-            const header = document.querySelector('#sats-per-dollar-section .section-header');
-            header.innerText = `Sats per ${getCurrencySymbol(currentCurrency)}`;
         }
 
         // Fetch Market Capitalisation
         async function fetchMarketCap() {
             try {
-                // Fetch BTC data from CoinGecko
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
                 const data = await response.json();
-                const marketCap = data.market_data.market_cap[currentCurrency];
-                document.getElementById('market-cap').innerText = formatCurrency(marketCap, currentCurrency);
+                const marketCap = data.market_data.market_cap.usd;
+                document.getElementById('market-cap').innerText = `$${marketCap.toLocaleString()}`;
             } catch (error) {
                 console.error('Error fetching market cap:', error);
                 document.getElementById('market-cap').innerText = 'Error';
             }
         }
-
-        // Function to handle Currency Selection
-        function handleCurrencyChange() {
-            const currencySelect = document.getElementById('currency-select');
-            currentCurrency = currencySelect.value;
-            // Re-fetch Bitcoin prices
-            fetchBitcoinPrices().then(() => {
-                // Update all data sections with the new currency
-                fetchExchangePrices();
-                fetchSatsPerCurrency();
-                fetchMarketCap();
-                fetchATHData();
-            });
-        }
-
-        // Add event listener to Currency Selector
-        document.getElementById('currency-select').addEventListener('change', handleCurrencyChange);
-
-        // Initialize All Fetch Functions and Preferences
-        window.onload = async function() {
-            initializeSortable();    // Enable drag-and-drop
-            loadOrder();             // Load saved order if any
-
-            await fetchBitcoinPrices();
-            fetchExchangePrices();
-            fetchBlockHeight();
-            fetchFeeEstimates();
-            fetchMempoolStats();
-            fetchATHData();
-            fetchSatsPerCurrency();
-            fetchMarketCap();
-            updateTime();
-            setInterval(updateTime, 1000); // Update time every second
-
-            // Refresh data periodically (e.g., every minute)
-            setInterval(fetchExchangePrices, 60000);
-            setInterval(fetchBlockHeight, 60000);
-            setInterval(fetchFeeEstimates, 60000);
-            setInterval(fetchMempoolStats, 60000);
-            setInterval(fetchATHData, 60000);
-            setInterval(fetchSatsPerCurrency, 60000);
-            setInterval(fetchMarketCap, 60000);
-        };
 
         // Update Current Time in British Format
         function updateTime() {
@@ -1037,6 +888,33 @@
             const timeString = now.toLocaleString('en-GB', options); // British format
             document.getElementById('current-time').innerText = timeString;
         }
+
+        // Initialize All Fetch Functions and Preferences
+        window.onload = function() {
+            // initializePreferences(); // Removed Theme Preferences
+            initializeSortable();    // Enable drag-and-drop
+
+            loadOrder();             // Load saved order if any
+
+            fetchExchangePrices();
+            fetchBlockHeight();
+            fetchFeeEstimates();
+            fetchMempoolStats();
+            fetchATHData();
+            fetchSatsPerDollar();
+            fetchMarketCap();
+            updateTime();
+            setInterval(updateTime, 1000); // Update time every second
+
+            // Refresh data periodically (e.g., every minute)
+            setInterval(fetchExchangePrices, 60000);
+            setInterval(fetchBlockHeight, 60000);
+            setInterval(fetchFeeEstimates, 60000);
+            setInterval(fetchMempoolStats, 60000);
+            setInterval(fetchATHData, 60000);
+            setInterval(fetchSatsPerDollar, 60000);
+            setInterval(fetchMarketCap, 60000);
+        };
     </script>
 </body>
 </html>
