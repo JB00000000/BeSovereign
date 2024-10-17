@@ -157,7 +157,7 @@
             display: flex;
             align-items: center;
             color: var(--text-color);
-            margin-bottom: 10px;
+            margin-top: 10px; /* Added margin-top for spacing within the box */
         }
 
         .currency-selector label {
@@ -204,6 +204,7 @@
             box-sizing: border-box;
             transition: all 0.3s ease;
             cursor: move; /* Indicate draggable elements */
+            position: relative; /* For potential positioning of child elements */
         }
 
         .section-header {
@@ -475,10 +476,19 @@
             <div class="data-value" id="sats-per-dollar">Loading...</div>
         </div>
 
-        <!-- Exchange Average Price Section -->
+        <!-- Exchange Average Price Section with Integrated Currency Selector -->
         <div class="data-section" id="average-price-section">
             <div class="section-header">Exchange Average Price</div>
             <div class="data-value" id="average-price">Loading...</div>
+            <!-- Integrated Currency Selector -->
+            <div class="currency-selector">
+                <label for="currency-select">Currency:</label>
+                <select id="currency-select">
+                    <option value="usd" selected>USD</option>
+                    <option value="gbp">GBP</option>
+                    <option value="ron">RON</option>
+                </select>
+            </div>
         </div>
 
         <!-- Market Capitalisation Section -->
@@ -578,16 +588,6 @@
 
         <!-- Exchange Prices Display (Three Boxes) -->
         <div class="exchange-prices-container">
-            <!-- Currency Selector within Exchange Prices Section -->
-            <div class="currency-selector">
-                <label for="currency-select">Currency:</label>
-                <select id="currency-select">
-                    <option value="usd" selected>USD</option>
-                    <option value="gbp">GBP</option>
-                    <option value="ron">RON</option>
-                </select>
-            </div>
-
             <!-- Exchange Prices Boxes -->
             <div class="data-section">
                 <div class="section-header">Exchange Prices</div>
