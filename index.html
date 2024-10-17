@@ -268,27 +268,13 @@
             gap: 20px;
         }
 
-        /* Fee Estimates Container (Consolidated for Mobile) */
-        .fee-estimates-container {
+        /* Additional Data Row: Market Cap, % Decline, ATH Date, Days Since ATH, etc. */
+        .additional-data-row {
             width: 100%;
-            display: none; /* Hidden by default, visible on mobile */
-            flex-direction: column;
-            align-items: center;
-            background: var(--card-bg-color);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            font-size: 20px;
-            box-sizing: border-box;
-        }
-
-        .fee-estimates-container .section-header {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .fee-estimates-container .fee {
-            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         /* Responsive Adjustments */
@@ -301,6 +287,12 @@
 
             /* Adjust bottom-row to wrap properly */
             .bottom-row {
+                justify-content: space-between;
+            }
+
+            /* Adjust additional-data-row to wrap */
+            .additional-data-row {
+                flex-direction: row;
                 justify-content: space-between;
             }
         }
@@ -408,6 +400,17 @@
                 font-size: 14px;
                 margin-top: 5px;
             }
+
+            /* Additional Data Row on Mobile: Stack vertically */
+            .additional-data-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .additional-data-row .data-section {
+                width: 100%;
+                margin: 8px 0;
+            }
         }
 
         /* Desktop Styles for Individual Fee Estimates */
@@ -420,6 +423,12 @@
 
             /* Arrange bottom-row exchange prices left to right */
             .exchange-prices-container {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            /* Arrange additional-data-row to align horizontally */
+            .additional-data-row {
                 flex-direction: row;
                 align-items: flex-start;
             }
@@ -554,52 +563,58 @@
             </div>
         </div>
 
-        <!-- Market Capitalisation Section -->
-        <div class="data-section" id="market-cap-section">
-            <div class="section-header">Market Capitalisation</div>
-            <div class="data-value" id="market-cap">Loading...</div>
+        <!-- Additional Data Row: Market Cap, % Decline, ATH Date, Days Since ATH -->
+        <div class="additional-data-row">
+            <!-- Market Capitalisation Section -->
+            <div class="data-section" id="market-cap-section">
+                <div class="section-header">Market Capitalisation</div>
+                <div class="data-value" id="market-cap">Loading...</div>
+            </div>
+
+            <!-- Percentage Decline from ATH -->
+            <div class="data-section" id="ath-decline-container">
+                <div class="section-header">% Decline from ATH</div>
+                <div class="data-value" id="ath-decline">Loading...</div>
+            </div>
+
+            <!-- ATH Date -->
+            <div class="data-section" id="ath-date-container">
+                <div class="section-header">ATH Date</div>
+                <div class="data-value" id="ath-date">Loading...</div>
+            </div>
+
+            <!-- Days Since ATH -->
+            <div class="data-section" id="days-since-ath-container">
+                <div class="section-header">Days Since ATH</div>
+                <div class="data-value" id="days-since-ath">Loading...</div>
+            </div>
         </div>
 
-        <!-- Percentage Decline from ATH -->
-        <div class="data-section" id="ath-decline-container">
-            <div class="section-header">% Decline from ATH</div>
-            <div class="data-value" id="ath-decline">Loading...</div>
-        </div>
+        <!-- Mempool Data Row: Unconfirmed Transactions, Mempool Size, Total Fees, Blocks to Clear -->
+        <div class="additional-data-row">
+            <!-- Unconfirmed Transactions -->
+            <div class="data-section" id="mempool-tx-container">
+                <div class="section-header">Unconfirmed Transactions</div>
+                <div class="data-value" id="mempool-tx-count">Loading...</div>
+            </div>
 
-        <!-- ATH Date -->
-        <div class="data-section" id="ath-date-container">
-            <div class="section-header">ATH Date</div>
-            <div class="data-value" id="ath-date">Loading...</div>
-        </div>
+            <!-- Mempool Size in MB -->
+            <div class="data-section" id="mempool-size-container">
+                <div class="section-header">Mempool Size (MB)</div>
+                <div class="data-value" id="mempool-size">Loading...</div>
+            </div>
 
-        <!-- Days Since ATH -->
-        <div class="data-section" id="days-since-ath-container">
-            <div class="section-header">Days Since ATH</div>
-            <div class="data-value" id="days-since-ath">Loading...</div>
-        </div>
+            <!-- Total Fees in Mempool -->
+            <div class="data-section" id="mempool-fees-container">
+                <div class="section-header">Total Fees in Mempool</div>
+                <div class="data-value" id="mempool-total-fees">Loading...</div>
+            </div>
 
-        <!-- Unconfirmed Transactions -->
-        <div class="data-section" id="mempool-tx-container">
-            <div class="section-header">Unconfirmed Transactions</div>
-            <div class="data-value" id="mempool-tx-count">Loading...</div>
-        </div>
-
-        <!-- Mempool Size in MB -->
-        <div class="data-section" id="mempool-size-container">
-            <div class="section-header">Mempool Size (MB)</div>
-            <div class="data-value" id="mempool-size">Loading...</div>
-        </div>
-
-        <!-- Total Fees in Mempool -->
-        <div class="data-section" id="mempool-fees-container">
-            <div class="section-header">Total Fees in Mempool</div>
-            <div class="data-value" id="mempool-total-fees">Loading...</div>
-        </div>
-
-        <!-- Blocks to Clear Mempool -->
-        <div class="data-section" id="blocks-clear-container">
-            <div class="section-header">Blocks to Clear Mempool</div>
-            <div class="data-value" id="blocks-to-clear">Loading...</div>
+            <!-- Blocks to Clear Mempool -->
+            <div class="data-section" id="blocks-clear-container">
+                <div class="section-header">Blocks to Clear Mempool</div>
+                <div class="data-value" id="blocks-to-clear">Loading...</div>
+            </div>
         </div>
 
     </div>
