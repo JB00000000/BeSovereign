@@ -431,46 +431,8 @@
 
             
             <div class="chart-container" style="width:100%; margin-top:20px;">
-                <div class="section-header" style="text-align:center; margin-bottom:8px;">EUR/USD Chart</div>
-                <div id="tradingview_eurusd_chart"></div>
-                <script type="text/javascript">
-                    new TradingView.widget({
-                        "width": "100%",
-                        "height": 400,
-                        "symbol": "FX:EURUSD",
-                        "interval": "D",
-                        "timezone": "Etc/UTC",
-                        "theme": "dark",
-                        "style": "1",
-                        "locale": "en",
-                        "enable_publishing": false,
-                        "hide_top_toolbar": true,
-                        "hide_legend": false,
-                        "save_image": false,
-                        "container_id": "tradingview_eurusd_chart"
-                    });
-                </script>
-            </div>
-            <div class="chart-container" style="width:100%; margin-top:20px;">
-                <div class="section-header" style="text-align:center; margin-bottom:8px;">GBP/USD Chart</div>
-                <div id="tradingview_gbpusd_chart"></div>
-                <script type="text/javascript">
-                    new TradingView.widget({
-                        "width": "100%",
-                        "height": 400,
-                        "symbol": "FX:GBPUSD",
-                        "interval": "D",
-                        "timezone": "Etc/UTC",
-                        "theme": "dark",
-                        "style": "1",
-                        "locale": "en",
-                        "enable_publishing": false,
-                        "hide_top_toolbar": true,
-                        "hide_legend": false,
-                        "save_image": false,
-                        "container_id": "tradingview_gbpusd_chart"
-                    });
-                </script>
+                <div class="section-header" style="text-align:center; margin-bottom:8px;" id="currency-chart-title">Select a currency to view chart</div>
+                <div id="tradingview_currency_chart" style="min-height:400px;"></div>
             </div>
 
             <div class="note">Includes Romanian Leu (RON). Rates update roughly every minute.</div>
@@ -684,12 +646,71 @@
                     </tr>`;
                 });
                 document.getElementById('currency-tbody').innerHTML = html;
+                attachCurrencyClicks();
 
             } catch (e) {
                 console.error('Metals/Currencies error', e);
                 document.getElementById('gold-price').textContent = 'Error';
                 document.getElementById('silver-price').textContent = 'Error';
             }
+        }
+
+        
+        // ========== CURRENCY CHART CLICK HANDLER ==========
+        function loadCurrencyChart(symbol, title) {
+            const container = document.getElementById('tradingview_currency_chart');
+            const titleEl = document.getElementById('currency-chart-title');
+            titleEl.textContent = title + ' Chart';
+            container.innerHTML = ''; // clear previous
+            new TradingView.widget({
+                "width": "100%",
+                "height": 400,
+                "symbol": symbol,
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "enable_publishing": false,
+                "hide_top_toolbar": true,
+                "hide_legend": false,
+                "save_image": false,
+                "container_id": "tradingview_currency_chart"
+            });
+        }
+
+        // Map currency codes to TradingView symbols
+        const currencySymbols = {
+            'eur': 'FX:EURUSD',
+            'gbp': 'FX:GBPUSD',
+            'jpy': 'FX:USDJPY',
+            'chf': 'FX:USDCHF',
+            'cad': 'FX:USDCAD',
+            'aud': 'FX:AUDUSD',
+            'ron': 'FX:USDRON'
+        };
+
+        // Attach click handlers after table is populated
+        function attachCurrencyClicks() {
+            const rows = document.querySelectorAll('#currency-tbody tr');
+            rows.forEach(row => {
+                const nameCell = row.cells[0];
+                if (!nameCell) return;
+                const text = nameCell.textContent.toLowerCase();
+                let code = null;
+                if (text.includes('euro')) code = 'eur';
+                else if (text.includes('pound')) code = 'gbp';
+                else if (text.includes('yen')) code = 'jpy';
+                else if (text.includes('franc')) code = 'chf';
+                else if (text.includes('canadian')) code = 'cad';
+                else if (text.includes('australian')) code = 'aud';
+                else if (text.includes('leu') || text.includes('ron')) code = 'ron';
+                if (code && currencySymbols[code]) {
+                    row.style.cursor = 'pointer';
+                    row.title = 'Click to view chart';
+                    row.onclick = () => loadCurrencyChart(currencySymbols[code], nameCell.textContent.split('(')[0].trim());
+                }
+            });
         }
 
         // ========== INIT ==========
