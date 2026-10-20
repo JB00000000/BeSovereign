@@ -430,9 +430,16 @@
             </table>
 
             
-            <div class="chart-container" style="width:100%; margin-top:20px;">
-                <div class="section-header" style="text-align:center; margin-bottom:8px;" id="currency-chart-title">Select a currency to view chart</div>
-                <div id="tradingview_currency_chart" style="min-height:400px;"></div>
+            <div id="currency-grid-view" style="width:100%; margin-top:20px;">
+                <div class="section-header" style="text-align:center; margin-bottom:12px;">All Charts</div>
+                <div id="currency-chart-grid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; width:100%;"></div>
+            </div>
+            <div id="currency-full-view" style="width:100%; margin-top:20px; display:none;">
+                <div style="text-align:center; margin-bottom:8px;">
+                    <button onclick="showCurrencyGrid()" style="background:#FF9900; color:#111; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">← Back to all charts</button>
+                </div>
+                <div class="section-header" style="text-align:center; margin-bottom:8px;" id="currency-full-title">Chart</div>
+                <div id="tradingview_currency_full" style="min-height:500px;"></div>
             </div>
 
             <div class="note">Includes Romanian Leu (RON). Rates update roughly every minute.</div>
@@ -449,6 +456,9 @@
 
         // ========== TAB SWITCHING ==========
         function switchTab(tab) {
+            if (tab === 'currencies') {
+                setTimeout(initCurrencyGrid, 200);
+            }
             currentTab = tab;
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.tab === tab);
@@ -656,59 +666,84 @@
         }
 
         
-        // ========== CURRENCY CHART CLICK HANDLER ==========
-        function loadCurrencyChart(symbol, title) {
-            const container = document.getElementById('tradingview_currency_chart');
-            const titleEl = document.getElementById('currency-chart-title');
-            titleEl.textContent = title + ' Chart';
-            container.innerHTML = ''; // clear previous
+        // ========== CURRENCY CHARTS ==========
+        const currencyCharts = [
+            { code: 'usd', symbol: 'TVC:DXY', title: 'US Dollar Index' },
+            { code: 'eur', symbol: 'FX:EURUSD', title: 'EUR/USD' },
+            { code: 'gbp', symbol: 'FX:GBPUSD', title: 'GBP/USD' },
+            { code: 'jpy', symbol: 'FX:USDJPY', title: 'USD/JPY' },
+            { code: 'chf', symbol: 'FX:USDCHF', title: 'USD/CHF' },
+            { code: 'cad', symbol: 'FX:USDCAD', title: 'USD/CAD' },
+            { code: 'aud', symbol: 'FX:AUDUSD', title: 'AUD/USD' },
+            { code: 'ron', symbol: 'USDRON', title: 'USD/RON' }
+        ];
+
+        function createChartWidget(containerId, symbol, height) {
             new TradingView.widget({
-                "width": "100%",
-                "height": 400,
-                "symbol": symbol,
-                "interval": "D",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "enable_publishing": false,
-                "hide_top_toolbar": true,
-                "hide_legend": false,
-                "save_image": false,
-                "container_id": "tradingview_currency_chart"
+                width: "100%",
+                height: height,
+                symbol: symbol,
+                interval: "D",
+                timezone: "Etc/UTC",
+                theme: "dark",
+                style: "1",
+                locale: "en",
+                enable_publishing: false,
+                hide_top_toolbar: true,
+                hide_legend: true,
+                save_image: false,
+                container_id: containerId
             });
         }
 
-        // Map currency codes to TradingView symbols
-        const currencySymbols = {
-            'eur': 'FX:EURUSD',
-            'gbp': 'FX:GBPUSD',
-            'jpy': 'FX:USDJPY',
-            'chf': 'FX:USDCHF',
-            'cad': 'FX:USDCAD',
-            'aud': 'FX:AUDUSD',
-            'ron': 'FX:USDRON'
-        };
+        function showCurrencyGrid() {
+            document.getElementById('currency-full-view').style.display = 'none';
+            document.getElementById('currency-grid-view').style.display = 'block';
+        }
 
-        // Attach click handlers after table is populated
+        function showFullChart(symbol, title) {
+            document.getElementById('currency-grid-view').style.display = 'none';
+            document.getElementById('currency-full-view').style.display = 'block';
+            document.getElementById('currency-full-title').textContent = title;
+            const container = document.getElementById('tradingview_currency_full');
+            container.innerHTML = '';
+            createChartWidget('tradingview_currency_full', symbol, 500);
+        }
+
+        function initCurrencyGrid() {
+            const grid = document.getElementById('currency-chart-grid');
+            grid.innerHTML = '';
+            currencyCharts.forEach((c, i) => {
+                const id = 'tv-grid-' + c.code;
+                const box = document.createElement('div');
+                box.style.cssText = 'background:#262626; border-radius:10px; padding:8px; cursor:pointer; text-align:center;';
+                box.innerHTML = `<div style="font-size:13px; color:#FF9900; margin-bottom:6px; font-weight:600;">${c.title}</div><div id="${id}" style="height:180px;"></div>`;
+                box.onclick = () => showFullChart(c.symbol, c.title);
+                grid.appendChild(box);
+                // Delay widget creation slightly so DOM is ready
+                setTimeout(() => createChartWidget(id, c.symbol, 180), 100 + i * 50);
+            });
+        }
+
         function attachCurrencyClicks() {
             const rows = document.querySelectorAll('#currency-tbody tr');
             rows.forEach(row => {
                 const nameCell = row.cells[0];
                 if (!nameCell) return;
                 const text = nameCell.textContent.toLowerCase();
-                let code = null;
-                if (text.includes('euro')) code = 'eur';
-                else if (text.includes('pound')) code = 'gbp';
-                else if (text.includes('yen')) code = 'jpy';
-                else if (text.includes('franc')) code = 'chf';
-                else if (text.includes('canadian')) code = 'cad';
-                else if (text.includes('australian')) code = 'aud';
-                else if (text.includes('leu') || text.includes('ron')) code = 'ron';
-                if (code && currencySymbols[code]) {
+                let match = null;
+                if (text.includes('dollar') && text.includes('us')) match = currencyCharts.find(c => c.code === 'usd');
+                else if (text.includes('euro')) match = currencyCharts.find(c => c.code === 'eur');
+                else if (text.includes('pound')) match = currencyCharts.find(c => c.code === 'gbp');
+                else if (text.includes('yen')) match = currencyCharts.find(c => c.code === 'jpy');
+                else if (text.includes('franc')) match = currencyCharts.find(c => c.code === 'chf');
+                else if (text.includes('canadian')) match = currencyCharts.find(c => c.code === 'cad');
+                else if (text.includes('australian')) match = currencyCharts.find(c => c.code === 'aud');
+                else if (text.includes('leu') || text.includes('ron')) match = currencyCharts.find(c => c.code === 'ron');
+                if (match) {
                     row.style.cursor = 'pointer';
-                    row.title = 'Click to view chart';
-                    row.onclick = () => loadCurrencyChart(currencySymbols[code], nameCell.textContent.split('(')[0].trim());
+                    row.title = 'Click to view full chart';
+                    row.onclick = () => showFullChart(match.symbol, match.title);
                 }
             });
         }
@@ -727,6 +762,8 @@
         }
 
         window.onload = function() {
+            // Pre-init currency grid in background
+            setTimeout(initCurrencyGrid, 500);
             updateTime();
             setInterval(updateTime, 1000);
             refreshAll();
