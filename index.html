@@ -361,6 +361,50 @@
                 <div class="small-text">BTC per 1 oz gold</div>
             </div>
 
+            
+            <div class="chart-container" style="width:100%; margin-top:20px;">
+                <div class="section-header" style="text-align:center; margin-bottom:8px;">Gold Chart</div>
+                <div id="tradingview_gold_chart"></div>
+                <script type="text/javascript">
+                    new TradingView.widget({
+                        "width": "100%",
+                        "height": 400,
+                        "symbol": "TVC:GOLD",
+                        "interval": "D",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "enable_publishing": false,
+                        "hide_top_toolbar": true,
+                        "hide_legend": false,
+                        "save_image": false,
+                        "container_id": "tradingview_gold_chart"
+                    });
+                </script>
+            </div>
+            <div class="chart-container" style="width:100%; margin-top:20px;">
+                <div class="section-header" style="text-align:center; margin-bottom:8px;">Silver Chart</div>
+                <div id="tradingview_silver_chart"></div>
+                <script type="text/javascript">
+                    new TradingView.widget({
+                        "width": "100%",
+                        "height": 400,
+                        "symbol": "TVC:SILVER",
+                        "interval": "D",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "enable_publishing": false,
+                        "hide_top_toolbar": true,
+                        "hide_legend": false,
+                        "save_image": false,
+                        "container_id": "tradingview_silver_chart"
+                    });
+                </script>
+            </div>
+
             <div class="note">Prices update roughly every minute. Data via public free sources.</div>
         </div>
     </div>
@@ -384,6 +428,50 @@
                     <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
                 </tbody>
             </table>
+
+            
+            <div class="chart-container" style="width:100%; margin-top:20px;">
+                <div class="section-header" style="text-align:center; margin-bottom:8px;">EUR/USD Chart</div>
+                <div id="tradingview_eurusd_chart"></div>
+                <script type="text/javascript">
+                    new TradingView.widget({
+                        "width": "100%",
+                        "height": 400,
+                        "symbol": "FX:EURUSD",
+                        "interval": "D",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "enable_publishing": false,
+                        "hide_top_toolbar": true,
+                        "hide_legend": false,
+                        "save_image": false,
+                        "container_id": "tradingview_eurusd_chart"
+                    });
+                </script>
+            </div>
+            <div class="chart-container" style="width:100%; margin-top:20px;">
+                <div class="section-header" style="text-align:center; margin-bottom:8px;">GBP/USD Chart</div>
+                <div id="tradingview_gbpusd_chart"></div>
+                <script type="text/javascript">
+                    new TradingView.widget({
+                        "width": "100%",
+                        "height": 400,
+                        "symbol": "FX:GBPUSD",
+                        "interval": "D",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "enable_publishing": false,
+                        "hide_top_toolbar": true,
+                        "hide_legend": false,
+                        "save_image": false,
+                        "container_id": "tradingview_gbpusd_chart"
+                    });
+                </script>
+            </div>
 
             <div class="note">Includes Romanian Leu (RON). Rates update roughly every minute.</div>
         </div>
