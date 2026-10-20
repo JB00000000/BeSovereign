@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - BeSovereign</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1A1A1A;
+            --text-color: #FFFFFF;
+            --accent-color: #FF9900;
+            --card-bg-color: #262626;
+            --muted-color: #BBBBBB;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            background-color: var(--card-bg-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+        .nav {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        .nav a:hover, .nav a.active {
+            color: var(--accent-color);
+        }
+        .content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px 60px;
+        }
+        h1 {
+            color: var(--accent-color);
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .muted {
+            color: var(--muted-color);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .faq-item {
+            background: var(--card-bg-color);
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 16px;
+        }
+        .faq-item h2 {
+            color: var(--accent-color);
+            font-size: 18px;
+            margin: 0 0 10px 0;
+        }
+        .faq-item p {
+            margin: 0;
+            font-size: 15px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .logo { display: none; }
+            .header { flex-direction: column; gap: 12px; padding: 15px; }
+            .nav { gap: 14px; }
+            h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html"><img src="new-logo.png" alt="BeSovereign Logo" class="logo"></a>
+                        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="faq.html" class="active">FAQ</a>
+            <a href="blog.html">Blog</a>
+            <a href="legal.html">Legal</a>
+            <a href="privacy.html">Privacy</a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <h1>Frequently Asked Questions</h1>
+        <p class="muted">Quick answers about BeSovereign and how the site works.</p>
+
+        <div class="faq-item">
+            <h2>What is BeSovereign?</h2>
+            <p>BeSovereign is a simple, clean Bitcoin dashboard that displays real-time and near real-time network and market data — block height, fees, mempool stats, price information, and more. The goal is to give users a clear, uncluttered view of key Bitcoin metrics so they can stay informed and make their own decisions.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>Where does the data come from?</h2>
+            <p>Data is fetched from publicly available APIs, including Mempool.space (for fees, mempool, and block height), CoinGecko (for market capitalisation and related metrics), and several major exchange APIs for price information. Charts are powered by TradingView. All sources are third-party; BeSovereign does not generate or control the underlying data.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>Is this financial advice?</h2>
+            <p>No. Everything on this site is for informational and educational purposes only. It is not financial, investment, or trading advice. Always do your own research and consult professionals if needed. See the <a href="legal.html">Legal</a>
+            <a href="privacy.html">Privacy</a> for full details.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>Can I rearrange the boxes on the homepage?</h2>
+            <p>Yes. On desktop you can drag and drop the data cards to reorder them. Your preferred order is saved in your browser’s local storage so it persists between visits on the same device.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>How can I support the site?</h2>
+            <p>You can donate Bitcoin using the “Donate Bitcoin” button on the homepage. Clicking it copies the donation address to your clipboard and shows a QR code. Donations are voluntary and help keep the site running.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>Why the name “Be Sovereign”?</h2>
+            <p>Sovereignty in the Bitcoin context means taking personal responsibility for your money, keys, and understanding of the network. The name reflects the idea of becoming more independent and informed rather than relying solely on third parties.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>Does the site collect or store my personal data?</h2>
+            <p>BeSovereign does not require accounts or logins. Basic technical data (such as browser type) may be processed by the hosting provider or analytics tools for site performance, but no personal profiles are created by the site itself. Your card order preference is stored only locally in your own browser.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>Why do some numbers sometimes show “Error” or “Loading…”?</h2>
+            <p>The site depends on external APIs. Occasionally an API may be slow, rate-limited, or temporarily unavailable. The page will retry on the next refresh cycle (usually within a minute). Refreshing the page often resolves temporary issues.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>Is the code open source?</h2>
+            <p>Yes. The site is hosted via GitHub. You can view the source code in the public repository associated with this project.</p>
+        </div>
+
+        <div class="faq-item">
+            <h2>How often is the data updated?</h2>
+            <p>Most data points refresh automatically every 60 seconds. The clock in the header updates every second. Block height and fee estimates typically update in near real time when the underlying APIs provide new information.</p>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+</body>
+</html>

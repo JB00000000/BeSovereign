@@ -1,919 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta Tags and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeSovereign</title>
-
-    <!-- Favicon Links -->
-    <!-- ICO format for older browsers -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- PNG format for modern browsers -->
     <link rel="icon" href="favicon.png" type="image/png">
-    <!-- SVG format -->
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any">
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-
-    <!-- SortableJS Library with Correct Integrity -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" integrity="sha512-Eezs+g9Lq4TCCq0wae01s9PuNWzHYoCMkE97e2qdkYthpI0pzC3UGB03lgEHn2XM85hDOUF6qgqqszs+iXU4UA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- CSS Styles -->
     <style>
         :root {
             --bg-color: #1A1A1A;
             --text-color: #FFFFFF;
             --accent-color: #FF9900;
             --card-bg-color: #262626;
-            --light-bg-color: #FFFFFF;
-            --light-text-color: #000000;
-            --light-accent-color: #007BFF;
+            --muted-color: #BBBBBB;
         }
-
-        /* Theme Styles (Removed Light/Dark Theme Controls) */
-        .dark-theme {
-            --bg-color: #1A1A1A;
-            --text-color: #FFFFFF;
-            --accent-color: #FF9900;
-            --card-bg-color: #262626;
-        }
-
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             padding: 0;
             font-family: 'Open Sans', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
         }
-
         .header {
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 20px;
-            box-sizing: border-box;
+            padding: 12px 20px;
             background-color: var(--card-bg-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex-wrap: wrap;
+            gap: 12px;
         }
-
         .logo {
-            width: 150px;
+            width: 140px;
             height: auto;
         }
-
-        .donate-section {
+        .header-left {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            text-align: center;
+            gap: 24px;
+            flex-wrap: wrap;
         }
-
-        .donate-text {
-            margin-top: 10px;
-            font-size: 16px;
+        .main-nav {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .main-nav a {
             color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
         }
+        .main-nav a:hover { color: var(--accent-color); }
 
-        .donate-container {
-            position: relative;
-            display: inline-block;
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin: 16px auto 8px;
+            max-width: 1200px;
+            padding: 0 16px;
+            width: 100%;
         }
-
-        .donate-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: var(--accent-color);
-            color: #fff;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .donate-button:hover {
-            background-color: #e68a00; /* Slightly darker shade for hover */
-            transform: scale(1.05);
-        }
-
-        .donate-button:active {
-            transform: scale(0.95);
-        }
-
-        /* QR Code Styles */
-        .qr-code {
-            position: absolute;
-            top: 120%;
-            left: 50%;
-            transform: translateX(-50%);
+        .tab-btn {
             background: var(--card-bg-color);
-            padding: 10px;
+            border: 2px solid transparent;
+            color: var(--text-color);
+            padding: 10px 22px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-            display: none; /* Initially hidden */
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { border-color: var(--accent-color); }
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: #111;
+            border-color: var(--accent-color);
         }
 
-        .qr-code.show {
-            display: block;
-            opacity: 1;
-        }
-
-        .qr-code img {
-            width: 200px;
-            height: 200px;
-        }
-
-        /* Bitcoin Block Height and Time */
         .header-info {
             text-align: right;
+            min-width: 160px;
         }
-
-        .block-height {
-            font-size: 24px;
+        .header-metric {
+            font-size: 20px;
             color: var(--accent-color);
             font-weight: bold;
         }
-
         .current-time {
-            font-size: 16px;
-            color: #BBBBBB;
-            margin-top: 5px;
+            font-size: 14px;
+            color: var(--muted-color);
+            margin-top: 4px;
         }
 
-        /* Main Container for all content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .main-container {
             width: 100%;
             max-width: 1200px;
-            padding: 10px;
+            margin: 0 auto;
+            padding: 12px 16px 40px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            box-sizing: border-box;
+            gap: 12px;
         }
-
-        /* Data Sections */
         .data-section {
-            font-size: 20px;
-            color: var(--text-color);
-            text-align: center;
             background: var(--card-bg-color);
-            padding: 15px;
+            padding: 16px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            flex: 1 1 200px; /* Adjusted for flexibility */
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            cursor: move; /* Indicate draggable elements */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            flex: 1 1 200px;
+            text-align: center;
+            min-width: 160px;
         }
-
         .section-header {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--accent-color);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
-
         .data-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 400;
-            color: var(--text-color);
         }
-
-        .small-text {
-            font-size: 18px;
-            color: var(--text-color);
-            margin: 5px 0;
-        }
+        .small-text { font-size: 15px; margin: 4px 0; }
 
         .chart-container {
             width: 100%;
             max-width: 1200px;
-            margin: 20px auto;
+            margin: 12px auto;
         }
 
-        /* Exchange Prices Container */
-        .exchange-prices-container {
+        /* Metals & Currencies specific */
+        .section-title {
             width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+            text-align: center;
+            color: var(--accent-color);
+            font-size: 20px;
+            margin: 10px 0 6px;
         }
-
-        /* Fee Estimates Container (Consolidated for Mobile) */
-        .fee-estimates-container {
+        .ratio-highlight {
+            font-size: 28px;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        table.currency-table {
             width: 100%;
-            display: none; /* Hidden by default, visible on mobile */
-            flex-direction: column;
-            align-items: center;
+            max-width: 1000px;
+            margin: 12px auto;
+            border-collapse: collapse;
             background: var(--card-bg-color);
-            padding: 15px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            font-size: 20px;
-            box-sizing: border-box;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        table.currency-table th,
+        table.currency-table td {
+            padding: 12px 14px;
+            text-align: right;
+            border-bottom: 1px solid #333;
+            font-size: 15px;
+        }
+        table.currency-table th {
+            background: #1f1f1f;
+            color: var(--accent-color);
+            text-align: center;
+            font-weight: 600;
+        }
+        table.currency-table td:first-child,
+        table.currency-table th:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+        table.currency-table tr:last-child td { border-bottom: none; }
+        table.currency-table tr:hover td { background: #2a2a2a; }
+
+        .note {
+            width: 100%;
+            text-align: center;
+            color: var(--muted-color);
+            font-size: 13px;
+            margin-top: 16px;
         }
 
-        .fee-estimates-container .section-header {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .fee-estimates-container .fee {
-            margin: 5px 0;
-        }
-
-        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .qr-code img {
-                width: 150px;
-                height: 150px;
-            }
-
-            /* Hide the logo on mobile */
-            .logo {
-                display: none;
-            }
-
-            /* Show consolidated fee estimates on mobile */
-            .fee-estimates-container {
-                display: flex;
-            }
-
-            /* Hide individual fee estimates on mobile */
-            .main-container .data-section.fast-fee-desktop,
-            .main-container .data-section.medium-fee-desktop,
-            .main-container .data-section.slow-fee-desktop {
-                display: none;
-            }
-
-            .main-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            /* Adjust data-section for smaller height */
-            .main-container .data-section {
-                width: 90%;
-                margin: 8px 0;
-                font-size: 16px; /* Reduce font size */
-                padding: 10px; /* Reduce padding */
-                flex: none; /* Remove flex-grow and flex-shrink */
-                max-height: none; /* Remove height restriction */
-                overflow: visible; /* Prevent overflow */
-            }
-
-            .main-container .data-value {
-                font-size: 24px; /* Reduce font size */
-            }
-
-            .main-container .section-header {
-                font-size: 18px; /* Reduce font size */
-            }
-
-            .main-container .small-text {
-                font-size: 16px; /* Reduce font size */
-            }
-
-            .chart-container {
-                width: 100%;
-                margin: 10px 0;
-            }
-
-            /* Reorder Elements on Mobile */
-            .main-container > #average-price-section {
-                order: 1;
-            }
-
-            .chart-container {
-                order: 2;
-            }
-
-            .fee-estimates-container {
-                order: 3;
-                width: 90%;
-                font-size: 14px; /* Smaller text */
-            }
-
-            .main-container > #sats-per-dollar-section {
-                order: 4;
-            }
-
-            .main-container > #market-cap-section {
-                order: 5;
-            }
-
-            .main-container > #ath-data-container {
-                order: 6;
-            }
-
-            .main-container > #ath-decline-container {
-                order: 7;
-            }
-
-            .main-container > #ath-date-container {
-                order: 8;
-            }
-
-            .main-container > #days-since-ath-container {
-                order: 9;
-            }
-
-            .main-container > #mempool-tx-container {
-                order: 10;
-            }
-
-            .main-container > #mempool-size-container {
-                order: 11;
-            }
-
-            .main-container > #mempool-fees-container {
-                order: 12;
-            }
-
-            .main-container > #blocks-clear-container {
-                order: 13;
-            }
-
-            .exchange-prices-container {
-                order: 14;
-                width: 90%;
-            }
-
-            /* Adjust data-section widths within Exchange Prices */
-            .exchange-prices-container .data-section {
-                flex: 1 1 45%; /* Two exchanges per box */
-                /* Ensure adequate height */
-                min-height: 100px; /* Increased from 80px to 100px */
-                padding: 15px; /* Increased padding for better visibility */
-            }
-
-            /* Adjust Fee Estimates Container */
-            .fee-estimates-container .section-header {
-                font-size: 18px;
-                margin-bottom: 5px;
-            }
-
-            .fee-estimates-container .fee {
-                margin: 2px 0;
-            }
-
-            /* Donate Section Styling */
-            .donate-section {
-                margin: 0 auto;
-            }
-
-            .donate-text {
-                font-size: 14px;
-                margin-top: 5px;
-            }
-        }
-
-        /* Desktop Styles for Individual Fee Estimates */
-        @media (min-width: 769px) {
-            /* Hide the donate text on desktop if desired */
-            .donate-text {
-                font-size: 16px;
-                margin-top: 10px;
-            }
-        }
-
-        /* Highlight active buttons */
-        .controls button.active {
-            background-color: #333333;
-            color: #FFFFFF;
-        }
-
-        /* Optional: Styles for SortableJS ghost class */
-        .sortable-ghost {
-            opacity: 0.4;
+            .logo { display: none; }
+            .header { flex-direction: column; align-items: stretch; }
+            .header-left { justify-content: center; }
+            .header-info { text-align: center; }
+            .tabs { justify-content: center; }
+            .tab-btn { padding: 8px 14px; font-size: 14px; }
+            .data-section { flex: 1 1 100%; max-width: 100%; }
+            table.currency-table { font-size: 13px; }
+            table.currency-table th, table.currency-table td { padding: 8px 6px; }
         }
     </style>
 </head>
-<body class="dark-theme"> <!-- Default theme -->
+<body>
 
-    <!-- Header with Logo, Donate Button, and Block Height -->
+    <!-- HEADER -->
     <div class="header">
-        <!-- Logo on the Left -->
-        <img src="new-logo.png" alt="BeSovereign Logo" class="logo">
-
-        <!-- Donate Section in the Middle -->
-        <div class="donate-section">
-            <div class="donate-container">
-                <button class="donate-button" onclick="handleDonate()" title="Click to donate Bitcoin" aria-label="Donate Bitcoin">
-                    Donate Bitcoin
-                </button>
-                <div class="qr-code" id="qr-code">
-                    <a href="https://www.bitcoinqrcodemaker.com" target="_blank">
-                        <img src="https://www.bitcoinqrcodemaker.com/api/?style=bitcoin&amp;address=bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t" 
-                             height="200" width="200" 
-                             alt="Bitcoin QR code" 
-                             title="bitcoin:bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t">
-                    </a>
-                </div>
-            </div>
-            <div class="donate-text">
-                Support the site by donating Bitcoin
-            </div>
+        <div class="header-left">
+            <a href="index.html"><img src="new-logo.png" alt="BeSovereign" class="logo"></a>
+            <nav class="main-nav">
+                <a href="faq.html">FAQ</a>
+                <a href="blog.html">Blog</a>
+                <a href="legal.html">Legal</a>
+                <a href="privacy.html">Privacy</a>
+            </nav>
         </div>
-
-        <!-- Block Height and Current Time on the Right -->
         <div class="header-info">
-            <div class="block-height">Block Height: <span id="block-height">Loading...</span></div>
+            <div class="header-metric" id="header-metric">—</div>
             <div class="current-time" id="current-time">Loading...</div>
         </div>
     </div>
 
-    <!-- Controls for Theme Selection (Removed) -->
-    <!--
-    <div class="controls">
-        <div class="theme-controls">
-            <button onclick="setTheme('light')" id="theme-light" aria-pressed="false" aria-label="Switch to Light Mode">Light Mode</button>
-            <button onclick="setTheme('dark')" id="theme-dark" aria-pressed="false" aria-label="Switch to Dark Mode">Dark Mode</button>
-            <!-- Removed Blue and Green Theme Buttons -->
-        </div>
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="bitcoin" onclick="switchTab('bitcoin')">Bitcoin</button>
+        <button class="tab-btn" data-tab="metals" onclick="switchTab('metals')">Metals</button>
+        <button class="tab-btn" data-tab="currencies" onclick="switchTab('currencies')">Currencies</button>
     </div>
-    -->
 
-    <!-- Main Container for all content -->
-    <div class="main-container grid-layout"> <!-- Default layout is Grid -->
-        <!-- Sats per Dollar Section -->
-        <div class="data-section" id="sats-per-dollar-section">
-            <div class="section-header">Sats per Dollar</div>
-            <div class="data-value" id="sats-per-dollar">Loading...</div>
-        </div>
-
-        <!-- Exchange Average Price Section -->
-        <div class="data-section" id="average-price-section">
-            <div class="section-header">Exchange Average Price</div>
-            <div class="data-value" id="average-price">Loading...</div>
-        </div>
-
-        <!-- Market Capitalisation Section -->
-        <div class="data-section" id="market-cap-section">
-            <div class="section-header">Market Capitalisation</div>
-            <div class="data-value" id="market-cap">Loading...</div>
-        </div>
-
-        <!-- TradingView Bitcoin Price Chart -->
-        <div class="chart-container">
-            <!-- TradingView Widget BEGIN -->
-            <div class="tradingview-widget-container">
-                <div id="tradingview_btc_chart"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                    new TradingView.widget({
-                        "width": "100%",
-                        "height": 500,
-                        "symbol": "BITSTAMP:BTCUSD",
-                        "interval": "60",
-                        "timezone": "Etc/UTC",
-                        "theme": "dark",
-                        "style": "1",
-                        "locale": "en",
-                        "toolbar_bg": "#f1f3f6",
-                        "enable_publishing": false,
-                        "hide_top_toolbar": true,
-                        "hide_legend": true,
-                        "save_image": false,
-                        "container_id": "tradingview_btc_chart"
-                    });
-                </script>
+    <!-- ===================== BITCOIN TAB ===================== -->
+    <div id="tab-bitcoin" class="tab-content active">
+        <div class="main-container" id="bitcoin-container">
+            <div class="data-section" id="sats-per-dollar-section">
+                <div class="section-header">Sats per Dollar</div>
+                <div class="data-value" id="sats-per-dollar">Loading...</div>
             </div>
-            <!-- TradingView Widget END -->
-        </div>
+            <div class="data-section" id="average-price-section">
+                <div class="section-header">Exchange Average Price</div>
+                <div class="data-value" id="average-price">Loading...</div>
+            </div>
+            <div class="data-section" id="market-cap-section">
+                <div class="section-header">Market Capitalisation</div>
+                <div class="data-value" id="market-cap">Loading...</div>
+            </div>
 
-        <!-- Consolidated Fee Estimates Display (Visible on Mobile) -->
-        <div class="fee-estimates-container">
-            <div class="section-header">Fee Estimates</div>
-            <div class="fee fast-fee">Fast Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee medium-fee">Medium Fee: <span class="data-value">Loading...</span></div>
-            <div class="fee slow-fee">Slow Fee: <span class="data-value">Loading...</span></div>
-        </div>
+            <div class="chart-container">
+                <div class="tradingview-widget-container">
+                    <div id="tradingview_btc_chart"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <script type="text/javascript">
+                        new TradingView.widget({
+                            "width": "100%",
+                            "height": 420,
+                            "symbol": "BITSTAMP:BTCUSD",
+                            "interval": "60",
+                            "timezone": "Etc/UTC",
+                            "theme": "dark",
+                            "style": "1",
+                            "locale": "en",
+                            "toolbar_bg": "#f1f3f6",
+                            "enable_publishing": false,
+                            "hide_top_toolbar": true,
+                            "hide_legend": true,
+                            "save_image": false,
+                            "container_id": "tradingview_btc_chart"
+                        });
+                    </script>
+                </div>
+            </div>
 
-        <!-- Individual Fee Estimates Display (Visible on Desktop) -->
-        <div class="data-section fast-fee-desktop">
-            <div class="section-header">Fast Fee</div>
-            <div class="data-value">Loading...</div>
-        </div>
-        <div class="data-section medium-fee-desktop">
-            <div class="section-header">Medium Fee</div>
-            <div class="data-value">Loading...</div>
-        </div>
-        <div class="data-section slow-fee-desktop">
-            <div class="section-header">Slow Fee</div>
-            <div class="data-value">Loading...</div>
-        </div>
-
-        <!-- New Data Points: All-time High, etc. -->
-        <div class="data-section" id="ath-data-container">
-            <div class="section-header">All-time High Price</div>
-            <div class="data-value" id="ath-price">Loading...</div>
-        </div>
-        <div class="data-section" id="ath-decline-container">
-            <div class="section-header">% Decline from ATH</div>
-            <div class="data-value" id="ath-decline">Loading...</div>
-        </div>
-        <div class="data-section" id="ath-date-container">
-            <div class="section-header">ATH Date</div>
-            <div class="data-value" id="ath-date">Loading...</div>
-        </div>
-        <div class="data-section" id="days-since-ath-container">
-            <div class="section-header">Days Since ATH</div>
-            <div class="data-value" id="days-since-ath">Loading...</div>
-        </div>
-
-        <!-- Remaining Data Sections -->
-        <div class="data-section" id="mempool-tx-container">
-            <div class="section-header">Unconfirmed Transactions</div>
-            <div class="data-value" id="mempool-tx-count">Loading...</div>
-        </div>
-
-        <div class="data-section" id="mempool-size-container">
-            <div class="section-header">Mempool Size (MB)</div>
-            <div class="data-value" id="mempool-size">Loading...</div>
-        </div>
-
-        <div class="data-section" id="mempool-fees-container">
-            <div class="section-header">Total Fees in Mempool</div>
-            <div class="data-value" id="mempool-total-fees">Loading...</div>
-        </div>
-
-        <div class="data-section" id="blocks-clear-container">
-            <div class="section-header">Blocks to Clear Mempool</div>
-            <div class="data-value" id="blocks-to-clear">Loading...</div>
-        </div>
-
-        <!-- Exchange Prices Display (Three Boxes) -->
-        <div class="exchange-prices-container">
             <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-1">Loading...</div>
+                <div class="section-header">Fast Fee</div>
+                <div class="data-value" id="fast-fee">Loading...</div>
             </div>
             <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-2">Loading...</div>
+                <div class="section-header">Medium Fee</div>
+                <div class="data-value" id="medium-fee">Loading...</div>
             </div>
             <div class="data-section">
-                <div class="section-header">Exchange Prices</div>
-                <div id="exchange-prices-3">Loading...</div>
+                <div class="section-header">Slow Fee</div>
+                <div class="data-value" id="slow-fee">Loading...</div>
+            </div>
+
+            <div class="data-section" id="ath-data-container">
+                <div class="section-header">All-time High Price</div>
+                <div class="data-value" id="ath-price">Loading...</div>
+            </div>
+            <div class="data-section" id="ath-decline-container">
+                <div class="section-header">% Decline from ATH</div>
+                <div class="data-value" id="ath-decline">Loading...</div>
+            </div>
+            <div class="data-section" id="ath-date-container">
+                <div class="section-header">ATH Date</div>
+                <div class="data-value" id="ath-date">Loading...</div>
+            </div>
+            <div class="data-section" id="days-since-ath-container">
+                <div class="section-header">Days Since ATH</div>
+                <div class="data-value" id="days-since-ath">Loading...</div>
+            </div>
+
+            <div class="data-section" id="mempool-tx-container">
+                <div class="section-header">Unconfirmed Transactions</div>
+                <div class="data-value" id="mempool-tx-count">Loading...</div>
+            </div>
+            <div class="data-section" id="mempool-size-container">
+                <div class="section-header">Mempool Size (MB)</div>
+                <div class="data-value" id="mempool-size">Loading...</div>
+            </div>
+            <div class="data-section" id="mempool-fees-container">
+                <div class="section-header">Total Fees in Mempool</div>
+                <div class="data-value" id="mempool-total-fees">Loading...</div>
+            </div>
+            <div class="data-section" id="blocks-clear-container">
+                <div class="section-header">Blocks to Clear Mempool</div>
+                <div class="data-value" id="blocks-to-clear">Loading...</div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript to fetch and display the data, and handle donate functionality -->
+    <!-- ===================== METALS TAB ===================== -->
+    <div id="tab-metals" class="tab-content">
+        <div class="main-container">
+            <div class="section-title">Precious Metals</div>
+
+            <div class="data-section">
+                <div class="section-header">Gold (XAU)</div>
+                <div class="data-value" id="gold-price">Loading...</div>
+                <div class="small-text">USD per troy ounce</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Silver (XAG)</div>
+                <div class="data-value" id="silver-price">Loading...</div>
+                <div class="small-text">USD per troy ounce</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Gold / Silver Ratio</div>
+                <div class="data-value ratio-highlight" id="gold-silver-ratio">Loading...</div>
+            </div>
+
+            <div class="data-section">
+                <div class="section-header">BTC priced in Gold</div>
+                <div class="data-value" id="btc-in-gold">Loading...</div>
+                <div class="small-text">ounces of gold per 1 BTC</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">BTC priced in Silver</div>
+                <div class="data-value" id="btc-in-silver">Loading...</div>
+                <div class="small-text">ounces of silver per 1 BTC</div>
+            </div>
+            <div class="data-section">
+                <div class="section-header">Gold priced in BTC</div>
+                <div class="data-value" id="gold-in-btc">Loading...</div>
+                <div class="small-text">BTC per 1 oz gold</div>
+            </div>
+
+            <div class="note">Prices update roughly every minute. Data via public free sources.</div>
+        </div>
+    </div>
+
+    <!-- ===================== CURRENCIES TAB ===================== -->
+    <div id="tab-currencies" class="tab-content">
+        <div class="main-container">
+            <div class="section-title">Major Currencies</div>
+
+            <table class="currency-table">
+                <thead>
+                    <tr>
+                        <th>Currency</th>
+                        <th>vs USD</th>
+                        <th>1 BTC</th>
+                        <th>1 oz Gold</th>
+                        <th>1 oz Silver</th>
+                    </tr>
+                </thead>
+                <tbody id="currency-tbody">
+                    <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+
+            <div class="note">Includes Romanian Leu (RON). Rates update roughly every minute.</div>
+        </div>
+    </div>
+
     <script>
-        // Bitcoin Address
-        const bitcoinAddress = 'bc1qj3k0ntj75m9qvjreqn623kwt0u965k0nl7wv9t'; // Replace with your actual address
+        // ========== STATE ==========
+        let currentTab = 'bitcoin';
+        let btcPriceUsd = null;
+        let goldPriceUsd = null;
+        let silverPriceUsd = null;
+        let eurUsd = null;
 
-        // Function to handle Donate Button Click
-        function handleDonate() {
-            // Copy the Bitcoin address to clipboard
-            navigator.clipboard.writeText(bitcoinAddress)
-                .then(() => {
-                    // Notify the user
-                    alert('Bitcoin address copied to clipboard!');
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
-                    alert('Failed to copy Bitcoin address. Please try manually.');
-                });
-
-            // Toggle QR Code Visibility
-            const qrCode = document.getElementById('qr-code');
-            if (qrCode.classList.contains('show')) {
-                qrCode.classList.remove('show');
-            } else {
-                qrCode.classList.add('show');
-            }
-        }
-
-        // Optional: Close QR Code When Clicking Outside
-        window.onclick = function(event) {
-            const donateContainer = document.querySelector('.donate-container');
-            const qrCode = document.getElementById('qr-code');
-            if (!donateContainer.contains(event.target)) {
-                qrCode.classList.remove('show');
-            }
-        }
-
-        // Initialize Sortable on the main container
-        function initializeSortable() {
-            const mainContainer = document.querySelector('.main-container');
-            Sortable.create(mainContainer, {
-                animation: 150,
-                ghostClass: 'sortable-ghost',
-                onEnd: function (evt) {
-                    saveOrder();
-                }
+        // ========== TAB SWITCHING ==========
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
             });
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.toggle('active', el.id === 'tab-' + tab);
+            });
+            updateHeaderMetric();
         }
 
-        // Save the current order of elements to localStorage
-        function saveOrder() {
-            const mainContainer = document.querySelector('.main-container');
-            const order = Array.from(mainContainer.children)
-                .filter(child => child.id) // Only include elements with an ID
-                .map(child => child.id);
-            localStorage.setItem('boxOrder', JSON.stringify(order));
-        }
-
-        // Load the saved order from localStorage
-        function loadOrder() {
-            const mainContainer = document.querySelector('.main-container');
-            const savedOrder = JSON.parse(localStorage.getItem('boxOrder'));
-
-            if (savedOrder) {
-                savedOrder.forEach(id => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        mainContainer.appendChild(element);
-                    }
-                });
+        function updateHeaderMetric() {
+            const el = document.getElementById('header-metric');
+            if (currentTab === 'bitcoin') {
+                const bh = document.getElementById('block-height-value');
+                el.textContent = bh ? 'Block: ' + bh.textContent : 'Block Height';
+            } else if (currentTab === 'metals') {
+                const ratio = document.getElementById('gold-silver-ratio');
+                el.textContent = ratio && ratio.textContent !== 'Loading...' 
+                    ? 'G/S Ratio: ' + ratio.textContent 
+                    : 'Gold/Silver Ratio';
+            } else if (currentTab === 'currencies') {
+                el.textContent = eurUsd 
+                    ? 'EUR/USD: ' + eurUsd.toFixed(4) 
+                    : 'EUR/USD';
             }
         }
 
-        // Fetch Exchange Prices from various exchanges and distribute them into three boxes
-        async function fetchExchangePrices() {
-            const exchanges = [
-                { name: 'Coinbase', url: 'https://api.coinbase.com/v2/prices/spot?currency=USD' },
-                { name: 'Kraken', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD' },
-                { name: 'Binance', url: 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT' },
-                { name: 'Gemini', url: 'https://api.gemini.com/v1/pubticker/btcusd' },
-                { name: 'Huobi', url: 'https://api.huobi.pro/market/detail/merged?symbol=btcusdt' },
-                { name: 'OKX', url: 'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT' }
-            ];
-
-            let totalPrice = 0;
-            let priceCount = 0;
-            const exchangeRows = [[], [], []]; // Three arrays for three boxes
-
-            for (let i = 0; i < exchanges.length; i++) {
-                const exchange = exchanges[i];
-                try {
-                    const response = await fetch(exchange.url);
-                    const data = await response.json();
-                    let price = null;
-
-                    switch (exchange.name) {
-                        case 'Coinbase':
-                            price = parseFloat(data.data.amount);
-                            break;
-                        case 'Kraken':
-                            const krakenPair = data.result.XXBTZUSD || data.result.XXBTUSD;
-                            if (krakenPair) {
-                                price = parseFloat(krakenPair.c[0]);
-                            }
-                            break;
-                        case 'Binance':
-                            price = parseFloat(data.price);
-                            break;
-                        case 'Gemini':
-                            price = parseFloat(data.last);
-                            break;
-                        case 'Huobi':
-                            price = parseFloat(data.tick.close);
-                            break;
-                        case 'OKX':
-                            price = parseFloat(data.data[0].last);
-                            break;
-                    }
-
-                    if (price !== null && !isNaN(price)) {
-                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">$${price.toLocaleString()}</span></div>`);
-                        totalPrice += price;
-                        priceCount++;
-                    } else {
-                        exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">N/A</span></div>`);
-                    }
-                } catch (error) {
-                    console.error(`Error fetching price from ${exchange.name}:`, error);
-                    exchangeRows[Math.floor(i / 2)].push(`<div class="small-text">${exchange.name}: <span class="data-value">Error</span></div>`);
-                }
-            }
-
-            // Populate each exchange prices box
-            for (let i = 0; i < 3; i++) {
-                const exchangePricesDiv = document.getElementById(`exchange-prices-${i + 1}`);
-                exchangePricesDiv.innerHTML = exchangeRows[i].join('');
-            }
-
-            // Calculate and display average price
-            if (priceCount > 0) {
-                const averagePrice = totalPrice / priceCount;
-                const formattedPrice = `$${averagePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                document.getElementById('average-price').innerText = formattedPrice;
-                document.title = `BTC: ${formattedPrice} - BeSovereign`;
-            } else {
-                document.getElementById('average-price').innerText = 'N/A';
-                document.title = 'BeSovereign';
-            }
-        }
-
-        // Fetch Fee Estimates from Mempool.space
-        async function fetchFeeEstimates() {
-            try {
-                const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-                const data = await response.json();
-
-                // Update Mobile Fee Estimates
-                const fastFees = document.querySelectorAll('.fast-fee .data-value');
-                const mediumFees = document.querySelectorAll('.medium-fee .data-value');
-                const slowFees = document.querySelectorAll('.slow-fee .data-value');
-
-                fastFees.forEach(el => el.innerText = `${data.fastestFee} sat/vB`);
-                mediumFees.forEach(el => el.innerText = `${data.halfHourFee} sat/vB`);
-                slowFees.forEach(el => el.innerText = `${data.hourFee} sat/vB`);
-
-                // Update Desktop Fee Estimates
-                const fastFeesDesktop = document.querySelectorAll('.fast-fee-desktop .data-value');
-                const mediumFeesDesktop = document.querySelectorAll('.medium-fee-desktop .data-value');
-                const slowFeesDesktop = document.querySelectorAll('.slow-fee-desktop .data-value');
-
-                fastFeesDesktop.forEach(el => el.innerText = `${data.fastestFee} sat/vB`);
-                mediumFeesDesktop.forEach(el => el.innerText = `${data.halfHourFee} sat/vB`);
-                slowFeesDesktop.forEach(el => el.innerText = `${data.hourFee} sat/vB`);
-            } catch (error) {
-                console.error('Error fetching fee estimates:', error);
-
-                // Update Mobile Fee Estimates with Error
-                document.querySelectorAll('.fast-fee .data-value').forEach(el => el.innerText = 'Fast Fee: Error');
-                document.querySelectorAll('.medium-fee .data-value').forEach(el => el.innerText = 'Medium Fee: Error');
-                document.querySelectorAll('.slow-fee .data-value').forEach(el => el.innerText = 'Slow Fee: Error');
-
-                // Update Desktop Fee Estimates with Error
-                document.querySelectorAll('.fast-fee-desktop .data-value').forEach(el => el.innerText = 'Fast Fee: Error');
-                document.querySelectorAll('.medium-fee-desktop .data-value').forEach(el => el.innerText = 'Medium Fee: Error');
-                document.querySelectorAll('.slow-fee-desktop .data-value').forEach(el => el.innerText = 'Slow Fee: Error');
-            }
-        }
-
-        // Fetch Block Height from Blockchain.info
-        async function fetchBlockHeight() {
-            console.log('Fetching block height...');
-            try {
-                const response = await fetch('https://blockchain.info/q/getblockcount?cors=true');
-                const height = await response.text();
-                document.getElementById('block-height').innerText = height;
-            } catch (error) {
-                console.error('Error fetching block height:', error);
-                document.getElementById('block-height').innerText = 'Error';
-            }
-        }
-
-        // Fetch Mempool Statistics from Mempool.space
-        async function fetchMempoolStats() {
-            console.log('Fetching mempool statistics...');
-            try {
-                const response = await fetch('https://mempool.space/api/mempool');
-                const data = await response.json();
-
-                // Unconfirmed Transactions
-                document.getElementById('mempool-tx-count').innerText = data.count.toLocaleString();
-
-                // Mempool Size in MB
-                const sizeMB = (data.vsize / 1e6).toFixed(2);
-                document.getElementById('mempool-size').innerText = `${sizeMB} MB`;
-
-                // Total Fees in Mempool
-                const totalFeesBTC = (data.total_fee / 1e8).toFixed(2);
-                document.getElementById('mempool-total-fees').innerText = `${totalFeesBTC} BTC`;
-
-                // Estimated Blocks to Clear Mempool
-                const blocksResponse = await fetch('https://mempool.space/api/v1/fees/mempool-blocks');
-                const blocksData = await blocksResponse.json();
-                const blocksToClear = blocksData.length;
-                document.getElementById('blocks-to-clear').innerText = blocksToClear;
-
-            } catch (error) {
-                console.error('Error fetching mempool statistics:', error);
-                document.getElementById('mempool-tx-count').innerText = 'Error';
-                document.getElementById('mempool-size').innerText = 'Error';
-                document.getElementById('mempool-total-fees').innerText = 'Error';
-                document.getElementById('blocks-to-clear').innerText = 'Error';
-            }
-        }
-
-        // Fetch All-Time High and Related Data from CoinGecko
-        async function fetchATHData() {
-            try {
-                // Fetch BTC data from CoinGecko
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
-                const data = await response.json();
-
-                // All-time High Price
-                const athPrice = data.market_data.ath.usd;
-                document.getElementById('ath-price').innerText = `$${athPrice.toLocaleString()}`;
-
-                // Current Price
-                const currentPrice = data.market_data.current_price.usd;
-
-                // Percentage Decline from ATH
-                const decline = ((currentPrice - athPrice) / athPrice) * 100;
-                document.getElementById('ath-decline').innerText = `${decline.toFixed(2)}%`;
-
-                // ATH Date
-                const athDate = new Date(data.market_data.ath_date.usd);
-                const options = { day: 'numeric', month: 'long', year: 'numeric' };
-                const formattedATHDate = athDate.toLocaleDateString('en-GB', options);
-                document.getElementById('ath-date').innerText = formattedATHDate;
-
-                // Days Since ATH
-                const now = new Date();
-                const timeDiff = now - athDate;
-                const daysSinceATH = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-                document.getElementById('days-since-ath').innerText = daysSinceATH;
-
-            } catch (error) {
-                console.error('Error fetching ATH data:', error);
-                document.getElementById('ath-price').innerText = 'Error';
-                document.getElementById('ath-decline').innerText = 'Error';
-                document.getElementById('ath-date').innerText = 'Error';
-                document.getElementById('days-since-ath').innerText = 'Error';
-            }
-        }
-
-        // Fetch Sats per Dollar
-        async function fetchSatsPerDollar() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-                const data = await response.json();
-                const btcPrice = data.bitcoin.usd;
-                const satsPerDollar = (100000000 / btcPrice).toFixed(2);
-                document.getElementById('sats-per-dollar').innerText = `${satsPerDollar} sats/$`;
-            } catch (error) {
-                console.error('Error fetching sats per dollar:', error);
-                document.getElementById('sats-per-dollar').innerText = 'Error';
-            }
-        }
-
-        // Fetch Market Capitalisation
-        async function fetchMarketCap() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
-                const data = await response.json();
-                const marketCap = data.market_data.market_cap.usd;
-                document.getElementById('market-cap').innerText = `$${marketCap.toLocaleString()}`;
-            } catch (error) {
-                console.error('Error fetching market cap:', error);
-                document.getElementById('market-cap').innerText = 'Error';
-            }
-        }
-
-        // Update Current Time in British Format
+        // ========== TIME ==========
         function updateTime() {
             const now = new Date();
-            const options = { 
-                day: 'numeric', 
-                month: 'short', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
-            };
-            const timeString = now.toLocaleString('en-GB', options); // British format
-            document.getElementById('current-time').innerText = timeString;
+            const opts = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('current-time').textContent = now.toLocaleString('en-GB', opts);
         }
 
-        // Initialize All Fetch Functions and Preferences
+        // ========== BITCOIN DATA ==========
+        async function fetchBlockHeight() {
+            try {
+                const res = await fetch('https://mempool.space/api/blocks/tip/height');
+                const height = await res.text();
+                // We store it for the header
+                let el = document.getElementById('block-height-value');
+                if (!el) {
+                    // Create a hidden span so header can read it
+                    el = document.createElement('span');
+                    el.id = 'block-height-value';
+                    el.style.display = 'none';
+                    document.body.appendChild(el);
+                }
+                el.textContent = height;
+                if (currentTab === 'bitcoin') updateHeaderMetric();
+            } catch (e) {
+                console.error('Block height error', e);
+            }
+        }
+
+        async function fetchFeeEstimates() {
+            try {
+                const res = await fetch('https://mempool.space/api/v1/fees/recommended');
+                const data = await res.json();
+                document.getElementById('fast-fee').textContent = data.fastestFee + ' sat/vB';
+                document.getElementById('medium-fee').textContent = data.halfHourFee + ' sat/vB';
+                document.getElementById('slow-fee').textContent = data.hourFee + ' sat/vB';
+            } catch (e) {
+                console.error('Fees error', e);
+            }
+        }
+
+        async function fetchMempoolStats() {
+            try {
+                const res = await fetch('https://mempool.space/api/mempool');
+                const data = await res.json();
+                document.getElementById('mempool-tx-count').textContent = data.count.toLocaleString();
+                document.getElementById('mempool-size').textContent = (data.vsize / 1e6).toFixed(2);
+                document.getElementById('mempool-total-fees').textContent = (data.total_fee / 1e8).toFixed(2) + ' BTC';
+                // Rough blocks to clear (assuming ~1.5 MVB per block)
+                const blocks = Math.ceil(data.vsize / 1.5e6);
+                document.getElementById('blocks-to-clear').textContent = blocks;
+            } catch (e) {
+                console.error('Mempool error', e);
+            }
+        }
+
+        async function fetchBtcPriceAndAth() {
+            try {
+                // Average from a couple of sources
+                let prices = [];
+                try {
+                    const r1 = await fetch('https://api.coinbase.com/v2/prices/spot?currency=USD');
+                    const d1 = await r1.json();
+                    prices.push(parseFloat(d1.data.amount));
+                } catch (_) {}
+                try {
+                    const r2 = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+                    const d2 = await r2.json();
+                    prices.push(parseFloat(d2.price));
+                } catch (_) {}
+
+                if (prices.length) {
+                    btcPriceUsd = prices.reduce((a, b) => a + b, 0) / prices.length;
+                    document.getElementById('average-price').textContent = '$' + btcPriceUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    document.title = 'BTC: $' + btcPriceUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' - BeSovereign';
+                    document.getElementById('sats-per-dollar').textContent = Math.round(1e8 / btcPriceUsd).toLocaleString() + ' sats/$';
+                }
+
+                // ATH from CoinGecko
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
+                const data = await res.json();
+                const ath = data.market_data.ath.usd;
+                const athDate = new Date(data.market_data.ath_date.usd);
+                const marketCap = data.market_data.market_cap.usd;
+                const decline = ((ath - btcPriceUsd) / ath * 100);
+
+                document.getElementById('ath-price').textContent = '$' + ath.toLocaleString(undefined, {maximumFractionDigits: 0});
+                document.getElementById('ath-decline').textContent = decline.toFixed(1) + '%';
+                document.getElementById('ath-date').textContent = athDate.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+                const days = Math.floor((Date.now() - athDate.getTime()) / 86400000);
+                document.getElementById('days-since-ath').textContent = days.toLocaleString();
+                document.getElementById('market-cap').textContent = '$' + (marketCap / 1e9).toFixed(1) + 'B';
+            } catch (e) {
+                console.error('BTC price/ATH error', e);
+            }
+        }
+
+        // ========== METALS + CURRENCIES (single free source) ==========
+        async function fetchMetalsAndCurrencies() {
+            try {
+                // fawazahmed0 free currency API – includes xau & xag and many fiats
+                const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
+                const data = await res.json();
+                const rates = data.usd;
+
+                // Metals (rates are units of metal per 1 USD → invert)
+                if (rates.xau) {
+                    goldPriceUsd = 1 / rates.xau;
+                    document.getElementById('gold-price').textContent = '$' + goldPriceUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                }
+                if (rates.xag) {
+                    silverPriceUsd = 1 / rates.xag;
+                    document.getElementById('silver-price').textContent = '$' + silverPriceUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                }
+
+                if (goldPriceUsd && silverPriceUsd) {
+                    const ratio = goldPriceUsd / silverPriceUsd;
+                    document.getElementById('gold-silver-ratio').textContent = ratio.toFixed(1);
+                    if (currentTab === 'metals') updateHeaderMetric();
+                }
+
+                if (btcPriceUsd && goldPriceUsd) {
+                    document.getElementById('btc-in-gold').textContent = (btcPriceUsd / goldPriceUsd).toFixed(2) + ' oz';
+                    document.getElementById('gold-in-btc').textContent = (goldPriceUsd / btcPriceUsd).toFixed(6) + ' BTC';
+                }
+                if (btcPriceUsd && silverPriceUsd) {
+                    document.getElementById('btc-in-silver').textContent = (btcPriceUsd / silverPriceUsd).toFixed(0) + ' oz';
+                }
+
+                // Currencies we care about
+                const currencyList = [
+                    { code: 'usd', name: 'US Dollar (USD)' },
+                    { code: 'eur', name: 'Euro (EUR)' },
+                    { code: 'gbp', name: 'British Pound (GBP)' },
+                    { code: 'jpy', name: 'Japanese Yen (JPY)' },
+                    { code: 'chf', name: 'Swiss Franc (CHF)' },
+                    { code: 'cad', name: 'Canadian Dollar (CAD)' },
+                    { code: 'aud', name: 'Australian Dollar (AUD)' },
+                    { code: 'ron', name: 'Romanian Leu (RON)' }
+                ];
+
+                // rates are "how many units of currency per 1 USD"
+                // so 1 USD = rates.eur EUR → EUR/USD = 1 / rates.eur? Wait:
+                // In this API: rates.eur = number of EUR that equal 1 USD
+                // Therefore EUR per USD = rates.eur, so USD per EUR = 1/rates.eur
+                // Common EUR/USD quote is how many USD per 1 EUR = 1 / rates.eur
+
+                if (rates.eur) {
+                    eurUsd = 1 / rates.eur; // classic EUR/USD
+                    if (currentTab === 'currencies') updateHeaderMetric();
+                }
+
+                let html = '';
+                currencyList.forEach(c => {
+                    const rate = rates[c.code]; // units of this currency per 1 USD
+                    if (!rate && c.code !== 'usd') return;
+
+                    const vsUsd = c.code === 'usd' ? '1.0000' : rate.toFixed(4);
+                    const btcInCur = btcPriceUsd ? (btcPriceUsd * (c.code === 'usd' ? 1 : rate)).toLocaleString(undefined, {maximumFractionDigits: 0}) : '—';
+                    const goldInCur = goldPriceUsd ? (goldPriceUsd * (c.code === 'usd' ? 1 : rate)).toLocaleString(undefined, {maximumFractionDigits: 0}) : '—';
+                    const silverInCur = silverPriceUsd ? (silverPriceUsd * (c.code === 'usd' ? 1 : rate)).toLocaleString(undefined, {maximumFractionDigits: 2}) : '—';
+
+                    html += `<tr>
+                        <td>${c.name}</td>
+                        <td>${vsUsd}</td>
+                        <td>${btcInCur}</td>
+                        <td>${goldInCur}</td>
+                        <td>${silverInCur}</td>
+                    </tr>`;
+                });
+                document.getElementById('currency-tbody').innerHTML = html;
+
+            } catch (e) {
+                console.error('Metals/Currencies error', e);
+                document.getElementById('gold-price').textContent = 'Error';
+                document.getElementById('silver-price').textContent = 'Error';
+            }
+        }
+
+        // ========== INIT ==========
+        async function refreshAll() {
+            await Promise.all([
+                fetchBlockHeight(),
+                fetchFeeEstimates(),
+                fetchMempoolStats(),
+                fetchBtcPriceAndAth()
+            ]);
+            // Metals & currencies need BTC price, so run after
+            await fetchMetalsAndCurrencies();
+            updateHeaderMetric();
+        }
+
         window.onload = function() {
-            // initializePreferences(); // Removed Theme Preferences
-            initializeSortable();    // Enable drag-and-drop
-
-            loadOrder();             // Load saved order if any
-
-            fetchExchangePrices();
-            fetchBlockHeight();
-            fetchFeeEstimates();
-            fetchMempoolStats();
-            fetchATHData();
-            fetchSatsPerDollar();
-            fetchMarketCap();
             updateTime();
-            setInterval(updateTime, 1000); // Update time every second
-
-            // Refresh data periodically (e.g., every minute)
-            setInterval(fetchExchangePrices, 60000);
-            setInterval(fetchBlockHeight, 60000);
-            setInterval(fetchFeeEstimates, 60000);
-            setInterval(fetchMempoolStats, 60000);
-            setInterval(fetchATHData, 60000);
-            setInterval(fetchSatsPerDollar, 60000);
-            setInterval(fetchMarketCap, 60000);
+            setInterval(updateTime, 1000);
+            refreshAll();
+            // Refresh data every 90 seconds (respect free API limits)
+            setInterval(refreshAll, 90000);
         };
     </script>
 </body>

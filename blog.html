@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - BeSovereign</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1A1A1A;
+            --text-color: #FFFFFF;
+            --accent-color: #FF9900;
+            --card-bg-color: #262626;
+            --muted-color: #BBBBBB;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.65;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            background-color: var(--card-bg-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+        .nav {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        .nav a:hover, .nav a.active {
+            color: var(--accent-color);
+        }
+        .content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px 60px;
+        }
+        h1 {
+            color: var(--accent-color);
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .intro {
+            color: var(--muted-color);
+            font-size: 15px;
+            margin-bottom: 36px;
+        }
+        .post {
+            background: var(--card-bg-color);
+            border-radius: 12px;
+            padding: 28px 28px 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 28px;
+        }
+        .post h2 {
+            color: var(--accent-color);
+            font-size: 22px;
+            margin: 0 0 6px 0;
+        }
+        .post .date {
+            color: var(--muted-color);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .post p {
+            margin: 0 0 14px 0;
+            font-size: 15.5px;
+        }
+        .post p:last-child {
+            margin-bottom: 0;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .logo { display: none; }
+            .header { flex-direction: column; gap: 12px; padding: 15px; }
+            .nav { gap: 14px; }
+            h1 { font-size: 24px; }
+            .post { padding: 22px 18px; }
+            .post h2 { font-size: 19px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html"><img src="new-logo.png" alt="BeSovereign Logo" class="logo"></a>
+                        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="faq.html">FAQ</a>
+            <a href="blog.html" class="active">Blog</a>
+            <a href="legal.html">Legal</a>
+            <a href="privacy.html">Privacy</a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <h1>Blog</h1>
+        <p class="intro">Short notes on Bitcoin, sovereignty, and using the dashboard.</p>
+
+        <!-- Post 1 -->
+        <article class="post">
+            <h2>Welcome to BeSovereign</h2>
+            <div class="date">October 2026</div>
+            <p>BeSovereign started as a simple place to check the numbers that matter: the current block height, what fees are doing, how congested the mempool is, and where the price sits across major exchanges.</p>
+            <p>In a world full of noise, the goal is clarity. No hype, no predictions, no “number go up” cheerleading — just the data, presented cleanly so you can form your own view.</p>
+            <p>This site is intentionally minimal. It exists to serve one purpose: help people stay informed about the Bitcoin network and market without distraction.</p>
+        </article>
+
+        <!-- Post 2 -->
+        <article class="post">
+            <h2>What “Be Sovereign” Actually Means</h2>
+            <div class="date">October 2026</div>
+            <p>Sovereignty in Bitcoin is not a slogan. It is a practice.</p>
+            <p>It means holding your own keys. It means understanding how the network works instead of outsourcing that knowledge to an app or an exchange. It means verifying rather than trusting whenever possible.</p>
+            <p>You do not need to run a full node on day one. You do not need to become a protocol expert overnight. Sovereignty is incremental. Every step you take toward greater independence — learning what a UTXO is, checking fees yourself, moving coins to a wallet you control — is progress.</p>
+            <p>This dashboard is a small tool in that direction: a place where the raw numbers are visible so you can start building your own understanding.</p>
+        </article>
+
+        <!-- Post 3 -->
+        <article class="post">
+            <h2>Understanding Bitcoin Fees (A Quick Guide)</h2>
+            <div class="date">October 2026</div>
+            <p>The fee estimates you see on the homepage (Fast / Medium / Slow) come from the current state of the mempool — the waiting room for unconfirmed transactions.</p>
+            <p><strong>Fast</strong> aims for inclusion in the next block or two. <strong>Medium</strong> is a reasonable middle ground. <strong>Slow</strong> may take longer when the network is busy.</p>
+            <p>Fees are measured in satoshis per virtual byte (sat/vB). They rise when many people want to send transactions at the same time and fall when the network is quiet. There is no fixed “correct” fee — only what the market is willing to pay for block space at a given moment.</p>
+            <p>Watching the mempool size and the “Blocks to Clear” number gives useful context. A large mempool with high fees usually means demand is elevated. A nearly empty mempool often means you can use lower fees safely.</p>
+        </article>
+
+        <!-- Post 4 -->
+        <article class="post">
+            <h2>Why the Numbers Sometimes Show “Error”</h2>
+            <div class="date">October 2026</div>
+            <p>BeSovereign pulls data from several independent public APIs. Occasionally one of them is slow, rate-limited, or temporarily offline. When that happens, the affected card may display “Error” or stay on “Loading…”.</p>
+            <p>This is normal for any site that relies on external sources. The page automatically retries every minute. In most cases the data reappears on the next cycle without any action needed from you.</p>
+            <p>If something stays broken for a long time, it usually means a particular API has changed or is under heavy load. The rest of the dashboard continues to function independently.</p>
+        </article>
+
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+</body>
+</html>
